@@ -1,0 +1,8 @@
+= TODO — Conventions
+
+== Pense-bete
+
+- [ ] Ajouter `conventions-gradle` dans le portefeuille de TOUS les INDEX.adoc des 26 autres boroughs
+- [ ] Creer `opencode.json` dans `conventions-plugin/`
+- [ ] Preparer le template du build.gradle.kts pour conventions-plugin
+- [ ] Verifier que l'includeBuild fonctionne avec dashboard-gradle

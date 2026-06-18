@@ -1,0 +1,124 @@
+= Index des Sessions — Conventions Gradle Plugin
+:code-name: conventions
+:borough-num: 27
+:n0-socle: Build Convention Plugins — Precompiled script plugins centralises cross-borough
+
+_Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
+
+_Derniere mise a jour_ : 2026-06-19
+_session terminee_ : 000
+_Prochaine session_ : 001 — CNV-1 US-1.1 + US-1.2 Squelette conventions-plugin + premier plugin
+
+'''
+
+== Regles Absolues
+
+=== 0. PUBLISH TO MAVEN LOCAL — OBLIGATOIRE APRES TOUTE MODIFICATION DU CODE SOURCE
+
+_Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q publishToMavenLocal` AVANT tout test fonctionnel ou validation via un projet consommateur._
+
+* Interdit : Tester le plugin via le projet parent sans avoir republie le JAR
+* Obligatoire : `./gradlew -q publishToMavenLocal` apres chaque `compileKotlin` reussi si le code a change
+
+=== 1. COMMITS/GIT
+
+_L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git modifiant l'historique _SANS permission explicite_.
+
+=== 1b. FICHIERS DE CONFIGURATION — REGLE ABSOLUE DE SURETE
+
+* **NE JAMAIS ecraser** un fichier config avec un `Write` complet quand un `Edit` partiel suffit
+* **NE JAMAIS remplacer** des valeurs sensibles par des valeurs factices
+* **NE JAMAIS modifier** sans verifier `git check-ignore` et `git ls-files`
+
+=== 2. TESTS EN FIN DE SESSION — INTERDICTION FORMELLE
+
+=== 3. PROCEDURE DE FIN DE SESSION — 6 ETAPES OBLIGATOIRES
+
+'''
+
+== Sessions Recentes
+
+  |===
+  | # | Date | Type | Sujet | Score
+  | 000 | 2026-06-19 | governance | Bootstrap Conventions — 27ème borough. Création gouvernance + analyse code review globale cross-borough. Refactoring ABIDJAN→Conventions dans fichiers publics. | 10/10
+  |===
+
+'''
+
+== Roadmap — Etat Actuel
+
+|===
+| EPIC | Description | Statut | Priorite
+| CNV-0 | Bootstrap gouvernance — .agents/, AGENT.adoc, INDEX.adoc, BACKLOG, code review globale | ✅ TERMINE | P0
+| CNV-1 | `cccp.build.gradle-plugin` — java-gradle-plugin + kotlin-jvm + test JUnit + withSourcesJar | 🔄 EN COURS | P0
+| CNV-2 | `cccp.build.publishing` — POM Maven Central + signing conditionnel + relocation | 🔄 A FAIRE | P0
+| CNV-3 | `cccp.build.functional-test` — functionalTest source set + GradleTestKit + task | 🔄 A FAIRE | P0
+| CNV-4 | `cccp.build.cucumber` — features/scenarios + cucumberTask + exclusion jupiter | 🔄 A FAIRE | P1
+| CNV-5 | Migration dogfood 3 projets (dashboard, codebase, capsule) — valider nouveau/mature/legacy | 🔄 A FAIRE | P1
+| CNV-6 | Generalisation aux 15+ projets actifs + documentation migration | 🔄 A FAIRE | P2
+| PUB | Publication Gradle Plugin Portal + Maven Central | 🔄 A FAIRE | P1
+|===
+
+'''
+
+== Portefeuille — 26 Boroughs Gouvernes
+
+|===
+| Code | Borough | DAG | Statut | Role
+| Conventions | `foundry/public/conventions-gradle/` | N0 | 🔄 CNV-1 | Build convention plugins centralises
+| MEMPHIS 🎸 | `foundry/public/workspace-bom/` | N0 | ✅ Publie | BOM + contrats N0
+| Grand Central 🟡 | `foundry/public/graphify-gradle/` | N0 | ✅ Dormant | KG workspace
+| Liberty 🗽 | `foundry/public/api-key-pool-gradle/` | N0 | ✅ Dormant | Pool de cles API
+| Queens 🔵 | `foundry/public/codebase-gradle/` | N1 | 🔄 Y-3 | RAG socle pgvector
+| Brooklyn | `foundry/public/codex-gradle/` | N2 | 🔄 CDX-15 | Asciidoctor pipeline
+| Manhattan | `foundry/public/planner-gradle/` | N2 | ✅ Dormant | LLM prompting SPG/SPD
+| Newark 🔴 | `foundry/private/training-gradle/` | N2 | 🔄 TRN-5 | Pipeline formation COEUR
+| The Bronx | `foundry/private/quizz-benchmark-gradle/` | N2 | ✅ Dormant | Quiz evaluation
+| Détroit | `foundry/public/capsule-gradle/` | N2 | 🔄 CAP-18 | Video capsule capture
+| Watts 🟠 | `foundry/public/hyperframes-gradle/` | N2 | 🔄 HF-5 | AsciiDoc→MP4
+| Chiraq 🟤 | `foundry/public/readme-gradle/` | N2 | 🔄 RM-1→10 | README + PlantUML
+| New Orleans 🟢 | `foundry/public/document-gradle/` | N2 | 🔄 DOC-0 | Document WRITE + PUBLISH
+| Philly | `foundry/public/jhipster-gradle-plugins/` | N2 | 🔄 EPIC 5 | JHipster tooling
+| Bushwick 🟤 | `foundry/public/bakery-gradle/` | N2 | ✅ 100% | Site statique JBake
+| MIAMI 🌴 | `foundry/public/slider-gradle/` | N2 | ✅ Publie | Slides Reveal.js
+| HTOWN 🚀 | `foundry/public/plantuml-gradle/` | N2 | 🔄 EPIC 13 | Diagrammes LLM
+| Staten Island | `office/sites/magic-stick/` | N2 | ✅ EPIC 7 | Site doc magic-stick
+| Compton | `foundry/private/waiter-gradle/` | N2 | ✅ Cadrage | Paiement/facturation
+| New Jersey | `foundry/public/runner-gradle/` | N3 | ✅ Termine | Orchestration DAG
+| ALGER 🟡 | `foundry/public/dashboard-gradle/` | N3 | 🔄 CNV-5 dogfood | Dashboard vision workspace
+| South Central | `foundry/private/workspace-gradle/` | N4 | 🔄 WSM-2 | Pilotage workspace
+| Atlanta | `foundry/public/agile-gradle/` | N4 | 🔄 AGL-0 | Pilotage agile IA
+| Harlem | `foundry/public/ticket-gradle/` | N4 | 🔄 TKT-0 | Ticketing GitHub
+| Baltimore | `foundry/public/review-gradle/` | N4 | 🔄 RVW-0 | Code review IA
+| Oakland | `foundry/public/flow-gradle/` | N4 | 🔄 FLW-0 | Orchestration merge/CI
+|===
+
+'''
+
+== Contexte Global — Pourquoi Conventions ?
+
+La code review globale des 26 boroughs a revele **6 familles de redondances** dans les fichiers `build.gradle.kts` :
+
+. **Test configuration** : `useJUnitPlatform()`, `testLogging`, `jvmArgs`, `java { withSourcesJar(); withJavadocJar() }` — identique dans ~20 projets
+. **FunctionalTest source set** : ~25 lignes identiques dans ~12 projets (sourceSet + dependencies + task + check.dependsOn)
+. **Cucumber BDD setup** : `features/scenarios` source dirs + task `cucumberTest` + `excludeEngines` + filter — identique dans ~8 projets
+. **Maven Central POM** : `developers { id = "cccp-education" }` + `scm {}` + `licenses {}` — identique dans ~15 projets
+. **Signing conditionnel** : `signing { if (CI != "true" && !SNAPSHOT) sign(pubs) }` — identique dans ~15 projets
+. **buildscript resolutionStrategy annotations** hack — identique dans ~5 projets
+
+Gain estime : **~1200 lignes de build supprimees**, **1 source de verite**, **versions harmonisees**.
+
+'''
+
+== Fichiers Associes
+
+|===
+| Fichier | Role | Type
+| `.agents/CODE_REVIEW_GLOBALE.adoc` | Analyse exhaustive des redondances cross-borough | EAGER
+| `.agents/decisions/` | ADRs architecture | LAZY
+| `.agents/sessions/` | Archives par session | LAZY
+| `.agents/INDEX.adoc` | Dashboard + roadmap + portefeuille | EAGER
+| `.agents/SESSIONS_HISTORY.adoc` | Historique complet des sessions | EAGER
+|===
+
+_Note_ : Cet index est maintenu automatiquement par l'agent en fin de session.

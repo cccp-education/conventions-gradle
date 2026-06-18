@@ -1,0 +1,7 @@
+= Test Coverage Analysis — Conventions Gradle Plugin
+:description: Suivi de la couverture de tests
+:session: 000
+
+== Session 000
+
+Aucun test ajoute. Session de gouvernance uniquement.

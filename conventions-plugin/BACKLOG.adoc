@@ -1,0 +1,200 @@
+= Backlog — Conventions Gradle Plugin
+:description: Backlog prioritaire — EPICs CNV-0→CNV-6 + PUB
+:toc: left
+:toclevels: 4
+:icons: font
+:sectnums:
+
+_Derniere mise a jour : 2026-06-19 — Session 000 (Bootstrap gouvernance)_
+_Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
+
+'''
+
+== EPICs Termines
+
+[cols="1,3,2,3"]
+|===
+| EPIC | Description | Pts | Cloture
+| CNV-0 | Bootstrap gouvernance — .agents/, AGENT.adoc, INDEX.adoc, BACKLOG, CODE_REVIEW_GLOBALE | — | Sess. 000
+|===
+
+'''
+
+== EN COURS — CNV-1 : Convention Plugin `gradle-plugin`
+
+_La base. Applique java-gradle-plugin + kotlin-jvm + test JUnit + withSourcesJar + withJavadocJar._
+
+*Priorite* : P0 — dependance de tous les autres EPICs
+*Charge estimee* : 8 pts (~2 sessions)
+*Fichiers cibles* : `src/main/kotlin/education/cccp/build/GradlePluginConventions.kt`
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Priorite
+| US-1.1 | Creer squelette projet + `build.gradle.kts` du conventions-plugin | 2 | P0
+| US-1.2 | Implementer `GradlePluginConventions` : java-gradle-plugin + kotlin-jvm | 2 | P0
+| US-1.3 | Config test JUnit : useJUnitPlatform + testLogging + jvmArgs | 1 | P0
+| US-1.4 | withSourcesJar + withJavadocJar automatiques | 1 | P0
+| US-1.5 | Option fixAnnotationsConflict (resolutionStrategy annotations) | 1 | P1
+| US-1.6 | Option koverEnabled + koverThreshold | 1 | P2
+|===
+
+'''
+
+== A FAIRE — CNV-2 : Convention Plugin `publishing`
+
+_POM Maven Central standardise : developers, scm, licenses, signing conditionnel, relocation._
+
+*Priorite* : P0
+*Charge estimee* : 6 pts (~1-2 sessions)
+*Depend de* : CNV-1
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Priorite
+| US-2.1 | Implementer PublishingConventions : POM developers + scm + licenses | 2 | P0
+| US-2.2 | Signing conditionnel (CI check + SNAPSHOT check) | 1 | P0
+| US-2.3 | Relocation block injection (via -Prem relocationGroup) | 1 | P0
+| US-2.4 | Support publicationType = PLUGIN | LIBRARY | BOM | 2 | P0
+|===
+
+'''
+
+== A FAIRE — CNV-3 : Convention Plugin `functional-test`
+
+_Source set functionalTest + GradleTestKit + task registration + check.dependsOn._
+
+*Priorite* : P0
+*Charge estimee* : 5 pts (~1 session)
+*Depend de* : CNV-1
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Priorite
+| US-3.1 | Source set functionalTest + dirs kotlin/resources | 1 | P0
+| US-3.2 | Dependencies gradleTestKit + junit5 + assertj | 1 | P0
+| US-3.3 | Task functionalTest + useJUnitPlatform | 1 | P0
+| US-3.4 | gradlePlugin.testSourceSets.add + check.dependsOn | 1 | P0
+| US-3.5 | Parametres : sourceSetName, additionalDependencies | 1 | P2
+|===
+
+'''
+
+== A FAIRE — CNV-4 : Convention Plugin `cucumber`
+
+_Source set test features/scenarios + cucumberTask + exclusion jupiter + check.dependsOn._
+
+*Priorite* : P1
+*Charge estimee* : 6 pts (~1-2 sessions)
+*Depend de* : CNV-1
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Priorite
+| US-4.1 | Config sourceSets test : features + scenarios dirs | 1 | P1
+| US-4.2 | Task cucumberTest : useJUnitPlatform excludeEngines(junit-jupiter) | 2 | P1
+| US-4.3 | Filter test task : excludeTestsMatching *.scenarios.* | 1 | P1
+| US-4.4 | check.dependsOn cucumberTest | 1 | P1
+| US-4.5 | Support codebase-style multi-task (CucumberTaskSpec) | 1 | P2
+|===
+
+'''
+
+== A FAIRE — CNV-5 : Migration Dogfood (3 projets)
+
+_Valider les convention plugins sur 3 profils differents avant generalisation._
+
+*Priorite* : P1
+*Charge estimee* : 10 pts (~3 sessions)
+*Depend de* : CNV-1, CNV-2, CNV-3, CNV-4
+
+=== Projets dogfood
+
+[cols="1,4,3"]
+|===
+| Projet | Profil | Raison du choix
+| dashboard-gradle | NOUVEAU | Projet en bootstrap, zero heritage build, ideal pour valider le contrat
+| codebase-gradle | EXISTANT MATURE | Projet le plus complexe (32 cucumber tasks, kover, publishing), valide la compatibilite
+| capsule-gradle | EXISTANT LEGACY | Pattern extension open class + config incomplete, valide la migration des cas tordus
+|===
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts
+| US-5.1 | Migrer dashboard-gradle vers les 4 convention plugins | 3
+| US-5.2 | Migrer codebase-gradle (verifier compat 32 cucumber tasks) | 4
+| US-5.3 | Migrer capsule-gradle (verifier config incomplete + legacy) | 3
+|===
+
+'''
+
+== A FAIRE — CNV-6 : Generalisation
+
+_Appliquer les convention plugins aux 15+ projets actifs restants._
+
+*Priorite* : P2
+*Charge estimee* : 15 pts (~4-5 sessions)
+*Depend de* : CNV-5
+
+=== Projets cibles (par ordre de priorite)
+
+1. bakery-gradle (projet gold standard)
+2. plantuml-gradle
+3. slider-gradle
+4. readme-gradle
+5. hyperframes-gradle
+6. graphify-gradle
+7. api-key-pool-gradle
+8. planner-gradle
+9. codex-gradle
+10. agile-gradle, ticket-gradle, review-gradle, flow-gradle
+11. runner-gradle, document-gradle
+
+'''
+
+== A FAIRE — PUB : Publication
+
+_Publication des convention plugins sur Gradle Plugin Portal + Maven Central._
+
+*Priorite* : P1
+*Charge estimee* : 7 pts (~2 sessions)
+*Depend de* : CNV-4 (tous les plugins stables)
+
+=== User Stories
+
+[cols="1,4,2"]
+|===
+| US | Description | Pts
+| US-PUB-1 | Configurer sonatype + signing pour `education.cccp.build` | 2
+| US-PUB-2 | Publier sur Maven Central (nmcp) | 2
+| US-PUB-3 | Publier sur Gradle Plugin Portal | 1
+| US-PUB-4 | Documenter la migration dans AGENT.adoc de chaque borough | 2
+|===
+
+'''
+
+== Synthese — Charge restante
+
+[cols="1,3,2,2"]
+|===
+| EPIC | Contenu | Pts | Priorite
+| CNV-0 | Bootstrap gouvernance | — | ✅ TERMINE
+| CNV-1 | Convention plugin `gradle-plugin` | 8 | 🔴 P0
+| CNV-2 | Convention plugin `publishing` | 6 | 🔴 P0
+| CNV-3 | Convention plugin `functional-test` | 5 | 🔴 P0
+| CNV-4 | Convention plugin `cucumber` | 6 | 🟠 P1
+| CNV-5 | Migration dogfood 3 projets | 10 | 🟠 P1
+| CNV-6 | Generalisation 15+ projets | 15 | 🟡 P2
+| PUB | Publication Plugin Portal + Maven Central | 7 | 🟠 P1
+| *Total* | | *57* |
+|===

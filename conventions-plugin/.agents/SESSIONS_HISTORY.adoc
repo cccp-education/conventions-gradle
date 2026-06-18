@@ -1,0 +1,29 @@
+= Sessions History — Conventions Gradle Plugin
+:description: Historique chronologique de toutes les sessions Conventions
+:toc: left
+:toclevels: 3
+
+'''
+
+== Session 000 — 2026-06-19
+Type:: governance
+Code:: CNV-0
+Titre:: Bootstrap gouvernance Conventions
+Score:: 10/10
+Duree:: 1 session
+
+**Créations** :
+- `conventions-gradle/` avec `.git/` initialise + remote `origin` configure
+- `conventions-plugin/.agents/` (sessions/, archives/, encyclopedies/, backup/)
+- `AGENT.adoc` — gouvernance complete (regles, architecture, 4 convention plugins)
+- `.agents/INDEX.adoc` — dashboard, roadmap, portefeuille 26 boroughs
+- `.agents/CODE_REVIEW_GLOBALE.adoc` — analyse 8 familles de redondances cross-borough
+- `BACKLOG.adoc` — 6 EPICs (CNV-0→CNV-6) + PUB, 57 pts
+- `PROMPT_REPRISE.adoc`, `opencode.json`, `LAZY_EAGER_ESSENTIALS.adoc`, `TODO.adoc`
+- Root `AGENTS.adoc` mis a jour (27 Boroughs)
+- Refactoring : ABIDJAN supprime des fichiers publics, conserve dans jardin secret
+
+**Fichiers** :
+- `conventions-gradle/.gitignore`
+- `conventions-gradle/settings.gradle.kts`
+- `conventions-gradle/LICENSE`

@@ -1,0 +1,381 @@
+= Code Review Globale — Analyse des Redondances Cross-Borough
+:description: Cartographie exhaustive des patterns de build dupliques dans les 26 boroughs
+:toc: left
+:toclevels: 4
+:icons: font
+:sectnums:
+:code-name: conventions
+:session: 000
+:date: 2026-06-19
+
+[abstract]
+--
+Cette analyse est le **document fondateur** du borough Conventions. Elle cartographie
+l'integralite des redondances de configuration build dans les 26 projets Gradle OSS
+du workspace, quantifie le gain potentiel de chaque extraction, et definit le
+perimetre des 4 convention plugins a developper.
+
+Source : exploration systematique de `foundry/public/` (26 projets) + analyse comparative
+des fichiers `build.gradle.kts`, `settings.gradle.kts`, `gradle/libs.versions.toml`.
+--
+
+'''
+
+== 1. Famille 1 — Test JUnit Configuration (present dans ~20 projets)
+
+=== Pattern actuel
+
+[source,kotlin]
+----
+dependencies {
+    testImplementation(kotlin("test-junit5"))
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
+}
+----
+
+=== Projets concernes
+
+Tous sauf `intellij-plugins` (JetBrains Platform, pas Gradle). Soit ~20 projets.
+
+=== Variantes identifiees
+
+|===
+| Variante | Projets
+| `jvmArgs("-XX:+EnableDynamicAgentLoading")` ajoute | bakery, plantuml, codebase, capsule
+| `maxHeapSize = "2g"` | codebase, plantuml
+| `systemProperty("junit.jupiter.execution.parallel.enabled", "true")` | codebase seulement
+|===
+
+=== Convention plugin propose
+
+`education.cccp.build.gradle-plugin` — avec options :
+- `enableDynamicAgentLoading` (default true)
+- `maxHeapSize` (default null)
+- `parallelExecution` (default false)
+
+'''
+
+== 2. Famille 2 — FunctionalTest Source Set (present dans ~12 projets)
+
+=== Pattern actuel
+
+[source,kotlin]
+----
+val functionalTest: SourceSet by sourceSets.creating {
+    java { srcDirs("src/functionalTest/kotlin") }
+    resources { srcDirs("src/functionalTest/resources") }
+}
+
+dependencies {
+    add(functionalTest.implementationConfigurationName, gradleTestKit())
+    add(functionalTest.implementationConfigurationName, kotlin("test-junit5"))
+    add(functionalTest.implementationConfigurationName, libs.assertj.core)
+    add(functionalTest.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
+}
+
+val functionalTestTask = tasks.register<Test>("functionalTest") {
+    testClassesDirs = functionalTest.output.classesDirs
+    classpath = configurations[functionalTest.runtimeClasspathConfigurationName] + functionalTest.output
+    useJUnitPlatform()
+}
+
+gradlePlugin.testSourceSets.add(functionalTest)
+
+tasks.check { dependsOn(functionalTestTask) }
+----
+
+=== Projets concernes
+
+bakery, plantuml, codebase, codex, capsule, readme, slider, hyperframes, dashboard, graphify, api-key-pool, planner
+
+=== Variantes identifiees
+
+|===
+| Variante | Projets
+| `configurations["functionalTestImplementation"].extendsFrom(…)` legacy | capsule, readme
+| `testImplementation` extend `functionalTest` (reverse inheritance) | plantuml, readme
+|===
+
+=== Convention plugin propose
+
+`education.cccp.build.functional-test` — parametres :
+- `sourceSetName` (default `functionalTest`)
+- `additionalDependencies` (pour les depends specifiques projet)
+
+'''
+
+== 3. Famille 3 — Cucumber BDD Tests (present dans ~8 projets)
+
+=== Pattern actuel
+
+[source,kotlin]
+----
+sourceSets.test {
+    resources.srcDir("src/test/features")
+    java.srcDir("src/test/scenarios")
+}
+
+val cucumberTest = tasks.register<Test>("cucumberTest") {
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = configurations.testRuntimeClasspath.get() +
+        sourceSets.test.get().output +
+        sourceSets.main.get().output +
+        files(tasks.jar.get().archiveFile)
+    useJUnitPlatform { excludeEngines("junit-jupiter") }
+    systemProperty("cucumber.junit-platform.naming-strategy", "long")
+}
+
+tasks.named<Test>("test") {
+    filter { excludeTestsMatching("*.scenarios.*") }
+}
+
+tasks.check { dependsOn(cucumberTest) }
+----
+
+=== Projets concernes
+
+codebase, bakery, plantuml, slider, readme, capsule, dashboard, agent-contracts (workspace-bom)
+
+=== Variantes identifiees
+
+|===
+| Variante | Projets
+| `cucumber.execution.parallel.enabled` | codebase
+| Timeout 5min par scenario | bakery
+| 32 cucumber tasks parametrees (data class CucumberTaskSpec) | codebase (unique, le plus avance)
+| Plugins Cucumber (`io.cucumber:junit-platform-engine` 7.21.0) | tous
+|===
+
+=== Convention plugin propose
+
+`education.cccp.build.cucumber` — parametres :
+- `featuresDir` (default `src/test/features`)
+- `scenariosDir` (default `src/test/scenarios`)
+- `parallel` (default false)
+- `timeoutMinutes` (default null)
+- Support multi-task pour le pattern avance codebase
+
+'''
+
+== 4. Famille 4 — Maven Central Publishing POM (present dans ~15 projets)
+
+=== Pattern actuel
+
+[source,kotlin]
+----
+publishing {
+    publications {
+        withType<MavenPublication> {
+            pom {
+                name.set(gradlePlugin.plugins.getByName("name").displayName)
+                description.set(gradlePlugin.plugins.getByName("name").description)
+                url.set(gradlePlugin.website.get())
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("cccp-education")
+                        name.set("CCCP Education")
+                        email.set("cccp.edu@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set(gradlePlugin.vcsUrl.get())
+                    developerConnection.set(gradlePlugin.vcsUrl.get())
+                    url.set(gradlePlugin.vcsUrl.get())
+                }
+                project.findProperty("relocationGroup")?.let { targetGroup ->
+                    withXml { /* inject relocation */ }
+                }
+            }
+        }
+    }
+    repositories { mavenCentral() }
+}
+
+signing {
+    if (System.getenv("CI") != "true" && !version.toString().endsWith("-SNAPSHOT")) {
+        sign(publishing.publications)
+    }
+    useGpgCmd()
+}
+----
+
+=== Projets concernes
+
+Tous les projets publies ou en cours de publication : codebase, codex, plantuml, bakery, slider, readme, graphify, api-key-pool, hyperframes, planner, capsule, dashboard
+
+=== Variantes identifiees
+
+|===
+| Variante | Projets
+| `withType<MavenPublication>` (plugin + maven) | plugins Gradle
+| `create<MavenPublication>("maven") { from(components["java"]) }` | librairies pures
+| `from(components["javaPlatform"])` | workspace-bom BOM
+| `signing { sign(publishing.publications) }` absent | capsule (incomplet)
+| `com.gradleup.gratatouille` legacy | graphify (ancien)
+|===
+
+=== Convention plugin propose
+
+`education.cccp.build.publishing` — parametres :
+- `publicationType` (PLUGIN | LIBRARY | BOM)
+- `signingEnabled` (default true)
+
+'''
+
+== 5. Famille 5 — Extension Class Patterns (2 styles concurrents, ~12 projets)
+
+=== Pattern A — Recommande (Gradle 8.x+)
+
+[source,kotlin]
+----
+abstract class CodexExtension {
+    abstract val zone: Property<LicenseZone>
+    abstract val pgvectorHost: Property<String>
+}
+----
+
+Utilise par : codex, planner, codebase (partiellement), dashboard, hyperframes, api-key-pool
+
+=== Pattern B — Legacy
+
+[source,kotlin]
+----
+open class PlantumlExtension @Inject constructor(objects: ObjectFactory) {
+    val configPath: Property<String> = objects.property(String::class.java)
+}
+----
+
+Utilise par : plantuml, graphify, bakery, capsule, slider, newpipe
+
+=== Recommandation
+
+Normaliser vers **Pattern A** (`abstract class` + `abstract val`) pour tous les nouveaux developpements.
+Migration progressive des projets legacy. Ce n'est pas un convention plugin — c'est une **norme de code**
+a documenter dans `AGENT.adoc` de chaque borough.
+
+'''
+
+== 6. Famille 6 — buildscript Resolution Strategy Hack (present dans ~5 projets)
+
+=== Pattern actuel
+
+[source,kotlin]
+----
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            force("org.jetbrains:annotations:26.0.2-1")
+        }
+    }
+}
+----
+
+=== Projets concernes
+
+codex, plantuml, slider, readme, capsule
+
+=== Convention plugin propose
+
+Integre dans `education.cccp.build.gradle-plugin` avec option :
+- `fixAnnotationsConflict` (default false) — temporaire, a supprimer quand Gradle 9.x stabilise
+
+'''
+
+== 7. Famille 7 — Kover Coverage Configuration (present dans ~6 projets)
+
+=== Pattern actuel
+
+[source,kotlin]
+----
+kover {
+    currentProject {
+        sources { includedSourceSets.addAll("main", "functionalTest") }
+    }
+    reports {
+        total {
+            xml { onCheck = true }
+            html { onCheck = true }
+        }
+    }
+}
+----
+
+=== Projets concernes
+
+codebase, codex, bakery, plantuml, capsule, dashboard
+
+=== Convention plugin propose
+
+Integre dans `education.cccp.build.gradle-plugin` avec option :
+- `koverEnabled` (default false)
+- `koverThreshold` (default null)
+
+'''
+
+== 8. Famille 8 — Version Catalog Divergence (risque)
+
+=== Constat
+
+Les memes dependances ont des **versions differentes** selon les projets :
+
+|===
+| Dependance | codebase | planner | bakery | plantuml | slider
+| kotlin | 2.3.20 | 2.3.20 | 2.0.21 | 2.3.20 | 2.3.20
+| langchain4j | 1.16.3 | 1.14.1 | - | 1.13.0 | 1.14.1
+| koog | 1.0.0 | 0.8.0 | - | - | -
+| cucumber | 7.21.0 | 7.21.0 | 7.21.0 | 7.21.0 | 7.21.0
+| assertj | 3.27.3 | 3.27.3 | 3.27.3 | 3.27.3 | 3.27.3
+|===
+
+=== Recommandation
+
+Ne fait pas partie du scope de Conventions directement. Mais Conventions peut imposer des versions
+via son BOM, ou documenter les versions recommandees dans un `libs.versions.toml` partage.
+
+'''
+
+== Synthese — Perimetre des Convention Plugins
+
+|===
+| Plugin | Lignes economisees/projet | Nb projets | Gain total estime
+| `gradle-plugin` | ~35 | ~20 | ~700
+| `publishing` | ~40 | ~15 | ~600
+| `functional-test` | ~25 | ~12 | ~300
+| `cucumber` | ~20 | ~8 | ~160
+| *Total* | *~120* | | *~1760*
+|===
+
+== Architecture Decision Records
+
+=== ADR-001 — Pourquoi des precompiled script plugins et pas un buildSrc partage ?
+
+*Contexte* : Les precompiled script plugins (`.gradle.kts` dans `src/main/kotlin`) sont le
+pattern recommande par Gradle pour les convention plugins. Alternatives : `buildSrc/` partage
+(impossible cross-repo), `includeBuild()` (plus lourd), plugin binaire publie (trop tot).
+
+*Decision* : Precompiled script plugins dans `conventions-plugin/src/main/kotlin/`,
+references par `includeBuild()` depuis les projets consommateurs.
+
+*Consequence* : Chaque projet consommateur doit ajouter `includeBuild("../conventions-gradle")`
+dans son `settings.gradle.kts`.
+
+=== ADR-002 — Ordre de migration
+
+1. Dashboard-gradle (projet nouveau, CNV-5 dogfood) — valide les 3 patterns (nouveau projet)
+2. Codebase-gradle (projet existant mature) — valide la compatibilite ascendante
+3. Capsule-gradle (projet legacy, patterns divergents) — valide la migration des cas tordus
+4. Generalisation aux 15+ autres projets

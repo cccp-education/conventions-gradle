@@ -1,0 +1,43 @@
+= Session 000 — Bootstrap Gouvernance Conventions
+:session: 000
+:date: 2026-06-19
+:type: governance
+:code: CNV-0
+:score: 10/10
+
+== Contexte
+
+Creation du 27eme borough (conventions-gradle) pour centraliser les patterns de build redondants
+identifies dans la code review globale des 26 boroughs OSS.
+
+Le projet `conventions-gradle` hebergera 4 convention plugins (precompiled script plugins)
+sous le groupId `education.cccp.build`.
+
+== Travail effectue
+
+1. Creation de la structure `foundry/public/conventions-gradle/` + `conventions-plugin/`
+2. `git init` + remote origin configure
+3. Fichiers de gouvernance :
+   - `AGENT.adoc` — regles absolues, architecture, procedures
+   - `.agents/INDEX.adoc` — dashboard, roadmap, portefeuille
+   - `.agents/CODE_REVIEW_GLOBALE.adoc` — analyse exhaustive des 8 familles de redondances
+   - `BACKLOG.adoc` — backlog CNV-0→CNV-6 + PUB (57 pts)
+   - `PROMPT_REPRISE.adoc` — mission session 001
+   - `.agents/SESSIONS_HISTORY.adoc`
+   - `.agents/TEST_COVERAGE_ANALYSIS.adoc`
+   - `.gitignore`, `settings.gradle.kts`, `LICENSE`
+   - `opencode.json`, `LAZY_EAGER_ESSENTIALS.adoc`, `TODO.adoc`
+4. Mise a jour `AGENTS.adoc` racine — 27 Boroughs, ABIDJAN dans table + chaine valeur + historique
+5. Refactoring gouvernance : suppression de toutes les mentions ABIDJAN des fichiers publics
+   (ABIDJAN reste uniquement dans le jardin secret `AGENTS.adoc` racine)
+
+== Decisions
+
+- ADR-001 : Precompiled script plugins (pas buildSrc partage)
+- ADR-002 : Ordre migration : dashboard (nouveau) → codebase (mature) → capsule (legacy)
+- DAG N0 : consomme par tous les autres boroughs via `includeBuild()`
+- Groupe : `education.cccp.build`
+
+== Prochaine session (001)
+
+CNV-1 US-1.1 + US-1.2 : Squelette conventions-plugin + premier plugin `gradle-plugin`.

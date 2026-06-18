@@ -1,0 +1,50 @@
+= PROMPT_REPRISE — Conventions
+:session: 000
+:date: 2026-06-19
+
+== Mission accomplie
+
+*Session 000 TERMINEE* — CNV-0 Bootstrap gouvernance Conventions.
+
+Creations :
+- `conventions-gradle/` avec `.git/` initialise + remote origin
+- `conventions-plugin/.agents/` complet (sessions/, archives/, encyclopedies/, backup/)
+- `AGENT.adoc`, `INDEX.adoc`, `CODE_REVIEW_GLOBALE.adoc`, `BACKLOG.adoc`
+- `opencode.json`, `LAZY_EAGER_ESSENTIALS.adoc`, `TODO.adoc`
+- Root `AGENTS.adoc` mis a jour (27 Boroughs, ABIDJAN)
+- Refactoring : ABIDJAN supprime des fichiers publics
+
+== Statut
+
+- CNV-0 : ✅ TERMINE
+- CNV-1→CNV-4 : 🔄 A FAIRE (convention plugins)
+- CNV-5 : 🔄 A FAIRE (dogfood)
+- CNV-6 : 🔄 A FAIRE (generalisation)
+- PUB : 🔄 A FAIRE
+- Total restant : 57 pts
+
+== Prochaine session (001) — CNV-1 US-1.1 + US-1.2
+
+*Priorite P0* : Creer le squelette du conventions-plugin + premier convention plugin.
+
+1. **US-1.1** : Creer `conventions-plugin/build.gradle.kts` :
+   - plugins : `kotlin-jvm`, `java-gradle-plugin`, `maven-publish`, `com.gradle.plugin-publish`
+   - `gradlePlugin {}` avec 4 plugins declares (gradle-plugin, publishing, functional-test, cucumber)
+   - `gradlePlugin {}` avec `website`, `vcsUrl`
+   - Dependencies : `compileOnly(gradleApi())`, `testImplementation(kotlin("test-junit5"))`
+
+2. **US-1.2** : Creer `src/main/kotlin/education/cccp/build/GradlePluginConventions.kt` :
+   - Precompiled script plugin
+   - Applique `java-gradle-plugin`, `kotlin-jvm`, `maven-publish`
+   - Configure Java 24 target, Kotlin JVM target
+   - `java { withSourcesJar(); withJavadocJar() }`
+   - Test JUnit config (`useJUnitPlatform`, `testLogging`)
+
+*Verification* :
+- `./gradlew compileKotlin` → SUCCESS
+- `./gradlew test` → PASS
+- `./gradlew publishToMavenLocal` → SUCCESS
+
+== Note
+
+Ordre du DAG : CNV-1 (base) → CNV-2 (publishing) → CNV-3 (functional-test) → CNV-4 (cucumber) → CNV-5 (dogfood) → CNV-6 (generalisation).

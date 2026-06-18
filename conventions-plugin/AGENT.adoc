@@ -1,0 +1,214 @@
+= Conventions Gradle Plugin — Directives Agent
+:toc: left
+:toclevels: 3
+:icons: font
+:sectnums:
+
+[CAUTION]
+====
+**ARRET OBLIGATOIRE** avant `rm`, `Write` (ecrasement), ou suppression de fichier :
+1. LIRE le fichier en entier
+2. VERIFIER `git ls-files -- <fichier>` (si pas dans git = pas de retour possible)
+3. DEMANDER confirmation fichier par fichier a l'utilisateur
+4. ATTENDRE "oui" avant d'agir
+====
+
+== Avertissement — Racine de Travail
+
+**Ce fichier est dans `conventions-plugin/`**, la racine de travail du projet.
+
+La racine du depot git (`conventions-gradle/`) ne contient QUE le repo git et les fichiers
+de build Gradle. TOUT le reste (code, tests, gouvernance, documentation agent) vit ici.
+
+* Les chemins dans ce fichier sont relatifs a **`conventions-plugin/`**
+* L'agent travaille depuis **`conventions-plugin/`**
+* Les commandes Gradle s'executent depuis **`conventions-plugin/`** ou avec `-p conventions-plugin`
+
+== Projet
+
+**Nom** : conventions-gradle
+**DAG** : N0 — build-logic partagé, socle de conventions cross-borough
+**Groupe** : `education.cccp.build`
+**Stack** : Kotlin, Gradle (precompiled script plugins), Kotlin DSL
+**Documentation** : AsciiDoc + Gradle
+**Mission** : Centraliser les patterns de build redondants identifiés dans la code review globale
+  des 26 boroughs : test config, functionalTest source set, Cucumber setup, signing/publishing,
+  extension class conventions, resolution strategy, Kover coverage config.
+
+== Regles Absolues
+
+=== Git
+
+**INTERDICTION FORMELLE** de commit/push/merge sans permission explicite de l'utilisateur.
+
+Commandes autorisees (lecture seule) : `git status`, `git diff`, `git log`, `git show`
+Commandes interdites (sauf ordre) : `git add`, `git commit`, `git push`, `git merge`, `git rebase`
+
+=== Tests
+
+L'agent NE DOIT JAMAIS lancer de tests (`./gradlew test`, etc.) lors de la procedure de fin de session SANS permission explicite de l'utilisateur.
+
+=== Securite
+* Jamais de secrets en dur dans le code
+* Jamais de credentials dans les fichiers de config
+* Jamais de tokens API commites dans Git
+* Utiliser des references (`keyRef: ${GOOGLE_API_KEY_1}`)
+
+=== Secrets et tokens — INTERDICTION DE LOG
+
+**PRINCIPE** : Les tokens API, mots de passe, et identifiants credentials NE DOIVENT JAMAIS apparaitre dans la sortie terminal de l'agent. L'utilisateur peut streamer son terminal (Discord, Twitch, etc.). Tout token visible dans le terminal est compromis.
+
+**INTERDICTIONS** :
+* **NE JAMAIS** passer un token en argument visible d'une commande
+* **NE JAMAIS** afficher le contenu d'un fichier contenant des tokens si le token peut etre visible dans la sortie
+* **NE JAMAIS** utiliser `echo`, `cat`, ou tout commande qui affiche des tokens dans le terminal
+
+=== Fichiers de configuration — REGLE ABSOLUE DE SURETE
+
+**PRINCIPE** : Tout fichier de configuration (YAML, JSON, XML, TOML, properties, .env, etc.) peut contenir des donnees sensibles non versionnees.
+
+**Procedure OBLIGATOIRE** avant modification d'un fichier de configuration :
+1. `git check-ignore <fichier>` : Verifier si le fichier est versionne
+2. `git ls-files -- <fichier>` : Confirmer s'il est tracke
+3. Si le fichier **n'est pas tracke** : **CREER UNE SAUVEGARDE** avant toute modification
+4. Privilegier **l'edit partiel** plutot que **l'ecriture complete**
+
+=== Methodologie de Travail
+
+* **1 fichier a la fois** : Modifier un seul fichier avant de passer au suivant
+* **Validation immediate** : Compiler apres chaque modification
+* **Contexte leger** : Maximum 50k tokens EAGER (~3000 lignes)
+
+== Architecture
+
+=== Structure du Projet (depuis la racine de travail = ce repertoire)
+
+[source,bash]
+----
+conventions-plugin/                 # RACINE DE TRAVAIL (ce repertoire)
+|-- src/main/kotlin/               # Code source Kotlin (precompiled script plugins)
+|-- src/test/                       # Tests unitaires
+|-- src/functionalTest/             # Tests fonctionnels GradleTestKit
+|-- src/test/features/              # Cucumber .feature files
+|-- src/test/scenarios/             # Cucumber step definitions
+|-- .agents/                        # Documentation agent
+|   |-- INDEX.adoc                 # Regles absolues + sessions recentes (EAGER)
+|   |-- CODE_REVIEW_GLOBALE.adoc   # Analyse des redondances cross-borough (EAGER)
+|   |-- SESSIONS_HISTORY.adoc      # Historique des sessions (EAGER)
+|   |-- sessions/                  # Archives par session (LAZY)
+|   |-- archives/                  # Archives mensuelles (LAZY)
+|   |-- encyclopedies/             # Connaissance froide (COLD — humain seulement)
+|   |-- backup/                    # Vagues froides (snapshots horodates)
+|-- PROMPT_REPRISE.adoc            # Mission session en cours (EAGER)
+|-- AGENT.adoc                     # Directives completes (ce fichier)
+|-- BACKLOG.adoc                   # Suivi prioritaire des taches
+|-- TODO.adoc                      # Pense-bete informel
++-- build.gradle.kts               # Build du plugin
+----
+
+=== Contexte Git (pour reference)
+
+[source,bash]
+----
+conventions-gradle/                # RACINE GIT
+|-- conventions-plugin/            # RACINE DE TRAVAIL
+|-- settings.gradle.kts            # Settings multi-projets
+|-- build.gradle.kts               # Build racine
++-- LICENSE                        # Apache 2.0
+----
+
+=== Contrats de Build (Precompiled Script Plugins)
+
+Le plugin expose 4 convention plugins sous le group `education.cccp.build` :
+
+[cols="2,5"]
+|===
+| Plugin ID | Role
+| `education.cccp.build.gradle-plugin` | `java-gradle-plugin` + `kotlin-jvm` + test JUnit + `withSourcesJar` + `withJavadocJar`
+| `education.cccp.build.publishing` | POM Maven Central (developers, scm, licenses) + signing conditionnel + relocation
+| `education.cccp.build.functional-test` | Source set `functionalTest` + GradleTestKit + task registration
+| `education.cccp.build.cucumber` | Source set features/scenarios + cucumberTask + exclusion jupiter
+|===
+
+=== Ordre de Surcharge Configuration (extension API)
+
+Chaque extension de plugin suit la cascade 5 couches :
+
+[source]
+----
+CLI (-Pproperty=value) > gradle.properties > DSL (extension { ... }) > fichier YAML > defaults
+----
+
+* **Couche 1** : CLI (`-Pconventions.xxx=...`) — priorite maximale
+* **Couche 2** : `gradle.properties` (`conventions.xxx=...`)
+* **Couche 3** : DSL (`conventions { xxx = "..." }`)
+* **Couche 4** : Fichier de configuration YAML
+* **Couche 5** : Defaults codes en dur dans les data classes
+
+=== Commandes Utiles
+
+[source,bash]
+----
+# Depuis la racine de travail (conventions-plugin/)
+./gradlew compileKotlin
+./gradlew test
+./gradlew functionalTest
+./gradlew cucumberTest
+./gradlew check
+----
+
+== Gestion du Contexte — CRITIQUE
+
+* **Que faire ensuite ?** -> **`BACKLOG.adoc`** (suivi autoritaire et prioritaire)
+* **`PROMPT_REPRISE.adoc`** -> mission de la session en cours
+
+=== Fichiers EAGER (charges automatiquement)
+
+|===
+| Fichier | Role
+| `PROMPT_REPRISE.adoc` | Mission session en cours (max 70 lignes)
+| `.agents/INDEX.adoc` | Regles absolues + sessions recentes
+| `.agents/CODE_REVIEW_GLOBALE.adoc` | Analyse exhaustive des redondances cross-borough
+| `AGENT.adoc` | Ce fichier — Directives completes
+|===
+
+== Session Procedure
+
+=== Debut de Session
+1. Lire `PROMPT_REPRISE.adoc` pour la mission en cours
+2. Lire `.agents/INDEX.adoc` pour les regles absolues
+3. Lire `.agents/CODE_REVIEW_GLOBALE.adoc` pour comprendre le perimetre
+
+=== Fin de Session
+
+**Procedure obligatoire en 6 etapes** :
+1. Creer l'archive LAZY : `.agents/sessions/{N}-{type}-{sujet}.adoc`
+2. Mettre a jour PROMPT_REPRISE.adoc — Mission N+1 (max 70 lignes)
+3. Mettre a jour SESSIONS_HISTORY.adoc
+4. Mettre a jour INDEX.adoc — Date, session en cours N+1
+5. Mettre a jour TEST_COVERAGE_ANALYSIS.adoc (si tests modifies)
+6. Mettre a jour COMPLETED_TASKS_ARCHIVE.adoc
+
+**Aucune etape ne peut etre marquee OK si le fichier n'a pas ete effectivement modifie et verifie.**
+
+== Anti-Patterns — Pieges a Eviter
+
+|===
+| # | Anti-Pattern | Prevention
+| 1 | **Agent sans `opencode.json`** | Creer `opencode.json` AVANT `AGENT.adoc`
+| 2 | **PROMPT_REPRISE fantome** | Mettre a jour systematiquement en fin de session
+| 3 | **Portefeuille fantome** | Ajouter conventions-gradle dans TOUS les INDEX.adoc des autres boroughs
+| 4 | **Redondance cachee** | INDEX.adoc = source de verite pour roadmap/EPICs
+| 5 | **Migration sans dogfood** | Toujours valider sur 3 projets (nouveau, mature, legacy) avant generalisation
+|===
+
+== References de Style — Codebases LAZY
+
+|===
+| Projet | Chemin | Role
+| bakery-gradle | `/home/cheroliv/workspace/foundry/public/bakery-gradle/bakery-plugin` | Plugin Gradle mature, gold standard gouvernance
+| plantuml-gradle | `/home/cheroliv/workspace/foundry/public/plantuml-gradle/plantuml-plugin` | Plugin Gradle reference architecture
+| jhipster-gradle-plugins | `/home/cheroliv/workspace/foundry/public/jhipster-gradle-plugins` | buildSrc precompiled script plugin existant
+| codebase-gradle | `/home/cheroliv/workspace/foundry/public/codebase-gradle` | Cucumber parametre avance (32 tasks)
+| workspace-bom | `/home/cheroliv/workspace/foundry/public/workspace-bom` | Artefacts N0 partages
+|===

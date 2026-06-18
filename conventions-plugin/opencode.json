@@ -1,0 +1,8 @@
+{
+  "instructions": [
+    "AGENT.adoc",
+    ".agents/INDEX.adoc",
+    ".agents/CODE_REVIEW_GLOBALE.adoc",
+    "PROMPT_REPRISE.adoc"
+  ]
+}

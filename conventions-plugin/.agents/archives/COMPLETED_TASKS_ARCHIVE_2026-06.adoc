@@ -1,0 +1,18 @@
+= Archive des Tâches Terminées — Juin 2026 — Conventions
+:description: Tâches terminées du borough Conventions en juin 2026
+:month: 2026-06
+
+== Session 000 — 2026-06-19 — CNV-0 Bootstrap gouvernance
+
+**Tâches** :
+- [x] Creation dossiers conventions-gradle + conventions-plugin/.agents/
+- [x] git init + remote origin
+- [x] AGENT.adoc (215 lignes, gouvernance complete)
+- [x] .agents/INDEX.adoc (dashboard, roadmap 6 EPICs, portefeuille)
+- [x] .agents/CODE_REVIEW_GLOBALE.adoc (8 familles de redondances)
+- [x] BACKLOG.adoc (CNV-0→CNV-6 + PUB, 57 pts)
+- [x] PROMPT_REPRISE.adoc, opencode.json, LAZY_EAGER_ESSENTIALS.adoc, TODO.adoc
+- [x] Mise a jour AGENTS.adoc racine (27 Boroughs, ABIDJAN)
+- [x] Refactoring : ABIDJAN supprime des fichiers publics
+
+**EPICs** : CNV-0 ✅

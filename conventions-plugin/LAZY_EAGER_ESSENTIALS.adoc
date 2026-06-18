@@ -1,0 +1,33 @@
+= LAZY/EAGER Essentials — Conventions
+
+== Principe
+
+- EAGER : charge automatiquement en debut de session
+- LAZY : charge sur demande uniquement
+- COLD : jamais charge automatiquement (backup, encyclopedies)
+
+== Fichiers EAGER (toujours charger)
+
+|===
+| Fichier | Role | Lignes approx
+| `PROMPT_REPRISE.adoc` | Mission session courante | <70
+| `.agents/INDEX.adoc` | Dashboard + regles absolues | <200
+| `.agents/CODE_REVIEW_GLOBALE.adoc` | Analyse redondances perimetre | <300
+| `AGENT.adoc` | Directives completes | <350
+|===
+
+== Fichiers LAZY (sur demande)
+
+|===
+| Fichier | Role
+| `BACKLOG.adoc` | Backlog detaille (EAGER si EPIC active)
+| `.agents/sessions/*` | Archives sessions LAZY
+| `.agents/SESSIONS_HISTORY.adoc` | Historique complet
+| `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Couverture tests
+|===
+
+== Politique de chargement
+
+- Total EAGER doit rester < 1000 lignes
+- Audit periodeque tous les ~10 sessions
+- Rotation backup quand EAGER > 500 lignes
