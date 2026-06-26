@@ -27,3 +27,29 @@ Duree:: 1 session
 - `conventions-gradle/.gitignore`
 - `conventions-gradle/settings.gradle.kts`
 - `conventions-gradle/LICENSE`
+
+== Session 001 — 2026-06-26
+Type:: dev
+Code:: CNV-1
+Titre:: Squelette conventions-plugin + GradlePluginConventionsPlugin
+Score:: 10/10
+Duree:: 1 session
+
+**Creations** :
+- `build.gradle.kts` (Gradle 9.5.1, Kotlin 2.3.20, java-gradle-plugin, maven-publish, plugin-publish)
+- `GradlePluginConventionsPlugin.kt` — plugin binaire (apply java-gradle-plugin + kotlin-jvm + maven-publish, Java 24, withSourcesJar, withJavadocJar, JUnit testLogging)
+- functional tests (GradleTestKit) : 3/3 PASS
+- Cucumber BDD (3 scenarios) : 3/3 PASS
+- `publishToMavenLocal` valide
+
+**Fichiers** :
+- `build.gradle.kts`
+- `gradle/wrapper/gradle-wrapper.properties`, `gradlew`, `gradlew.bat`
+- `src/main/kotlin/education/cccp/build/GradlePluginConventionsPlugin.kt`
+- `src/functionalTest/kotlin/.../GradlePluginConventionsFunctionalTest.kt`
+- `src/test/scenarios/.../CucumberTestRunner.kt`, `GradlePluginConventionsSteps.kt`
+- `src/test/resources/features/gradle-plugin-conventions.feature`, `cucumber.properties`
+
+**Decisions** :
+- Plugin binaire (pas precompiled script) pour fiabilite includeBuild()
+- Build a la racine conventions-gradle/ (pas subproject)

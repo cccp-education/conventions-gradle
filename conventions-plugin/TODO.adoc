@@ -3,6 +3,6 @@
 == Pense-bete
 
 - [ ] Ajouter `conventions-gradle` dans le portefeuille de TOUS les INDEX.adoc des 26 autres boroughs
-- [ ] Creer `opencode.json` dans `conventions-plugin/`
-- [ ] Preparer le template du build.gradle.kts pour conventions-plugin
 - [ ] Verifier que l'includeBuild fonctionne avec dashboard-gradle
+- [ ] US-1.5 : fixAnnotationsConflict (P1)
+- [ ] US-1.6 : koverEnabled (P2)

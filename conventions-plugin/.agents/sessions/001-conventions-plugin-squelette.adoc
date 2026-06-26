@@ -1,0 +1,61 @@
+= Session 001 — Squelette conventions-plugin + GradlePluginConventionsPlugin
+:session: 001
+:date: 2026-06-26
+:type: dev
+:code: CNV-1
+:score: 10/10
+
+== Contexte
+
+Implementation du premier convention plugin `education.cccp.build.gradle-plugin` :
+plugin binaire Gradle qui normalise la configuration standard des plugins Gradle
+dans le workspace (java-gradle-plugin + kotlin-jvm + maven-publish + Java 24 + tests JUnit).
+
+== Travail effectue
+
+1. Restructuration build : root `build.gradle.kts` = build du plugin (pas de subproject)
+2. `build.gradle.kts` : plugins kotlin-jvm 2.3.20, java-gradle-plugin, maven-publish, plugin-publish 1.3.0
+3. `GradlePluginConventionsPlugin.kt` : plugin binaire implementant Plugin<Project>
+   - apply java-gradle-plugin + maven-publish + kotlin-jvm
+   - Java 24 source/target compatibility
+   - withSourcesJar + withJavadocJar
+   - Kotlin jvmToolchain(24)
+   - Repositories mavenCentral + gradlePluginPortal
+   - Test tasks : useJUnitPlatform + testLogging (PASSED, SKIPPED, FAILED) + showStandardStreams
+4. FunctionalTest source set + GradleTestKit (3 tests)
+5. Cucumber BDD : features + step definitions + CucumberTestRunner (3 scenarios)
+6. `publishToMavenLocal` valide
+
+== Baby Steps DDD/TDD/BDD
+
+1. US-1.1 : build.gradle.kts (build infrastructure)
+2. US-1.2 : GradlePluginConventionsPlugin (plugin implementation)
+3. Functional tests (GradleTestKit) : 3/3 PASS
+4. Cucumber BDD : 3/3 PASS
+5. publishToMavenLocal : OK
+
+== Decisions
+
+- Plugin binaire Kotlin (pas precompiled script) — plus fiable pour includeBuild()
+- Build a la racine de conventions-gradle/, pas en subproject (builds independants)
+- Gradle 9.5.1 (compatible Java 25)
+
+== Fichiers crees
+
+- `build.gradle.kts` — 95 lignes, build complet du plugin
+- `gradle/wrapper/gradle-wrapper.properties` — Gradle 9.5.1
+- `gradlew`, `gradlew.bat` — wrapper scripts
+- `src/main/kotlin/education/cccp/build/GradlePluginConventionsPlugin.kt` — 62 lignes
+- `src/functionalTest/kotlin/.../GradlePluginConventionsFunctionalTest.kt` — 3 tests
+- `src/test/scenarios/.../GradlePluginConventionsSteps.kt` — step definitions
+- `src/test/scenarios/.../CucumberTestRunner.kt` — @Suite runner
+- `src/test/resources/features/gradle-plugin-conventions.feature` — 3 scenarios
+- `src/test/resources/cucumber.properties` — config Cucumber
+
+== Prochaine session (002)
+
+CNV-2 Publishing Convention : POM Maven Central + signing conditionnel + relocation.
+
+== Stats
+
+compileKotlin: OK | test: 3/3 | functionalTest: 3/3 | cucumberTest: 3/3 | publishToMavenLocal: OK

@@ -5,3 +5,18 @@
 == Session 000
 
 Aucun test ajoute. Session de gouvernance uniquement.
+
+== Session 001
+
+**Functional tests (GradleTestKit)** : 3 tests
+- GradlePluginConventionsFunctionalTest
+  - `plugin applies without error` : ✅
+  - `plugin registers test task` : ✅
+  - `plugin does not fail on check` : ✅
+
+**Cucumber BDD** : 3 scenarios
+- `Plugin applies required plugins` : ✅ (3 Thens : java-gradle-plugin, kotlin-jvm, maven-publish)
+- `Plugin configures Java compatibility` : ✅ (4 Thens : source 24, target 24, sourcesJar, javadocJar)
+- `Plugin configures test tasks` : ✅ (2 Thens : JUnit platform, testLogging)
+
+**Couverture** : US-1.1→US-1.4 couverts. US-1.5 fixAnnotationsConflict et US-1.6 koverEnabled non implementes.

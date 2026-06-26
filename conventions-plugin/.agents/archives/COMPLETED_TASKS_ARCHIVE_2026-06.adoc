@@ -16,3 +16,18 @@
 - [x] Refactoring : ABIDJAN supprime des fichiers publics
 
 **EPICs** : CNV-0 ✅
+
+== Session 001 — 2026-06-26 — CNV-1 GradlePluginConventionsPlugin
+
+**Tâches** :
+- [x] build.gradle.kts a la racine (Gradle 9.5.1, Kotlin 2.3.20, java-gradle-plugin, maven-publish, plugin-publish)
+- [x] functionalTest source set + GradleTestKit
+- [x] Cucumber BDD (features + step defs + @Suite runner)
+- [x] GradlePluginConventionsPlugin.kt : apply java-gradle-plugin + kotlin-jvm + maven-publish, Java 24, withSourcesJar/JavadocJar, JUnit testLogging
+- [x] Functional tests 3/3
+- [x] Cucumber 3/3
+- [x] publishToMavenLocal
+
+**EPICs** : CNV-1 ✅
+
+**Restant CNV-1** : US-1.5 fixAnnotationsConflict (P1), US-1.6 koverEnabled (P2)
