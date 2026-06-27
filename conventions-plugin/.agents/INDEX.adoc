@@ -5,9 +5,9 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-06-26
-_session terminee_ : 001
-_Prochaine session_ : 002 — CNV-2 PublishingConventionsPlugin (POM Maven Central + signing + relocation)
+_Derniere mise a jour_ : 2026-06-27
+_session terminee_ : 002
+_Prochaine session_ : 003 — CNV-3 functional-test (FunctionalTestConventionsPlugin)
 
 '''
 
@@ -42,6 +42,7 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
   | # | Date | Type | Sujet | Score
   | 000 | 2026-06-19 | governance | Bootstrap Conventions — 27ème borough. Création gouvernance + analyse code review globale cross-borough. Refactoring ABIDJAN→Conventions dans fichiers publics. | 10/10
   | 001 | 2026-06-26 | dev | CNV-1 GradlePluginConventionsPlugin — plugin binaire, build.gradle.kts, functional tests (GradleTestKit 3/3), Cucumber BDD (3/3), publishToMavenLocal. | 10/10
+  | 002 | 2026-06-27 | dev | CNV-2 PublishingConventionsPlugin — POM Maven Central, signing conditionnel, relocation, publicationType. Functional 3/3, Cucumber 3/3. | 10/10
   |===
 
 '''
@@ -52,7 +53,7 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
 | EPIC | Description | Statut | Priorite
 | CNV-0 | Bootstrap gouvernance — .agents/, AGENT.adoc, INDEX.adoc, BACKLOG, code review globale | ✅ TERMINE | P0
 | CNV-1 | `cccp.build.gradle-plugin` — java-gradle-plugin + kotlin-jvm + test JUnit + withSourcesJar | ✅ TERMINE | P0
-| CNV-2 | `cccp.build.publishing` — POM Maven Central + signing conditionnel + relocation | 🔄 A FAIRE | P0
+| CNV-2 | `cccp.build.publishing` — POM Maven Central + signing conditionnel + relocation | ✅ TERMINE | P0
 | CNV-3 | `cccp.build.functional-test` — functionalTest source set + GradleTestKit + task | 🔄 A FAIRE | P0
 | CNV-4 | `cccp.build.cucumber` — features/scenarios + cucumberTask + exclusion jupiter | 🔄 A FAIRE | P1
 | CNV-5 | Migration dogfood 3 projets (dashboard, codebase, capsule) — valider nouveau/mature/legacy | 🔄 A FAIRE | P1
@@ -66,7 +67,7 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
 
 |===
 | Code | Borough | DAG | Statut | Role
-| Conventions | `foundry/public/conventions-gradle/` | N0 | 🔄 CNV-2 | Build convention plugins centralises
+| Conventions | `foundry/public/conventions-gradle/` | N0 | 🔄 CNV-3 | Build convention plugins centralises
 | MEMPHIS 🎸 | `foundry/public/workspace-bom/` | N0 | ✅ Publie | BOM + contrats N0
 | Grand Central 🟡 | `foundry/public/graphify-gradle/` | N0 | ✅ Dormant | KG workspace
 | Liberty 🗽 | `foundry/public/api-key-pool-gradle/` | N0 | ✅ Dormant | Pool de cles API

@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour : 2026-06-26 — Session 001 (CNV-1 GradlePluginConventionsPlugin)_
+_Derniere mise a jour : 2026-06-27 — Session 002 (CNV-2 PublishingConventionsPlugin)_
 _Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
 
 '''
@@ -17,32 +17,12 @@ _Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
 | EPIC | Description | Pts | Cloture
 | CNV-0 | Bootstrap gouvernance — .agents/, AGENT.adoc, INDEX.adoc, BACKLOG, CODE_REVIEW_GLOBALE | — | Sess. 000
 | CNV-1 | Convention plugin `gradle-plugin` — java-gradle-plugin + kotlin-jvm + test JUnit + withSourcesJar/JavadocJar | 8 | Sess. 001
+| CNV-2 | Convention plugin `publishing` — POM Maven Central + signing conditionnel + relocation + publicationType | 6 | Sess. 002
 |===
 
 '''
 
-== EN COURS — CNV-2 : Convention Plugin `publishing`
-
-_POM Maven Central standardise : developers, scm, licenses, signing conditionnel, relocation._
-
-*Priorite* : P0
-*Charge estimee* : 6 pts (~1-2 sessions)
-*Depend de* : CNV-1
-
-=== User Stories
-
-[cols="1,4,2,2"]
-|===
-| US | Description | Pts | Priorite
-| US-2.1 | Implementer PublishingConventions : POM developers + scm + licenses | 2 | P0
-| US-2.2 | Signing conditionnel (CI check + SNAPSHOT check) | 1 | P0
-| US-2.3 | Relocation block injection (via -Prem relocationGroup) | 1 | P0
-| US-2.4 | Support publicationType = PLUGIN | LIBRARY | BOM | 2 | P0
-|===
-
-'''
-
-== A FAIRE — CNV-3 : Convention Plugin `functional-test`
+== EN COURS — CNV-3 : Convention Plugin `functional-test`
 
 _Source set functionalTest + GradleTestKit + task registration + check.dependsOn._
 
@@ -168,8 +148,8 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central._
 | EPIC | Contenu | Pts | Priorite
 | CNV-0 | Bootstrap gouvernance | — | ✅ TERMINE
 | CNV-1 | Convention plugin `gradle-plugin` | 8 | ✅ TERMINE
-| CNV-2 | Convention plugin `publishing` | 6 | 🔄 EN COURS
-| CNV-3 | Convention plugin `functional-test` | 5 | 🔴 P0
+| CNV-2 | Convention plugin `publishing` | 6 | ✅ TERMINE
+| CNV-3 | Convention plugin `functional-test` | 5 | 🔄 EN COURS
 | CNV-4 | Convention plugin `cucumber` | 6 | 🟠 P1
 | CNV-5 | Migration dogfood 3 projets | 10 | 🟠 P1
 | CNV-6 | Generalisation 15+ projets | 15 | 🟡 P2

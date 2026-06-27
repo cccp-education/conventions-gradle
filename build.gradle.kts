@@ -104,6 +104,13 @@ gradlePlugin {
             implementationClass = "education.cccp.build.GradlePluginConventionsPlugin"
             tags = listOf("cccp", "conventions", "gradle-plugin")
         }
+        register("publishing") {
+            id = "education.cccp.build.publishing"
+            displayName = "Publishing Conventions"
+            description = "Configures Maven Central POM (developers, scm, licenses), conditional signing, and relocation for all Maven publications"
+            implementationClass = "education.cccp.build.PublishingConventionsPlugin"
+            tags = listOf("cccp", "conventions", "publishing", "maven", "signing")
+        }
     }
 }
 

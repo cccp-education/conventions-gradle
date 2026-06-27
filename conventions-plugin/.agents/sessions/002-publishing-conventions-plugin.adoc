@@ -1,0 +1,52 @@
+= Session 002 — PublishingConventionsPlugin (CNV-2)
+:session: 002
+:date: 2026-06-27
+:type: dev
+:code: CNV-2
+:score: 10/10
+
+== Contexte
+
+Implementation du convention plugin `education.cccp.build.publishing` :
+POM Maven Central standardise (developers, scm, licenses), signing conditionnel,
+relocation, support publicationType PLUGIN | LIBRARY | BOM.
+
+== Travail effectue
+
+1. `PublishingConventionsPlugin.kt` : plugin binaire avec extension configurable
+2. POM : developers (cccp-education), SCM github, licence Apache-2.0, url
+3. Signing conditionnel : skip si CI==true ou version SNAPSHOT
+4. Relocation : via `distributionManagement/relocation` dans le POM
+5. publicationType : PLUGIN utilise `gradlePlugin.website/vcsUrl`, LIBRARY/BOM defaults
+6. Extension `publishingConventions` : publicationType, relocationGroupId, relocationArtifactId
+7. `build.gradle.kts` : registration du plugin dans gradlePlugin
+8. Functional tests (GradleTestKit) : 3/3 PASS (apply, generatePom task, POM developers)
+9. Cucumber BDD : 3 scenarios, all PASS (POM metadata, signing, relocation)
+
+== Baby Steps DDD/TDD/BDD
+
+1. US-2.1 : PublishingConventionsPlugin (POM + extension)
+2. US-2.2 : Signing conditionnel
+3. US-2.3 : Relocation block
+4. US-2.4 : Support publicationType
+5. Functional tests : 3/3 PASS
+6. Cucumber BDD : 3/3 PASS
+
+== Fichiers crees
+
+- `src/main/kotlin/education/cccp/build/PublishingConventionsPlugin.kt` — plugin complet
+- `src/functionalTest/kotlin/.../PublishingConventionsFunctionalTest.kt` — 3 tests
+- `src/test/scenarios/.../PublishingConventionsSteps.kt` — step definitions
+- `src/test/resources/features/publishing-conventions.feature` — 3 scenarios
+
+== Fichiers modifies
+
+- `build.gradle.kts` — registration publishing plugin dans gradlePlugin
+
+== Prochaine session (003)
+
+CNV-3 FunctionalTest Convention : source set functionalTest + GradleTestKit + task + check.dependsOn.
+
+== Stats
+
+compileKotlin: OK | test: 6/6 (3 legacy + 3 publishing) | functionalTest: 6/6 | cucumberTest: 6/6 | check: PASS

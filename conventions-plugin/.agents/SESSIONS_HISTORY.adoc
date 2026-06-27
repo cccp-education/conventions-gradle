@@ -53,3 +53,25 @@ Duree:: 1 session
 **Decisions** :
 - Plugin binaire (pas precompiled script) pour fiabilite includeBuild()
 - Build a la racine conventions-gradle/ (pas subproject)
+
+== Session 002 — 2026-06-27
+Type:: dev
+Code:: CNV-2
+Titre:: PublishingConventionsPlugin
+Score:: 10/10
+Duree:: 1 session
+
+**Creations** :
+- `PublishingConventionsPlugin.kt` : POM Maven Central (developers cccp-education, scm, Apache-2.0), signing conditionnel (CI/SNAPSHOT), relocation, publicationType
+- Extension `publishingConventions` : publicationType, relocationGroupId, relocationArtifactId
+- Functional tests : 3/3 PASS
+- Cucumber BDD (3 scenarios) : 3/3 PASS
+
+**Fichiers** :
+- `src/main/kotlin/education/cccp/build/PublishingConventionsPlugin.kt`
+- `src/functionalTest/kotlin/.../PublishingConventionsFunctionalTest.kt`
+- `src/test/scenarios/.../PublishingConventionsSteps.kt`
+- `src/test/resources/features/publishing-conventions.feature`
+
+**Modifications** :
+- `build.gradle.kts` : registration publishing plugin dans gradlePlugin

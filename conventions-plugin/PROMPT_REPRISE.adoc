@@ -1,51 +1,42 @@
 = PROMPT_REPRISE — Conventions
-:session: 001
-:date: 2026-06-26
+:session: 002
+:date: 2026-06-27
 
 == Mission accomplie
 
-*Session 001 TERMINEE* — CNV-1 Convention plugin `gradle-plugin` implemente + tests.
+*Session 002 TERMINEE* — CNV-2 PublishingConventionsPlugin implemente + tests.
 
 Creations :
-- `build.gradle.kts` a la racine de conventions-gradle/ (Gradle 9.5.1, Kotlin 2.3.20)
-- `src/main/kotlin/education/cccp/build/GradlePluginConventionsPlugin.kt`
-- functional tests (GradleTestKit) : 3/3 PASS
+- `PublishingConventionsPlugin.kt` : POM Maven Central, signing conditionnel, relocation, publicationType
+- Functional tests (GradleTestKit) : 3/3 PASS
 - Cucumber BDD : 3 scenarios, 3/3 PASS
-- `publishToMavenLocal` valide
-
-Decisions :
-- Plugin binaire Kotlin (pas precompiled script)
-- Build a la racine (pas subproject `conventions-plugin/`)
 
 == Statut
 
 - CNV-0 : ✅ TERMINE
-- CNV-1 : ✅ TERMINE (US-1.1→1.4, US-1.5 fixAnnotationsConflict P1, US-1.6 koverEnabled P2 restants)
-- CNV-2 : 🔄 A FAIRE (publishing)
+- CNV-1 : ✅ TERMINE
+- CNV-2 : ✅ TERMINE (US-2.1→2.4)
 - CNV-3 : 🔄 A FAIRE (functional-test)
 - CNV-4 : 🔄 A FAIRE (cucumber)
 - CNV-5 : 🔄 A FAIRE (dogfood)
 - CNV-6 : 🔄 A FAIRE (generalisation)
 - PUB : 🔄 A FAIRE
-- Total restant : 49 pts (57 - 8 CNV-1)
+- Total restant : 43 pts (57 - 8 CNV-1 - 6 CNV-2)
 
-== Prochaine session (002) — CNV-2 Publishing Convention
+== Prochaine session (003) — CNV-3 FunctionalTest Convention
 
-*Priorite P0* : Implementer le convention plugin `education.cccp.build.publishing`.
+*Priorite P0* : Implementer le convention plugin `education.cccp.build.functional-test`.
 
-1. **US-2.1** : Implementer `PublishingConventionsPlugin` :
-   - POM developers (cccp-education), scm, licences Apache 2.0
-   - url depuis gradlePlugin.website
-2. **US-2.2** : Signing conditionnel (CI != "true" && !SNAPSHOT)
-3. **US-2.3** : Relocation block (via -Prem relocationGroup)
-4. **US-2.4** : Support publicationType = PLUGIN | LIBRARY | BOM
+1. **US-3.1** : Source set functionalTest + dirs kotlin/resources
+2. **US-3.2** : Dependencies gradleTestKit + junit5 + assertj
+3. **US-3.3** : Task functionalTest + useJUnitPlatform
+4. **US-3.4** : gradlePlugin.testSourceSets.add + check.dependsOn
+5. **US-3.5** : Parametres : sourceSetName, additionalDependencies (P2)
 
 *Verification* :
 - `./gradlew compileKotlin` → SUCCESS
-- `./gradlew test` → PASS (unit + cucumber)
-- `./gradlew functionalTest` → PASS
-- `./gradlew publishToMavenLocal` → SUCCESS
+- `./gradlew check` → PASS
 
 == Note
 
-Ordre DAG : CNV-1 ✅→ CNV-2 🔜 → CNV-3 → CNV-4 → CNV-5 → CNV-6 → PUB
+Ordre DAG : CNV-1 ✅→ CNV-2 ✅→ CNV-3 🔜 → CNV-4 → CNV-5 → CNV-6 → PUB

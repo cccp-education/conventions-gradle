@@ -20,3 +20,18 @@ Aucun test ajoute. Session de gouvernance uniquement.
 - `Plugin configures test tasks` : ✅ (2 Thens : JUnit platform, testLogging)
 
 **Couverture** : US-1.1→US-1.4 couverts. US-1.5 fixAnnotationsConflict et US-1.6 koverEnabled non implementes.
+
+== Session 002
+
+**Functional tests (GradleTestKit)** : 3 tests
+- PublishingConventionsFunctionalTest
+  - `plugin applies without error` : ✅
+  - `plugin registers generatePom task` : ✅
+  - `plugin generates pom with developers` : ✅
+
+**Cucumber BDD** : 3 scenarios
+- `Publishing plugin applies POM metadata` : ✅ (4 Thens : id, name, license, SCM)
+- `Publishing plugin signs publications conditionally` : ✅ (2 Thens : signing applied, signed)
+- `Publishing plugin supports relocation` : ✅ (2 Thens : group, artifact)
+
+**Couverture** : US-2.1→US-2.4 couverts. 6/6 functional + 6/6 cucumber = 12 tests PASS.

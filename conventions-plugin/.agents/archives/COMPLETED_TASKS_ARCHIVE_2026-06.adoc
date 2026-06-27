@@ -31,3 +31,17 @@
 **EPICs** : CNV-1 ✅
 
 **Restant CNV-1** : US-1.5 fixAnnotationsConflict (P1), US-1.6 koverEnabled (P2)
+
+== Session 002 — 2026-06-27 — CNV-2 PublishingConventionsPlugin
+
+**Tâches** :
+- [x] PublishingConventionsPlugin.kt : POM Maven Central (developers, scm, licenses, url)
+- [x] Signing conditionnel (CI check + SNAPSHOT check) via extension.shouldSign
+- [x] Relocation block via extension.relocationGroupId/relocationArtifactId
+- [x] Support publicationType = PLUGIN | LIBRARY | BOM (PLUGIN utilise gradlePlugin metadata)
+- [x] Extension publishingConventions : publicationType, relocationGroupId, relocationArtifactId
+- [x] Functional tests 3/3
+- [x] Cucumber BDD 3/3
+- [x] Registration dans gradlePlugin de build.gradle.kts
+
+**EPICs** : CNV-2 ✅
