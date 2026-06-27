@@ -45,3 +45,17 @@
 - [x] Registration dans gradlePlugin de build.gradle.kts
 
 **EPICs** : CNV-2 ✅
+
+== Session 005 — 2026-06-27 — ARCH Architecture Plugin Indépendant + Racine Consommateur
+
+**Tâches** :
+- [x] Root `settings.gradle.kts` : suppression `include("conventions-plugin")`
+- [x] `conventions-plugin/settings.gradle.kts` : creation (rootProject.name = "conventions-plugin")
+- [x] `gradle/libs.versions.toml` copie dans `conventions-plugin/gradle/libs.versions.toml`
+- [x] Root `gradle/libs.versions.toml` : simplifié (consumer minimal)
+- [x] Root `build.gradle.kts` : consommateur dogfood (apply cucumber from mavenLocal)
+- [x] Wrapper : gradlew, gradlew.bat, gradle/wrapper/ copies dans conventions-plugin/
+- [x] Validation : `./gradlew check` depuis conventions-plugin/ — 12 tasks BUILD SUCCESSFUL
+- [x] Validation : `./gradlew tasks` depuis root/ — BUILD SUCCESSFUL
+
+**EPICs** : ARCH ✅

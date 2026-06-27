@@ -1,6 +1,8 @@
 .gradle/
 /build/
+/conventions-plugin/build/
 !gradle/wrapper/gradle-wrapper.jar
+!conventions-plugin/gradle/wrapper/gradle-wrapper.jar
 .idea/
 *.iml
 .kotlin/

@@ -1,0 +1,54 @@
+= Session 005 — Architecture Plugin Indépendant + Racine Consommateur
+:date: 2026-06-27
+:type: arch
+:code: ARCH
+:score: 10/10
+
+== Objectif
+
+Corriger l'architecture du projet pour passer du pattern `include()` multi-projets
+au pattern "Plugin Indépendant + Racine Consommateur" (dogfood via mavenLocal).
+
+== Travail effectué
+
+1. **Root `settings.gradle.kts`** : suppression de `include("conventions-plugin")`
+2. **`conventions-plugin/settings.gradle.kts`** : création — `rootProject.name = "conventions-plugin"` avec son propre `pluginManagement`
+3. **Version catalog** : copie de `gradle/libs.versions.toml` dans `conventions-plugin/gradle/libs.versions.toml` (le plugin devient auto-suffisant)
+4. **Root `gradle/libs.versions.toml`** : simplifié en catalogue minimal (consumer)
+5. **Root `build.gradle.kts`** : devient un consommateur qui applique `education.cccp.build.cucumber` depuis `mavenLocal()`
+6. **Wrapper** : `gradlew`, `gradlew.bat`, `gradle/wrapper/` copiés dans `conventions-plugin/` (plugin indépendant)
+7. **Validation** : `conventions-plugin ./gradlew check` — 12 tasks, BUILD SUCCESSFUL
+
+== Fichiers créés
+
+- `conventions-plugin/settings.gradle.kts`
+- `conventions-plugin/gradle/libs.versions.toml`
+- `conventions-plugin/gradlew`
+- `conventions-plugin/gradlew.bat`
+- `conventions-plugin/gradle/wrapper/gradle-wrapper.properties`
+- `conventions-plugin/gradle/wrapper/gradle-wrapper.jar`
+
+== Fichiers modifiés
+
+- `settings.gradle.kts` (root) : suppression `include("conventions-plugin")`
+- `build.gradle.kts` (root) : consommateur dogfood → apply cucumber from mavenLocal
+- `gradle/libs.versions.toml` (root) : simplifié (consumer minimal)
+
+== Décisions architecturales
+
+- **Pattern** : "Plugin Indépendant + Racine Consommateur" conforme à l'article de blog
+  (https://talaria.school/blog/gestion-plugin-gradle-independant). Pas de `include()`.
+- **Workflow** : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && ./gradlew build`
+- **Root** : projet consommateur minimal qui vérifie que le plugin est publiable/résoluble.
+  Zéro logique métier — `build.gradle.kts` = 6 lignes.
+- **Plugin** : build Gradle 100% indépendant avec son propre wrapper, catalog, settings.
+
+== Tests
+
+Aucun test modifié (migration architecture uniquement).
+`./gradlew check` depuis conventions-plugin/ : 12 tasks, BUILD SUCCESSFUL.
+`./gradlew tasks` depuis root/ : BUILD SUCCESSFUL (plugin résolu depuis mavenLocal).
+
+== Prochaine session
+
+CNV-5 : Migration dogfood 3 projets (dashboard-gradle, codebase-gradle, capsule-gradle)

@@ -9,6 +9,6 @@ import org.junit.platform.suite.api.Suite
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
-@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "education.cccp.build")
+@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "education.cccp.build,build")
 @ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty, html:build/reports/cucumber.html, json:build/reports/cucumber.json")
 class CucumberTestRunner

@@ -35,3 +35,50 @@ Aucun test ajoute. Session de gouvernance uniquement.
 - `Publishing plugin supports relocation` : ✅ (2 Thens : group, artifact)
 
 **Couverture** : US-2.1→US-2.4 couverts. 6/6 functional + 6/6 cucumber = 12 tests PASS.
+
+== Session 003
+
+**Functional tests (GradleTestKit)** : 4 tests
+- FunctionalTestConventionsFunctionalTest
+  - `plugin applies without error` : ✅
+  - `plugin registers functionalTest source set` : ✅
+  - `plugin registers functionalTest task` : ✅
+  - `plugin wires check depends on functionalTest` : ✅
+
+**Cucumber BDD** : 3 scenarios
+- `Plugin creates functionalTest source set` : ✅
+- `Plugin registers functionalTest task` : ✅
+- `Plugin wires check task dependency` : ✅
+
+**Couverture** : US-3.1→US-3.4 couverts. US-3.5 (sourceSetName, additionalDependencies) P2 implemente mais pas teste en Cucumber. 10/10 functional + 9/9 cucumber = 19 tests PASS cumules.
+
+== Session 004
+
+**Functional tests (GradleTestKit)** : 4 tests
+- CucumberConventionsFunctionalTest
+  - `plugin applies without error` : ✅
+  - `plugin registers cucumberTest task` : ✅
+  - `plugin configures features and scenarios dirs` : ✅
+  - `plugin wires check depends on cucumberTest` : ✅
+
+**Cucumber BDD** : 4 scenarios
+- `Plugin creates features and scenarios source dirs` : ✅
+- `Plugin registers cucumberTest task` : ✅
+- `Plugin excludes scenarios from test task` : ✅
+- `Plugin wires check task dependency` : ✅
+
+**Migration** : src/ deplace de la racine git vers conventions-plugin/ (architecture conforme AGENT.adoc)
+
+**Couverture** : US-4.1→US-4.5 couverts. 14/14 functional + 13/13 cucumber = 27 tests PASS cumules.
+
+== Session 005
+
+**Architecture uniquement** — Aucun test modifie.
+
+Changement structurel : suppression `include()` du root settings, `conventions-plugin/` devient
+un build Gradle independant avec son propre wrapper, catalog, settings.
+
+Root devient un consommateur dogfood qui applique `education.cccp.build.cucumber` depuis `mavenLocal()`.
+
+**Validation** : `./gradlew check` depuis conventions-plugin/ — 12 tasks BUILD SUCCESSFUL.
+`./gradlew tasks` depuis root/ — BUILD SUCCESSFUL (plugin resolu depuis mavenLocal).

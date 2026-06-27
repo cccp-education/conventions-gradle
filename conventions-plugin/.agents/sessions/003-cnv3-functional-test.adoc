@@ -1,0 +1,45 @@
+= Session 003 — CNV-3 FunctionalTestConventionsPlugin
+:date: 2026-06-27
+:type: dev
+:code: CNV-3
+:score: 10/10
+
+== Objectif
+
+Implementer le convention plugin `education.cccp.build.functional-test` :
+source set functionalTest + GradleTestKit + JUnit 5 + AssertJ + task registration + check.dependsOn.
+
+== Travail effectue
+
+1. **Extension** : `FunctionalTestConventionsExtension` (sourceSetName, additionalDependencies)
+2. **Plugin** : `FunctionalTestConventionsPlugin` — cree le source set, ajoute les dependances (gradleTestKit, JUnit 5, AssertJ), enregistre la tache, cablage check.dependsOn
+3. **Version catalog** : `gradle/libs.versions.toml` — Kotlin 2.3.20, JUnit 5.12.2, Cucumber 7.34.3, AssertJ 3.25.3
+4. **Acces programmatique** : plugin utilise `VersionCatalogsExtension` pour lire le catalog
+5. **workspace-bom** : importe `education.cccp:workspace-bom:0.0.4` comme platform
+6. **Functional tests** : 4/4 PASS (GradleTestKit)
+7. **Cucumber BDD** : 3 scenarios, 3/3 PASS
+
+== Fichiers crees
+
+- `src/main/kotlin/build/FunctionalTestConventionsPlugin.kt`
+- `src/main/kotlin/build/FunctionalTestConventionsExtension.kt`
+- `src/functionalTest/kotlin/build/FunctionalTestConventionsFunctionalTest.kt`
+- `src/test/scenarios/build/FunctionalTestConventionsSteps.kt`
+- `src/test/resources/features/functional-test-conventions.feature`
+- `gradle/libs.versions.toml`
+
+== Fichiers modifies
+
+- `build.gradle.kts` : registration functionalTest plugin + dependencies vers TOML + workspace-bom
+- `src/test/scenarios/.../CucumberTestRunner.kt` : glue package `build` ajoute
+
+== Decisions
+
+- Package `build` (pas `education.cccp.build`) pour le nouveau plugin, aligne sur la demande utilisateur
+- Plugin binaire (pas precompiled script) pour fiabilite includeBuild()
+- Dependances sans versions hardcodees : plugin utilise le version catalog du projet consommateur via `VersionCatalogsExtension`
+- Fallback vers des versions par defaut si pas de catalog
+
+== Prochaine session
+
+CNV-4 : CucumberConventionsPlugin

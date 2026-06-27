@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour : 2026-06-27 — Session 002 (CNV-2 PublishingConventionsPlugin)_
+_Derniere mise a jour : 2026-06-27 — Session 005 (ARCH Architecture Plugin Independant)_
 _Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
 
 '''
@@ -18,53 +18,9 @@ _Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
 | CNV-0 | Bootstrap gouvernance — .agents/, AGENT.adoc, INDEX.adoc, BACKLOG, CODE_REVIEW_GLOBALE | — | Sess. 000
 | CNV-1 | Convention plugin `gradle-plugin` — java-gradle-plugin + kotlin-jvm + test JUnit + withSourcesJar/JavadocJar | 8 | Sess. 001
 | CNV-2 | Convention plugin `publishing` — POM Maven Central + signing conditionnel + relocation + publicationType | 6 | Sess. 002
+| CNV-3 | Convention plugin `functional-test` — source set + GradleTestKit + task + check.dependsOn + TOML catalog + programmatic access | 5 | Sess. 003
+| CNV-4 | Convention plugin `cucumber` — features/scenarios dirs + cucumberTest task + test filter + check.dependsOn + CucumberTaskSpec multi-task | 6 | Sess. 004
 |===
-
-'''
-
-== EN COURS — CNV-3 : Convention Plugin `functional-test`
-
-_Source set functionalTest + GradleTestKit + task registration + check.dependsOn._
-
-*Priorite* : P0
-*Charge estimee* : 5 pts (~1 session)
-*Depend de* : CNV-1
-
-=== User Stories
-
-[cols="1,4,2,2"]
-|===
-| US | Description | Pts | Priorite
-| US-3.1 | Source set functionalTest + dirs kotlin/resources | 1 | P0
-| US-3.2 | Dependencies gradleTestKit + junit5 + assertj | 1 | P0
-| US-3.3 | Task functionalTest + useJUnitPlatform | 1 | P0
-| US-3.4 | gradlePlugin.testSourceSets.add + check.dependsOn | 1 | P0
-| US-3.5 | Parametres : sourceSetName, additionalDependencies | 1 | P2
-|===
-
-'''
-
-== A FAIRE — CNV-4 : Convention Plugin `cucumber`
-
-_Source set test features/scenarios + cucumberTask + exclusion jupiter + check.dependsOn._
-
-*Priorite* : P1
-*Charge estimee* : 6 pts (~1-2 sessions)
-*Depend de* : CNV-1
-
-=== User Stories
-
-[cols="1,4,2,2"]
-|===
-| US | Description | Pts | Priorite
-| US-4.1 | Config sourceSets test : features + scenarios dirs | 1 | P1
-| US-4.2 | Task cucumberTest : useJUnitPlatform excludeEngines(junit-jupiter) | 2 | P1
-| US-4.3 | Filter test task : excludeTestsMatching *.scenarios.* | 1 | P1
-| US-4.4 | check.dependsOn cucumberTest | 1 | P1
-| US-4.5 | Support codebase-style multi-task (CucumberTaskSpec) | 1 | P2
-|===
-
-'''
 
 == A FAIRE — CNV-5 : Migration Dogfood (3 projets)
 
@@ -126,7 +82,7 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central._
 
 *Priorite* : P1
 *Charge estimee* : 7 pts (~2 sessions)
-*Depend de* : CNV-4 (tous les plugins stables)
+*Depend de* : CNV-5 (tous les plugins valides sur 3 profils)
 
 === User Stories
 
@@ -141,6 +97,15 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central._
 
 '''
 
+== Archives
+
+Session 005 (ARCH) : Architecture "Plugin Independant + Racine Consommateur".
+`conventions-plugin/` est maintenant un build Gradle completement independant avec son propre wrapper, catalog, et settings.
+Root `settings.gradle.kts` : plus de `include()`. Root `build.gradle.kts` : consommateur dogfood via `mavenLocal()`.
+Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && ./gradlew build`
+
+'''
+
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]
@@ -149,8 +114,8 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central._
 | CNV-0 | Bootstrap gouvernance | — | ✅ TERMINE
 | CNV-1 | Convention plugin `gradle-plugin` | 8 | ✅ TERMINE
 | CNV-2 | Convention plugin `publishing` | 6 | ✅ TERMINE
-| CNV-3 | Convention plugin `functional-test` | 5 | 🔄 EN COURS
-| CNV-4 | Convention plugin `cucumber` | 6 | 🟠 P1
+| CNV-3 | Convention plugin `functional-test` | 5 | ✅ TERMINE
+| CNV-4 | Convention plugin `cucumber` | 6 | ✅ TERMINE
 | CNV-5 | Migration dogfood 3 projets | 10 | 🟠 P1
 | CNV-6 | Generalisation 15+ projets | 15 | 🟡 P2
 | PUB | Publication Plugin Portal + Maven Central | 7 | 🟠 P1

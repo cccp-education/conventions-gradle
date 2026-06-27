@@ -1,42 +1,41 @@
 = PROMPT_REPRISE — Conventions
-:session: 002
+:session: 006
 :date: 2026-06-27
 
 == Mission accomplie
 
-*Session 002 TERMINEE* — CNV-2 PublishingConventionsPlugin implemente + tests.
+*Session 005 TERMINEE* — Architecture Plugin Indépendant + Racine Consommateur.
 
-Creations :
-- `PublishingConventionsPlugin.kt` : POM Maven Central, signing conditionnel, relocation, publicationType
-- Functional tests (GradleTestKit) : 3/3 PASS
-- Cucumber BDD : 3 scenarios, 3/3 PASS
+Changements :
+- `settings.gradle.kts` root : suppression `include("conventions-plugin")`
+- `conventions-plugin/settings.gradle.kts` : création (rootProject.name = "conventions-plugin")
+- `conventions-plugin/` : indépendant avec son propre wrapper, catalog, settings
+- Root `build.gradle.kts` : consommateur dogfood (apply cucumber from mavenLocal)
+- Root `gradle/libs.versions.toml` : simplifié (consumer minimal)
+- Validation : check ✅ (12 tasks), root tasks ✅
 
 == Statut
 
 - CNV-0 : ✅ TERMINE
 - CNV-1 : ✅ TERMINE
-- CNV-2 : ✅ TERMINE (US-2.1→2.4)
-- CNV-3 : 🔄 A FAIRE (functional-test)
-- CNV-4 : 🔄 A FAIRE (cucumber)
+- CNV-2 : ✅ TERMINE
+- CNV-3 : ✅ TERMINE
+- CNV-4 : ✅ TERMINE
+- ARCH : ✅ TERMINE (architecture fix)
 - CNV-5 : 🔄 A FAIRE (dogfood)
 - CNV-6 : 🔄 A FAIRE (generalisation)
 - PUB : 🔄 A FAIRE
-- Total restant : 43 pts (57 - 8 CNV-1 - 6 CNV-2)
+- Total restant : 32 pts
 
-== Prochaine session (003) — CNV-3 FunctionalTest Convention
+== Prochaine session (006) — CNV-5 Migration Dogfood
 
-*Priorite P0* : Implementer le convention plugin `education.cccp.build.functional-test`.
+*Priorite P1* : Valider les 4 convention plugins sur 3 profils differents.
 
-1. **US-3.1** : Source set functionalTest + dirs kotlin/resources
-2. **US-3.2** : Dependencies gradleTestKit + junit5 + assertj
-3. **US-3.3** : Task functionalTest + useJUnitPlatform
-4. **US-3.4** : gradlePlugin.testSourceSets.add + check.dependsOn
-5. **US-3.5** : Parametres : sourceSetName, additionalDependencies (P2)
-
-*Verification* :
-- `./gradlew compileKotlin` → SUCCESS
-- `./gradlew check` → PASS
+1. US-5.1 : Migrer dashboard-gradle (nouveau projet) — 3 pts
+2. US-5.2 : Migrer codebase-gradle (existant mature, 32 cucumber tasks) — 4 pts
+3. US-5.3 : Migrer capsule-gradle (legacy, config incomplete) — 3 pts
 
 == Note
 
-Ordre DAG : CNV-1 ✅→ CNV-2 ✅→ CNV-3 🔜 → CNV-4 → CNV-5 → CNV-6 → PUB
+Le pattern "Plugin Indépendant" est en place.
+Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && ./gradlew build`
