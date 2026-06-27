@@ -82,3 +82,17 @@ Root devient un consommateur dogfood qui applique `education.cccp.build.cucumber
 
 **Validation** : `./gradlew check` depuis conventions-plugin/ — 12 tasks BUILD SUCCESSFUL.
 `./gradlew tasks` depuis root/ — BUILD SUCCESSFUL (plugin resolu depuis mavenLocal).
+
+== Session 006
+
+**Migration dogfood uniquement** — Aucun test modifie.
+
+Test des conventions via 3 projets consommateurs :
+- dashboard-gradle : 34 tests PASS ✅
+- capsule-gradle : functional tests OK ✅
+- codebase-gradle : compileKotlin + compileTestKotlin OK ✅
+
+**Bugs corrigés** (sessions 005-006) :
+- FunctionalTestConventionsPlugin : source set dans `apply()` (fix `InvalidPluginMetadataException`)
+- `gradleTestKit()` shorthand remplace Maven coordinate
+- capsule-gradle : `afterEvaluate` workaround pour `extendsFrom(testImplementation)`

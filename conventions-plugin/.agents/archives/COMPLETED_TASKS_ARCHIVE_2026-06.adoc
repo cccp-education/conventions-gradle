@@ -59,3 +59,29 @@
 - [x] Validation : `./gradlew tasks` depuis root/ — BUILD SUCCESSFUL
 
 **EPICs** : ARCH ✅
+
+== Session 006 — 2026-06-27 — CNV-5 Migration Dogfood (codebase-gradle)
+
+**Tâches US-5.2** :
+- [x] Plugins block : `signing`, `maven-publish`, `java-gradle-plugin`, `kotlin.jvm` → conventions `gradle-plugin` + `publishing`
+- [x] Suppression `java { withJavadocJar(); withSourcesJar() }` (convention)
+- [x] Suppression `kotlin.jvmToolchain(24)` (convention)
+- [x] Suppression `publishing {}` (44 lignes POM + relocation → convention)
+- [x] Suppression `signing {}` (convention)
+- [x] Ajout `publishingConventions { publicationType = "PLUGIN" }`
+- [x] Garde des 32 cucumber tasks custom, kover, kotlin-serialization, plugin-publish
+- [x] Reduction : 356 → 298 lignes (-58)
+- [x] Validation : compileKotlin ✅, compileTestKotlin ✅
+
+**Tâches US-5.1 (session 005)** :
+- [x] dashboard-gradle : 141 → 33 lignes, 34 tests PASS ✅
+
+**Tâches US-5.3 (session 005)** :
+- [x] capsule-gradle : 131 → 80 lignes, compile + functional tests OK ✅
+
+**Bugs fixes** :
+- [x] FunctionalTestConventionsPlugin : source set eager dans apply() (fix InvalidPluginMetadataException)
+- [x] gradleTestKit() shorthand remplace Maven coordinate
+- [x] capsule-gradle : afterEvaluate workaround pour extendsFrom(testImplementation)
+
+**EPICs** : CNV-5 ✅

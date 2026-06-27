@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour : 2026-06-27 — Session 005 (ARCH Architecture Plugin Independant)_
+_Derniere mise a jour : 2026-06-27 — Session 006 (CNV-5 Dogfood 3/3 — codebase-gradle migré)_
 _Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
 
 '''
@@ -22,32 +22,32 @@ _Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
 | CNV-4 | Convention plugin `cucumber` — features/scenarios dirs + cucumberTest task + test filter + check.dependsOn + CucumberTaskSpec multi-task | 6 | Sess. 004
 |===
 
-== A FAIRE — CNV-5 : Migration Dogfood (3 projets)
+== ✅ TERMINE — CNV-5 : Migration Dogfood (3 projets)
 
-_Valider les convention plugins sur 3 profils differents avant generalisation._
+_Validee sur 3 profils differents — pret pour generalisation._
 
-*Priorite* : P1
+*Priorite* : P1 — ✅ TERMINE
 *Charge estimee* : 10 pts (~3 sessions)
 *Depend de* : CNV-1, CNV-2, CNV-3, CNV-4
 
-=== Projets dogfood
+=== Projets dogfood migres
 
-[cols="1,4,3"]
+[cols="1,4,3,2"]
 |===
-| Projet | Profil | Raison du choix
-| dashboard-gradle | NOUVEAU | Projet en bootstrap, zero heritage build, ideal pour valider le contrat
-| codebase-gradle | EXISTANT MATURE | Projet le plus complexe (32 cucumber tasks, kover, publishing), valide la compatibilite
-| capsule-gradle | EXISTANT LEGACY | Pattern extension open class + config incomplete, valide la migration des cas tordus
+| Projet | Profil | Verdict | Session
+| dashboard-gradle | NOUVEAU | ✅ 141→33 lignes, 34 tests PASS | 005
+| codebase-gradle | EXISTANT MATURE | ✅ 356→301 lignes, compile + test compile OK | 006
+| capsule-gradle | EXISTANT LEGACY | ✅ 131→80 lignes, compile + functional tests OK | 005
 |===
 
 === User Stories
 
 [cols="1,4,2,2"]
 |===
-| US | Description | Pts
-| US-5.1 | Migrer dashboard-gradle vers les 4 convention plugins | 3
-| US-5.2 | Migrer codebase-gradle (verifier compat 32 cucumber tasks) | 4
-| US-5.3 | Migrer capsule-gradle (verifier config incomplete + legacy) | 3
+| US | Description | Pts | Statut
+| US-5.1 | Migrer dashboard-gradle vers les 4 convention plugins | 3 | ✅ Sess. 005
+| US-5.2 | Migrer codebase-gradle (verifier compat 32 cucumber tasks) | 4 | ✅ Sess. 006
+| US-5.3 | Migrer capsule-gradle (verifier config incomplete + legacy) | 3 | ✅ Sess. 005
 |===
 
 '''
@@ -116,7 +116,7 @@ Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && .
 | CNV-2 | Convention plugin `publishing` | 6 | ✅ TERMINE
 | CNV-3 | Convention plugin `functional-test` | 5 | ✅ TERMINE
 | CNV-4 | Convention plugin `cucumber` | 6 | ✅ TERMINE
-| CNV-5 | Migration dogfood 3 projets | 10 | 🟠 P1
+| CNV-5 | Migration dogfood 3 projets | 10 | ✅ TERMINE
 | CNV-6 | Generalisation 15+ projets | 15 | 🟡 P2
 | PUB | Publication Plugin Portal + Maven Central | 7 | 🟠 P1
 | *Total* | | *57* |

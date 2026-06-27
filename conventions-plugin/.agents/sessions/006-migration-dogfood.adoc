@@ -1,0 +1,58 @@
+= Session 006 — CNV-5 Migration Dogfood 3/3 (codebase-gradle)
+:date: 2026-06-27
+:type: dev
+:code: CNV-5
+:score: 10/10
+
+== Objectif
+
+Terminer CNV-5 en migrant le dernier projet dogfood : codebase-gradle (profil "existant mature" — 356 lignes, 32 cucumber tasks, kover, plugin-publish).
+
+== Travail effectué
+
+=== US-5.2 : codebase-gradle
+
+1. **Plugins block** : `signing`, `maven-publish`, `java-gradle-plugin`, `kotlin.jvm 2.3.20` → conventions `education.cccp.build.gradle-plugin` + `education.cccp.build.publishing`
+2. **Suppressions** : `java { withJavadocJar(); withSourcesJar() }`, `kotlin.jvmToolchain(24)`, `publishing {}` (44 lignes POM + relocation + signing), `signing {}`
+3. **Ajout** : `publishingConventions { publicationType = "PLUGIN" }` pour que le POM lise les URLs depuis `gradlePlugin.website`/`vcsUrl`
+4. **Gardé** : 32 cucumber tasks custom (`runnerClass` filtering), `java-library`, `kotlin.serialization`, `kover`, `com.gradle.plugin-publish`, custom test JVM config, `validateDependencies`, `gradlePlugin {}`
+5. **Réduction** : 356 → 298 lignes (-58, -16%)
+6. **Validation** : `compileKotlin` ✅, `compileTestKotlin` ✅
+
+=== US-5.1 & US-5.3 (sessions précédentes)
+
+- US-5.1 dashboard-gradle : 141 → 33 lignes, 34 tests PASS ✅
+- US-5.3 capsule-gradle : 131 → 80 lignes, compile + functional tests OK ✅
+
+=== Bug fixes (cumulés sessions 005-006)
+
+- FunctionalTestConventionsPlugin : source set créé dans `apply()` (pas `afterEvaluate`) pour que `java-gradle-plugin` enregistre les métadonnées correctement (fix `InvalidPluginMetadataException`)
+- `gradleTestKit()` shorthand remplace la coordinate Maven qui cassait
+- capsule-gradle : `afterEvaluate` workaround pour `extendsFrom(testImplementation)` car la convention ne cascade pas les dépendances test
+
+== Fichiers modifiés (conventions-gradle)
+
+- `conventions-plugin/.agents/INDEX.adoc` : session 006 ajoutée, CNV-5 ✅
+- `conventions-plugin/.agents/SESSIONS_HISTORY.adoc` : session 006 ajoutée
+- `conventions-plugin/.agents/sessions/006-migration-dogfood.adoc` : présent rapport
+- `conventions-plugin/BACKLOG.adoc` : CNV-5 marqué ✅ TERMINE
+- `conventions-plugin/PROMPT_REPRISE.adoc` : mission session 007 (CNV-6)
+
+== Fichiers modifiés (codebase-gradle)
+
+- `codebase-plugin/build.gradle.kts` : 356 → 298 lignes, conventions appliquées
+
+== Décisions
+
+- **Ne PAS appliquer `cucumber` convention** : codebase a 32 tâches cucumber avec `runnerClass` filtering que `CucumberTaskSpec.additionalTasks` ne supporte pas (pas de champ `runnerClass`)
+- **Ne PAS appliquer `functional-test` convention** : codebase n'a pas de functional test source set
+- **Documenter gaps** : cucumber `additionalTasks` sans `runnerClass`, pas de `mavenLocal`, pas de `extendsFrom`, conflit nom `cucumberTest`
+
+== Tests
+
+Aucun test modifié (migration build file uniquement).
+`compileKotlin` ✅, `compileTestKotlin` ✅.
+
+== Prochaine session
+
+CNV-6 : Généralisation aux 15+ projets actifs.

@@ -167,3 +167,30 @@ Duree:: 1 session
 
 **Tests** : `./gradlew check` depuis conventions-plugin/ — 12 tasks BUILD SUCCESSFUL.
 `./gradlew tasks` depuis root/ — BUILD SUCCESSFUL (plugin résolu depuis mavenLocal).
+
+== Session 006 — 2026-06-27
+Type:: dev
+Code:: CNV-5
+Titre:: Migration Dogfood 3/3 — codebase-gradle
+Score:: 10/10
+Duree:: 1 session
+
+**Modifications US-5.2 (codebase-gradle)** :
+- Plugins block : `signing`, `maven-publish`, `java-gradle-plugin`, `kotlin.jvm 2.3.20` → conventions `gradle-plugin` + `publishing`
+- Supprime `java { withJavadocJar(); withSourcesJar() }` (convention)
+- Supprime `kotlin.jvmToolchain(24)` (convention)
+- Supprime `publishing {}` (POM + relocation 44 lignes → convention)
+- Supprime `signing {}` (convention)
+- Ajoute `publishingConventions { publicationType = "PLUGIN" }`
+- Garde : 32 cucumber tasks custom, `java-library`, `kotlin.serialization`, `kover`, `com.gradle.plugin-publish`
+- Réduction : 356 → 301 lignes (-55)
+
+**US-5.1 (dashboard-gradle)** : 141 → 33 lignes, 34 tests PASS (session 005)
+**US-5.3 (capsule-gradle)** : 131 → 80 lignes, compile + functional tests OK (session 005)
+
+**Bug fixes** (sessions 005-006):
+- FunctionalTestConventionsPlugin : source set créé dans `apply()` (pas `afterEvaluate`) pour que `java-gradle-plugin` enregistre les métadonnées correctement
+- `gradleTestKit()` shorthand remplace la coordinate Maven qui cassait
+- capsule-gradle : `afterEvaluate` workaround pour `extendsFrom(testImplementation)` car la convention ne cascade pas les dépendances test
+
+**CNV-5 TERMINE** — 3 profils validés : nouveau (dashboard), mature (codebase), legacy (capsule).
