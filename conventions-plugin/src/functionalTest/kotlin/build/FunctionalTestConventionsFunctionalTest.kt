@@ -72,6 +72,27 @@ class FunctionalTestConventionsFunctionalTest {
     }
 
     @Test
+    fun `functionalTest extends testImplementation dependencies`() {
+        settingsFile.writeText("rootProject.name = \"test-project\"")
+        buildFile.writeText("""
+            plugins {
+                id("java")
+                id("education.cccp.build.functional-test")
+            }
+        """)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("tasks", "--all")
+            .withPluginClasspath()
+            .build()
+
+        check(result.task(":tasks")?.outcome != null) {
+            "Expected tasks task to succeed with java+functional-test\n${result.output}"
+        }
+    }
+
+    @Test
     fun `plugin wires check depends on functionalTest`() {
         settingsFile.writeText("rootProject.name = \"test-project\"")
         buildFile.writeText("""

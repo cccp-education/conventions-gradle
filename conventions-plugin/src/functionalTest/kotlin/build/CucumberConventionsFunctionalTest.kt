@@ -1,4 +1,4 @@
-package education.cccp.build
+package build
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
@@ -63,6 +63,34 @@ class CucumberConventionsFunctionalTest {
             .build()
 
         assertTrue(result.task(":tasks")?.outcome != null)
+    }
+
+    @Test
+    fun `additional task with runnerClass applies test filter`() {
+        settingsFile.writeText("rootProject.name = \"test-project\"")
+        buildFile.writeText("""
+            import build.CucumberTaskSpec
+
+            plugins {
+                id("education.cccp.build.cucumber")
+            }
+            cucumberConventions {
+                additionalTasks = listOf(
+                    CucumberTaskSpec(
+                        name = "cucumberTestEpic1",
+                        runnerClass = "com.example.Epic1CucumberRunner"
+                    )
+                )
+            }
+        """)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("tasks", "--all")
+            .withPluginClasspath()
+            .build()
+
+        assertTrue(result.output.contains("cucumberTestEpic1"))
     }
 
     @Test

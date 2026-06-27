@@ -1,60 +1,34 @@
 = PROMPT_REPRISE — Conventions
-:session: 007
+:session: 008
 :date: 2026-06-27
 
-== Mission accomplie
+== Session 007 TERMINEE — CNV-6 Bugs fixes 4/4 ✅
 
-*Session 006 TERMINEE* — CNV-5 Dogfood complet : 3/3 projets migrés.
+**Bugs fixes** (TDD 100%, testé, publié v0.0.1) :
+- Bug #1 : `CucumberTaskSpec.runnerClass` — support 32 tâches codebase
+- Bug #2 : `mavenLocal()` ajouté aux repositories
+- Bug #3 : `extendsFrom(testImplementation)` pour functionalTest
+- Bug #4 : `cucumberTestTaskName` configurables
 
-Changements US-5.2 (codebase-gradle) :
-- Plugins block : remplace `signing`, `maven-publish`, `java-gradle-plugin`, `kotlin.jvm 2.3.20` par conventions `gradle-plugin` + `publishing`
-- Supprime `java { withJavadocJar(); withSourcesJar() }` (convention)
-- Supprime `kotlin.jvmToolchain(24)` (convention)
-- Supprime `publishing {}` (convention + POM + relocation + signing)
-- Supprime `signing {}` (convention)
-- Ajoute `publishingConventions { publicationType = "PLUGIN" }`
-- Garde : 32 cucumber tasks custom, `java-library`, `kotlin.serialization`, `kover`, `com.gradle.plugin-publish`
-- Réduction : 356 → 301 lignes (-55)
-- Compilation ✅, test compilation ✅
+**Package** : `education.cccp.build` → `build` (IDs plugin inchangés)
+**Version** : 0.0.1 publiée Maven Local
 
-Changements sessions précédentes (005 US-5.1, US-5.3) :
-- US-5.1 dashboard-gradle : 141 → 33 lignes, 34 tests ✅
-- US-5.3 capsule-gradle : 131 → 80 lignes, compile + functional tests ✅
-- Bug fix FunctionalTestConventionsPlugin : source set eager dans apply()
-- Bug fix : gradleTestKit() remplace Maven coordinate
+== Statut - CNV-6
 
-== Statut
+- CNV-0-CN-V5 : ✅ TERMINE
+- CNV-6 Fix : ✅ TERMINE (TDD 100%)
+- CNV-6 Gen : 🔄 EN COURS (15 projets restants)
 
-- CNV-0 : ✅ TERMINE
-- CNV-1 : ✅ TERMINE
-- CNV-2 : ✅ TERMINE
-- CNV-3 : ✅ TERMINE
-- CNV-4 : ✅ TERMINE
-- ARCH : ✅ TERMINE (architecture fix)
-- CNV-5 : ✅ TERMINE (3/3 dogfood migrés)
-- CNV-6 : 🔄 A FAIRE (generalisation)
-- PUB : 🔄 A FAIRE
-- Total restant : 22 pts
+== Prochaine session (008) — CNV-6 Généralisation
 
-== Prochaine session (007) — CNV-6 Generalisation
+Priorite P2 : Migrer bakery-gradle → slider-gradle → etc.
 
-*Priorite P2* : Appliquer les conventions aux 15+ projets restants.
-
-Projets cibles par ordre :
-1. bakery-gradle, plantuml-gradle, slider-gradle
-2. readme-gradle, hyperframes-gradle
-3. graphify-gradle, api-key-pool-gradle
-4. planner-gradle, codex-gradle
-5. agile-gradle, ticket-gradle, review-gradle, flow-gradle
-6. runner-gradle, document-gradle
-
-== Bugs conventions documentés pour CNV-6
-
-1. cucumber `additionalTasks` : pas de support `runnerClass` filtering (codebase utilise ça pour 32 tasks)
-2. `mavenLocal` pas ajouté par les conventions (capsule a dû l'ajouter manuellement pour slider dep)
-3. Pas de `extendsFrom` dans functional-test (capsule utilise `afterEvaluate` pour hériter de testImplementation)
-4. Nom tâche `cucumberTest` en conflit avec les projets qui ont leur propre cucumberTest (codebase)
-
-== Note
-
-Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && ./gradlew build`
+Projets cibles :
+1. bakery-gradle (gold standard)
+2. plantuml-gradle
+3. slider-gradle
+4. readme-gradle, hyperframes-gradle
+5. graphify-gradle, api-key-pool-gradle
+6. planner-gradle, codex-gradle
+7. agile-gradle, ticket-gradle, review-gradle, flow-gradle
+8. runner-gradle, document-gradle

@@ -1,8 +1,5 @@
 = TODO — Conventions
 
-== Pense-bete
+== Completed
 
-- [ ] Ajouter `conventions-gradle` dans le portefeuille de TOUS les INDEX.adoc des 26 autres boroughs
-- [ ] Verifier que l'includeBuild fonctionne avec dashboard-gradle
-- [ ] US-1.5 : fixAnnotationsConflict (P1)
-- [ ] US-1.6 : koverEnabled (P2)
+- CNV-6 : 4 bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name)

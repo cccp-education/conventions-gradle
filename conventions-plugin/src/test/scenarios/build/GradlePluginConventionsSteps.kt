@@ -1,4 +1,4 @@
-package education.cccp.build
+package build
 
 import io.cucumber.java8.En
 import org.gradle.testkit.runner.BuildResult

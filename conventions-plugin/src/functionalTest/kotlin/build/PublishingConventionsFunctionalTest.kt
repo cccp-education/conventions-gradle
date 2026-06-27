@@ -1,4 +1,4 @@
-package education.cccp.build
+package build
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test

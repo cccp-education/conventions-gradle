@@ -1,4 +1,4 @@
-package education.cccp.build
+package build
 
 import io.cucumber.java8.En
 import org.gradle.testkit.runner.BuildResult
@@ -80,6 +80,39 @@ class CucumberConventionsSteps : En {
                 .build()
             assert(checkResult?.task(":cucumberTest")?.outcome != null) {
                 "Expected cucumberTest task to run during check"
+            }
+        }
+
+        Given("a project applies the cucumber plugin with additional tasks and runnerClass") {
+            testProjectDir = createTempDir("cucumber-test-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                import build.CucumberTaskSpec
+
+                plugins {
+                    id("education.cccp.build.cucumber")
+                }
+                cucumberConventions {
+                    additionalTasks = listOf(
+                        CucumberTaskSpec(
+                            name = "cucumberTestEpic1",
+                            runnerClass = "com.example.Epic1CucumberRunner"
+                        )
+                    )
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the additional cucumberTestEpic1 task is registered") {
+            assert(taskListResult.output.contains("cucumberTestEpic1")) {
+                "Expected cucumberTestEpic1 task in output\n${taskListResult.output}"
+            }
+        }
+
+        Then("the additional task uses runnerClass filter") {
+            assert(taskListResult.output.contains("cucumberTestEpic1")) {
+                "Expected cucumberTestEpic1 task to be available with runnerClass filter\n${taskListResult.output}"
             }
         }
     }

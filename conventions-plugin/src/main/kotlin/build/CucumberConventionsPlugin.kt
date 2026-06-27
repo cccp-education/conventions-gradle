@@ -1,4 +1,4 @@
-package education.cccp.build
+package build
 
 import org.gradle.api.Action
 import org.gradle.api.Plugin
@@ -32,7 +32,7 @@ open class CucumberConventionsPlugin : Plugin<Project> {
         testSourceSet.resources.srcDir(extension.featuresDir)
         testSourceSet.java.srcDir(extension.scenariosDir)
 
-        val cucumberTest = project.tasks.register("cucumberTest", Test::class.java) { task ->
+        val cucumberTest = project.tasks.register(extension.cucumberTestTaskName, Test::class.java) { task ->
             task.testClassesDirs = testSourceSet.output.classesDirs
             task.classpath = project.configurations.getByName(testSourceSet.runtimeClasspathConfigurationName) +
                 testSourceSet.output +
@@ -58,6 +58,9 @@ open class CucumberConventionsPlugin : Plugin<Project> {
                     mainSourceSet.output +
                     project.files(project.tasks.named("jar", Jar::class.java).get().archiveFile)
 
+                if (spec.runnerClass != null) {
+                    task.filter.includeTestsMatching(spec.runnerClass)
+                }
                 if (spec.features.isNotEmpty()) {
                     task.systemProperty("cucumber.features", spec.features.joinToString(","))
                 }

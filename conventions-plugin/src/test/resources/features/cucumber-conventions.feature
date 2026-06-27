@@ -21,3 +21,8 @@ Feature: Cucumber BDD Conventions
     Given a project applies the cucumber plugin
     And a smoke feature file exists
     Then the check task runs cucumberTest
+
+  Scenario: Plugin supports additional tasks with runnerClass
+    Given a project applies the cucumber plugin with additional tasks and runnerClass
+    Then the additional cucumberTestEpic1 task is registered
+    And the additional task uses runnerClass filter

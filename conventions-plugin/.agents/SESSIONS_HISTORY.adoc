@@ -194,3 +194,27 @@ Duree:: 1 session
 - capsule-gradle : `afterEvaluate` workaround pour `extendsFrom(testImplementation)` car la convention ne cascade pas les dépendances test
 
 **CNV-5 TERMINE** — 3 profils validés : nouveau (dashboard), mature (codebase), legacy (capsule).
+
+'''
+== Session 007 — 2026-06-27
+Type:: dev
+Code:: CNV-6
+Titre:: Bugs fixes runnerClass, mavenLocal, extendsFrom, cucumberTest name
+Score:: 10/10
+Duree:: 1 session
+
+**Bug fixes (TDD 100%, testé, publié v0.0.1)** :
+- Bug #1 : `CucumberTaskSpec.runnerClass` — support 32 tâches codebase (filter.includeTestsMatching)
+- Bug #2 : `mavenLocal()` ajouté aux repositories dans GradlePluginConventionsPlugin
+- Bug #3 : `extendsFrom(testImplementation)` ajouté à FunctionalTestConventionsPlugin
+- Bug #4 : `cucumberTestTaskName` configurable (remplace "cucumberTest" fix)
+
+**Package** : `education.cccp.build` → `build` (renommage complet)
+**Version** : 0.0.1 publiée Maven Local
+**Tests** : 14/14 unit + Cucumber, 15/15 functional PASS
+
+**Fichiers modifiés** :
+- CucumberConventionsExtension.kt, CucumberConventionsPlugin.kt, GradlePluginConventionsPlugin.kt, FunctionalTestConventionsPlugin.kt
+- 4 tests unitaires/fonctionnels Cucumber ajoutés
+
+**CNV-6 Fixes TERMINE** — 4 bugs corrigés, CNV-6 Generalisation prête pour 15+ projets

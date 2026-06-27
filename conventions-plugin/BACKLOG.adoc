@@ -5,8 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour : 2026-06-27 — Session 006 (CNV-5 Dogfood 3/3 — codebase-gradle migré)_
-_Code review source_ : `.agents/CODE_REVIEW_GLOBALE.adoc`
+_Derniere mise a jour_ : 2026-06-27 — Session 007 (CNV-6 Bugs fixes 4/4 — TDD 100%)
 
 '''
 
@@ -52,15 +51,16 @@ _Validee sur 3 profils differents — pret pour generalisation._
 
 '''
 
-== A FAIRE — CNV-6 : Generalisation
+== A FAIRE — CNV-6 : Bugs fixes + Generalisation
 
-_Appliquer les convention plugins aux 15+ projets actifs restants._
+_Bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name) — TDD 100% — v0.0.1 published_
 
-*Priorite* : P2
-*Charge estimee* : 15 pts (~4-5 sessions)
+*Priorite* : P1 (fixes) / P2 (generalisation)
+*Charge estimee* : 8 pts fixes + 15 pts generalisation
 *Depend de* : CNV-5
+*Statut* : Fix terminés, generalisation en cours
 
-=== Projets cibles (par ordre de priorite)
+=== Projets cibles pour generalisation (par ordre de priorite)
 
 1. bakery-gradle (projet gold standard)
 2. plantuml-gradle

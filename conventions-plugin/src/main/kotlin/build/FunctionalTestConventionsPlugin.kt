@@ -56,6 +56,13 @@ open class FunctionalTestConventionsPlugin : Plugin<Project> {
         }
 
         val implConfig = ftSourceSet.implementationConfigurationName
+        try {
+            project.configurations.getByName(implConfig).extendsFrom(
+                project.configurations.getByName("testImplementation")
+            )
+        } catch (_: Exception) {
+        }
+
         addPlatformBom(project, implConfig)
         project.dependencies.add(implConfig, project.dependencies.gradleTestKit())
         addFromCatalog(project, libs, implConfig, "junit-jupiter", "org.junit.jupiter:junit-jupiter:5.12.2")

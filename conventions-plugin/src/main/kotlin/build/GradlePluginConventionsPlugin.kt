@@ -1,4 +1,4 @@
-package education.cccp.build
+package build
 
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
@@ -36,6 +36,7 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
     }
 
     private fun configureRepositories(project: Project) {
+        project.repositories.mavenLocal()
         project.repositories.mavenCentral()
         project.repositories.gradlePluginPortal()
     }

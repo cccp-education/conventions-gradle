@@ -95,14 +95,14 @@ gradlePlugin {
             id = "education.cccp.build.gradle-plugin"
             displayName = "Gradle Plugin Conventions"
             description = "Applies java-gradle-plugin, kotlin-jvm, maven-publish, Java 24 target, withSourcesJar, withJavadocJar, JUnit test config"
-            implementationClass = "education.cccp.build.GradlePluginConventionsPlugin"
+            implementationClass = "build.GradlePluginConventionsPlugin"
             tags = listOf("cccp", "conventions", "gradle-plugin")
         }
         register("publishing") {
             id = "education.cccp.build.publishing"
             displayName = "Publishing Conventions"
             description = "Configures Maven Central POM (developers, scm, licenses), conditional signing, and relocation for all Maven publications"
-            implementationClass = "education.cccp.build.PublishingConventionsPlugin"
+            implementationClass = "build.PublishingConventionsPlugin"
             tags = listOf("cccp", "conventions", "publishing", "maven", "signing")
         }
         register("functionalTest") {
@@ -116,7 +116,7 @@ gradlePlugin {
             id = "education.cccp.build.cucumber"
             displayName = "Cucumber BDD Conventions"
             description = "Configures Cucumber BDD test source sets (features/scenarios), cucumberTest task with JUnit Platform exclusion, test filter, check.dependsOn, and optional multi-task CucumberTaskSpec support"
-            implementationClass = "education.cccp.build.CucumberConventionsPlugin"
+            implementationClass = "build.CucumberConventionsPlugin"
             tags = listOf("cccp", "conventions", "cucumber", "bdd")
         }
     }
