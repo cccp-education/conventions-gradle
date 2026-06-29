@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version libs.versions.kotlin
     `java-gradle-plugin`
     `maven-publish`
+    signing
     id("com.gradle.plugin-publish") version libs.versions.plugin.publish
 }
 
@@ -123,7 +124,41 @@ gradlePlugin {
 }
 
 publishing {
+    publications {
+        withType<MavenPublication> {
+            pom {
+                name.set("Conventions Gradle Plugins")
+                description.set("Centralized build convention plugins for education.cccp boroughs")
+                url.set("https://github.com/cccp-education/conventions-gradle")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("cccp-education")
+                        name.set("CCCP Education")
+                        email.set("cccp.edu@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("https://github.com/cccp-education/conventions-gradle.git")
+                    developerConnection.set("https://github.com/cccp-education/conventions-gradle.git")
+                    url.set("https://github.com/cccp-education/conventions-gradle")
+                }
+            }
+        }
+    }
     repositories {
         mavenCentral()
     }
+}
+
+signing {
+    if (System.getenv("CI") != "true" && !version.toString().endsWith("-SNAPSHOT")) {
+        sign(publishing.publications)
+    }
+    useGpgCmd()
 }

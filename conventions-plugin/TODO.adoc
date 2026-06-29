@@ -2,4 +2,10 @@
 
 == Completed
 
+- PUB : Publication Maven Central (nmcp) + Gradle Plugin Portal — 4 plugins v0.0.1 (session 008)
 - CNV-6 : 4 bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name)
+
+== Restant
+
+- US-PUB-4 : Documenter la migration dans AGENT.adoc de chaque borough (P2)
+- CNV-6 Gen : Migrer 15 boroughs vers les conventions plugins (P2)

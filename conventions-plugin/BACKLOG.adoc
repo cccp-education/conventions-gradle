@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-06-27 — Session 007 (CNV-6 Bugs fixes 4/4 — TDD 100%)
+_Derniere mise a jour_ : 2026-06-29 — Session 008 (PUB Publication Maven Central + Plugin Portal)
 
 '''
 
@@ -76,23 +76,24 @@ _Bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name) — TDD 10
 
 '''
 
-== A FAIRE — PUB : Publication
+== ✅ TERMINE — PUB : Publication
 
-_Publication des convention plugins sur Gradle Plugin Portal + Maven Central._
+_Publication des convention plugins sur Gradle Plugin Portal + Maven Central — 3/4 US terminées._
 
 *Priorite* : P1
 *Charge estimee* : 7 pts (~2 sessions)
 *Depend de* : CNV-5 (tous les plugins valides sur 3 profils)
+*Statut* : ✅ TERMINE (3/4 US — US-PUB-4 doc reste P2)
 
 === User Stories
 
-[cols="1,4,2"]
+[cols="1,4,2,2"]
 |===
-| US | Description | Pts
-| US-PUB-1 | Configurer sonatype + signing pour `education.cccp.build` | 2
-| US-PUB-2 | Publier sur Maven Central (nmcp) | 2
-| US-PUB-3 | Publier sur Gradle Plugin Portal | 1
-| US-PUB-4 | Documenter la migration dans AGENT.adoc de chaque borough | 2
+| US | Description | Pts | Statut
+| US-PUB-1 | Configurer sonatype + signing pour `education.cccp.build` | 2 | ✅ Sess. 008
+| US-PUB-2 | Publier sur Maven Central (nmcp) | 2 | ✅ Sess. 008
+| US-PUB-3 | Publier sur Gradle Plugin Portal | 1 | ✅ Sess. 008
+| US-PUB-4 | Documenter la migration dans AGENT.adoc de chaque borough | 2 | 🟡 RESTANT
 |===
 
 '''
@@ -118,6 +119,6 @@ Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && .
 | CNV-4 | Convention plugin `cucumber` | 6 | ✅ TERMINE
 | CNV-5 | Migration dogfood 3 projets | 10 | ✅ TERMINE
 | CNV-6 | Generalisation 15+ projets | 15 | 🟡 P2
-| PUB | Publication Plugin Portal + Maven Central | 7 | 🟠 P1
+| PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
 | *Total* | | *57* |
 |===

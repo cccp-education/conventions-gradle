@@ -1,0 +1,67 @@
+= Session 008 — 2026-06-29
+Type:: dev
+Code:: PUB
+Titre:: Publication Maven Central + Gradle Plugin Portal
+Score:: 10/10
+Duree:: 1 session
+
+== Contexte
+
+Publication des 4 convention plugins sur Maven Central (nmcp) et Gradle Plugin Portal.
+Le plugin était jusque là en mavenLocal() uniquement — verrou producteur bloquant la
+généralisation CNV-6 (15 boroughs consommateurs nécessitent le JAR sur Central).
+
+== Travail effectue
+
+1. `settings.gradle.kts` : ajout plugin `com.gradleup.nmcp.settings` 1.5.0 + `nmcpSettings { centralPortal { username/password depuis ~/.gradle/gradle.properties, publishingType = AUTOMATIC } }` (pattern graphify référence)
+2. `build.gradle.kts` : ajout plugin `signing` dans plugins block
+3. `build.gradle.kts` : POM `withType<MavenPublication>` (name, description, url, Apache-2.0, developer cccp-education, SCM github)
+4. `build.gradle.kts` : `signing { if (CI != true && !SNAPSHOT) sign(publishing.publications); useGpgCmd() }`
+5. `compileKotlin` ✅ (config nmcp + signing chargées)
+6. `check` ✅ (pas de régression — 12 tasks)
+7. `publishToMavenLocal` ✅ (signing GPG CBE2926CD46D8E8B actif, 5 publications signées)
+8. `publishAggregationToCentralPortal` ✅ — Bundle `72a98761-cefe-47e9-b476-1cff27273a2c` uploadé, validation AUTOMATIC
+9. `publishPlugins` ✅ — 4 plugins soumis au Gradle Plugin Portal pour approbation
+
+== Baby Steps
+
+1. settings : nmcp 1.5.0 + centralPortal credentials (ossrhUsername/ossrhPassword)
+2. build : plugin `signing` ajout (Unresolved reference fix)
+3. build : POM withType<MavenPublication> + signing useGpgCmd conditionnel
+4. compileKotlin ✅
+5. check ✅ (pas de régression)
+6. publishToMavenLocal ✅ (dry-run signing GPG)
+7. publishAggregationToCentralPortal ✅ (Maven Central réel)
+8. publishPlugins ✅ (Plugin Portal réel)
+
+== Publications
+
+[cols="2,3,3"]
+|===
+| Plugin ID | Maven Central | Plugin Portal
+| `education.cccp.build.gradle-plugin` | ✅ | ✅ soumis
+| `education.cccp.build.publishing` | ✅ | ✅ soumis
+| `education.cccp.build.functional-test` | ✅ | ✅ soumis
+| `education.cccp.build.cucumber` | ✅ | ✅ soumis
+|===
+
+== Fichiers modifies
+
+- `settings.gradle.kts` : nmcp 1.5.0 + centralPortal (15 lignes ajoutées)
+- `build.gradle.kts` : plugin signing + POM + signing block (35 lignes ajoutées)
+
+== US couvertes
+
+- US-PUB-1 : Configurer signing pour `education.cccp.build` ✅
+- US-PUB-2 : Publier sur Maven Central (nmcp) ✅
+- US-PUB-3 : Publier sur Gradle Plugin Portal ✅
+- US-PUB-4 : Documenter la migration dans AGENT.adoc de chaque borough — RESTANT (doc consommateur, P2)
+
+== Stats
+
+compileKotlin: OK | check: 12 tasks PASS | publishToMavenLocal: 5 pubs signées | publishAggregationToCentralPortal: BUILD SUCCESSFUL | publishPlugins: 4 plugins soumis
+
+== Prochaine session (009)
+
+CNV-6 Généralisation — migrer bakery-gradle (gold standard) puis 14 autres boroughs.
+Les 4 plugins sont maintenant disponibles sur Maven Central + Plugin Portal.

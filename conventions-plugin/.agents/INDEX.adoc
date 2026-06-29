@@ -5,10 +5,10 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-06-27
-_session terminee_ : 006
-_session en cours_ : 007 — CNV-6 Bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name)
-_Prochaine session_ : 008 — CNV-6 Generalisation 15+ projets
+_Derniere mise a jour_ : 2026-06-29
+_session terminee_ : 008
+_session en cours_ : 009 — CNV-6 Généralisation 15+ projets
+_Prochaine session_ : 010 — CNV-6 suite généralisation ou nouveau borough
 
 '''
 
@@ -47,9 +47,10 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
   | 003 | 2026-06-27 | dev | CNV-3 FunctionalTestConventionsPlugin — source set + GradleTestKit + task + TOML catalog + acces programmatique. Functional 4/4, Cucumber 3/3. | 10/10
   | 004 | 2026-06-27 | dev | CNV-4 CucumberConventionsPlugin — source set features/scenarios, cucumberTest task, test filter, check.dependsOn, multi-task CucumberTaskSpec. Migration src/ → conventions-plugin/. Functional 4/4, Cucumber 4/4. | 10/10
   | 005 | 2026-06-27 | arch | ARCH Architecture Plugin Indépendant + Racine Consommateur — suppression include(), conventions-plugin indépendant avec wrapper/catalog/settings. Root consommateur dogfood mavenLocal. | 10/10
-   | 006 | 2026-06-27 | dev | CNV-5 Migration Dogfood 3/3 — codebase-gradle migré (gradle-plugin + publishing conventions, 356→301 lignes, compile ✅). US-5.1 (dashboard) + US-5.3 (capsule) complétés session 005. CNV-5 ✅ TERMINE. | 10/10
-   | 007 | 2026-06-27 | dev | CNV-6 Bugs fixes — runnerClass, mavenLocal(), extendsFrom(), cucumberTest name configurable. Package renamed build/. TDD 100%. Published to Maven Local v0.0.1. | 10/10
-   |===
+  | 006 | 2026-06-27 | dev | CNV-5 Migration Dogfood 3/3 — codebase-gradle migré (gradle-plugin + publishing conventions, 356→301 lignes, compile ✅). US-5.1 (dashboard) + US-5.3 (capsule) complétés session 005. CNV-5 ✅ TERMINE. | 10/10
+  | 007 | 2026-06-27 | dev | CNV-6 Bugs fixes — runnerClass, mavenLocal(), extendsFrom(), cucumberTest name configurable. Package renamed build/. TDD 100%. Published to Maven Local v0.0.1. | 10/10
+  | 008 | 2026-06-29 | dev | PUB Publication Maven Central (nmcp 1.5.0, bundle 72a98761) + Gradle Plugin Portal (4 plugins soumis). POM withType<MavenPublication> + signing useGpgCmd. | 10/10
+  |===
 
 '''
 
@@ -64,7 +65,7 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
 | CNV-4 | `cccp.build.cucumber` — features/scenarios + cucumberTask + exclusion jupiter + CucumberTaskSpec | ✅ TERMINE | P1
 | CNV-5 | Migration dogfood 3 projets (dashboard, codebase, capsule) — valider nouveau/mature/legacy | ✅ TERMINE | P1
 | CNV-6 | Bugs fixes + generalisation 15+ projets | 🔄 EN COURS | P2
-| PUB | Publication Gradle Plugin Portal + Maven Central | 🔄 A FAIRE | P1
+| PUB | Publication Gradle Plugin Portal + Maven Central | ✅ TERMINE (3/4 US) | P1
 |===
 
 '''

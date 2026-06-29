@@ -85,3 +85,24 @@
 - [x] capsule-gradle : afterEvaluate workaround pour extendsFrom(testImplementation)
 
 **EPICs** : CNV-5 ✅
+
+== Session 008 — 2026-06-29 — PUB Publication Maven Central + Plugin Portal
+
+**Tâches** :
+- [x] `settings.gradle.kts` : nmcp 1.5.0 + centralPortal (ossrhUsername/ossrhPassword, AUTOMATIC)
+- [x] `build.gradle.kts` : plugin `signing` ajouté dans plugins block
+- [x] `build.gradle.kts` : POM withType<MavenPublication> (name, description, url, Apache-2.0, developer cccp-education, SCM)
+- [x] `build.gradle.kts` : signing conditionnel (CI != true && !SNAPSHOT) + useGpgCmd()
+- [x] `compileKotlin` ✅
+- [x] `check` ✅ (pas de régression)
+- [x] `publishToMavenLocal` ✅ (5 publications signées GPG CBE2926CD46D8E8B)
+- [x] `publishAggregationToCentralPortal` ✅ (bundle 72a98761-cefe-47e9-b476-1cff27273a2c)
+- [x] `publishPlugins` ✅ (4 plugins soumis Plugin Portal)
+
+**EPICs** : PUB ✅ (3/4 US — US-PUB-4 doc reste P2)
+
+**Publications** :
+- `education.cccp.build.gradle-plugin` 0.0.1 — Maven Central + Plugin Portal
+- `education.cccp.build.publishing` 0.0.1 — Maven Central + Plugin Portal
+- `education.cccp.build.functional-test` 0.0.1 — Maven Central + Plugin Portal
+- `education.cccp.build.cucumber` 0.0.1 — Maven Central + Plugin Portal

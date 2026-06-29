@@ -96,3 +96,15 @@ Test des conventions via 3 projets consommateurs :
 - FunctionalTestConventionsPlugin : source set dans `apply()` (fix `InvalidPluginMetadataException`)
 - `gradleTestKit()` shorthand remplace Maven coordinate
 - capsule-gradle : `afterEvaluate` workaround pour `extendsFrom(testImplementation)`
+
+== Session 008
+
+**Publication uniquement** — Aucun test modifié.
+
+Validation de la chaîne de publication :
+- `check` ✅ (pas de régression — 12 tasks, baseline verte conservée)
+- `publishToMavenLocal` ✅ (5 publications signées GPG)
+- `publishAggregationToCentralPortal` ✅ (bundle Maven Central)
+- `publishPlugins` ✅ (4 plugins Plugin Portal)
+
+**Couverture** : inchangée — 14/14 unit + Cucumber, 15/15 functional PASS.

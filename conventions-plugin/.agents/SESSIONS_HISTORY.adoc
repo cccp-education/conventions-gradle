@@ -218,3 +218,37 @@ Duree:: 1 session
 - 4 tests unitaires/fonctionnels Cucumber ajoutés
 
 **CNV-6 Fixes TERMINE** — 4 bugs corrigés, CNV-6 Generalisation prête pour 15+ projets
+
+== Session 008 — 2026-06-29
+Type:: dev
+Code:: PUB
+Titre:: Publication Maven Central + Gradle Plugin Portal
+Score:: 10/10
+Duree:: 1 session
+
+**Modifications** :
+- `settings.gradle.kts` : ajout plugin `com.gradleup.nmcp.settings` 1.5.0 + `nmcpSettings { centralPortal { username/password depuis ~/.gradle/gradle.properties, publishingType = AUTOMATIC } }` (pattern graphify référence)
+- `build.gradle.kts` : ajout plugin `signing` dans plugins block
+- `build.gradle.kts` : POM `withType<MavenPublication>` (name, description, url, Apache-2.0, developer cccp-education, SCM github)
+- `build.gradle.kts` : `signing { if (CI != true && !SNAPSHOT) sign(publishing.publications); useGpgCmd() }`
+
+**Publications** :
+- Maven Central (nmcp) : 4 plugins v0.0.1 uploadés, bundle `72a98761-cefe-47e9-b476-1cff27273a2c`, validation AUTOMATIC
+- Gradle Plugin Portal : 4 plugins soumis pour approbation (éducation.cccp.build.{gradle-plugin, publishing, functional-test, cucumber})
+- Signing GPG : clé CBE2926CD46D8E8B active, 5 publications signées (pluginMaven + 4 plugin markers)
+
+**US couvertes** :
+- US-PUB-1 : Configurer signing pour `education.cccp.build` ✅
+- US-PUB-2 : Publier sur Maven Central (nmcp) ✅
+- US-PUB-3 : Publier sur Gradle Plugin Portal ✅
+- US-PUB-4 : Documenter la migration dans AGENT.adoc de chaque borough — RESTANT (P2)
+
+**Validation** :
+- `compileKotlin` ✅
+- `check` ✅ (pas de régression — 12 tasks)
+- `publishToMavenLocal` ✅ (signing GPG actif, 5 publications)
+- `publishAggregationToCentralPortal` ✅ (Maven Central réel)
+- `publishPlugins` ✅ (Plugin Portal réel)
+
+**PUB TERMINE** — 3/4 US. US-PUB-4 (doc consommateur) reste en P2.
+Conventions-gradle est maintenant "liquidable" côté producteur.
