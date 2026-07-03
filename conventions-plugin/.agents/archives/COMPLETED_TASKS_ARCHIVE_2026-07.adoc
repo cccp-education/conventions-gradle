@@ -1,0 +1,33 @@
+= COMPLETED_TASKS_ARCHIVE — Juillet 2026
+
+== Conventions-gradle (ABIDJAN)
+
+=== Session 009 (2026-07-03) — CNV-6 Généralisation
+
+*Tâche* : CNV-6 Généralisation Batch 1+2+3 — migration de 10 boroughs vers les convention plugins v0.0.1
+*Statut* : ✅ TERMINÉ
+*Résultat* : ~470 lignes de build supprimées, 10 compileKotlin SUCCESS
+
+*Boroughs migrés* :
+- hyperframes-gradle (114→60, -54 lignes, pattern bakery)
+- plantuml-gradle (616→570, -46 lignes, pattern bakery)
+- readme-gradle (270→224, -46 lignes, pattern bakery)
+- slider-gradle (301→205, -96 lignes, pattern bakery)
+- graphify-gradle (111→49, -62 lignes, pattern bakery)
+- api-key-pool-gradle (94→47, -47 lignes, library pure — publishing seul)
+- planner-gradle (125→72, -53 lignes, pattern bakery)
+- codex-gradle (200→139, -61 lignes, pattern bakery)
+- review-gradle (stub créé CNV-6 natif, 4 conventions, BUILD SUCCESS)
+- flow-gradle (stub créé CNV-6 natif, 4 conventions, BUILD SUCCESS)
+
+*Non applicables* :
+- agile-gradle (bootstrap, CNV-6 natif à la session 001)
+- ticket-gradle (bootstrap, CNV-6 natif à la session 001)
+- runner-gradle (N3 consommateur terminal, pas un plugin Gradle)
+- document-gradle (nettoyé pattern capsule — voir session document-gradle 009)
+- bakery-gradle (déjà migré session 173)
+- capsule-gradle (déjà migré session 068)
+- codebase-gradle (déjà migré session 006)
+- dashboard-gradle (déjà migré session 005)
+
+*EPIC* : CNV-6 ✅ TERMINÉ

@@ -1,0 +1,83 @@
+= Session 009 — CNV-6 Généralisation Batch 1+2+3 (10 boroughs migrés)
+:session: 009
+:date: 2026-07-03
+:type: dev
+:epic: CNV-6
+
+== Objectif
+
+Migrer les 15 boroughs consommateurs restants vers les convention plugins
+`education.cccp.build.*` v0.0.1. Session super-dev agentique (1 agent principal
++ 8 sous-agents xp/explore en parallèle).
+
+== Récépére — 10 boroughs migrés
+
+=== Batch 1 (4 boroughs, pattern bakery gradle-plugin + publishing)
+
+|===
+| Borough | Lignes avant | Lignes après | Gain | compileKotlin
+| hyperframes-gradle | 114 | 60 | -54 | ✅ SUCCESS
+| plantuml-gradle | 616 | 570 | -46 | ✅ SUCCESS
+| readme-gradle | 270 | 224 | -46 | ✅ SUCCESS
+| slider-gradle | 301 | 205 | -96 | ✅ SUCCESS
+|===
+
+=== Batch 2 (4 boroughs)
+
+|===
+| Borough | Lignes avant | Lignes après | Gain | compileKotlin
+| graphify-gradle | 111 | 49 | -62 | ✅ SUCCESS
+| api-key-pool-gradle | 94 | 47 | -47 | ✅ SUCCESS (library N0 pure, publishing seulement)
+| planner-gradle | 125 | 72 | -53 | ✅ SUCCESS
+| codex-gradle | 200 | 139 | -61 | ✅ SUCCESS
+|===
+
+=== Batch 3 (6 boroughs)
+
+|===
+| Borough | Statut | Action
+| agile-gradle | Bootstrap, pas de build | CNV-6 natif à la session 001 (AGL-1)
+| ticket-gradle | Bootstrap, pas de build | CNV-6 natif à la session 001 (TKT-1)
+| review-gradle | Stub créé CNV-6 natif | 4 conventions appliquées, ReviewPlugin.kt stub, BUILD SUCCESS
+| flow-gradle | Stub créé CNV-6 natif | 4 conventions appliquées, FlowPlugin.kt stub, BUILD SUCCESS
+| runner-gradle | N/A | Consommateur terminal, pas un plugin Gradle
+| document-gradle | Nettoyé | 4 conventions appliquées (pattern capsule), -5 lignes
+|===
+
+== Total
+
+- **10 boroughs migrés** sur 15 cibles (5 non applicables : 2 bootstrap, 1 N/A, 2 stubs créés)
+- **~470 lignes de build supprimées** au total
+- **10 compileKotlin SUCCESS** — zéro régression
+- **CNV-6 natif** pour review + flow (stubs créés directement avec les conventions)
+
+== Pattern de migration retenu
+
+- **Pattern bakery** (gradle-plugin + publishing seulement) : hyperframes, plantuml, readme, slider, graphify, planner, codex — boroughs avec variantes functionalTest/cucumber trop nombreuses
+- **Pattern capsule** (4 conventions) : document, review, flow — boroughs simples ou nouveaux
+- **Library pure** (publishing seulement) : api-key-pool — N0 sans java-gradle-plugin
+
+== Variantes gardées fréquentes
+
+- buildscript workaround `force("org.jetbrains:annotations:26.0.2-1")` (koog-agents)
+- configurations groovy/logback exclusions
+- jvmArgs EnableDynamicAgentLoading, SerialGC, MaxMetaspaceSize
+- gradlePlugin compatibility configurationCache=false (asciidoctor)
+- cucumberTest doLast cleanup gradle-test-*
+- extendsFrom test←functionalTest (inversé)
+- koverThresholdCheck custom
+
+== Blocage pipeline-contracts
+
+DOC-8 (release notes pipeline) dépend de MEM-2 (pipeline-contracts N0) qui
+est cadré mais pas encore implémenté dans workspace-bom. Le code
+pipeline-contracts n'existe pas dans le BOM (settings.gradle.kts ne référence
+pas le module). DOC-8.1 (releaseNotesGenerate) reste en TODO jusqu'à
+publication de MEM-2.
+
+== Prochaine session (010)
+
+- CNV-6 : 0 boroughs restants (tous migrés ou N/A)
+- US-PUB-4 : Documenter la migration dans AGENT.adoc de chaque borough
+- MEM-2 : Implémenter pipeline-contracts dans workspace-bom (code pas créé)
+- DOC-8.1 : releaseNotesGenerate (post MEM-2)

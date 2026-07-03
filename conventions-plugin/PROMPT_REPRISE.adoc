@@ -1,41 +1,40 @@
 = PROMPT_REPRISE — Conventions
-:session: 009
-:date: 2026-06-29
+:session: 010
+:date: 2026-07-03
 
-== Session 008 TERMINEE — PUB Publication Maven Central + Plugin Portal ✅
+== Session 009 TERMINEE — CNV-6 Généralisation ✅
 
-**Publications** :
-- Maven Central (nmcp) : 4 plugins v0.0.1 uploadés, bundle `72a98761-cefe-47e9-b476-1cff27273a2c`
-- Gradle Plugin Portal : 4 plugins soumis pour approbation
-- `settings.gradle.kts` : nmcp 1.5.0 + centralPortal (ossrhUsername/ossrhPassword)
-- `build.gradle.kts` : POM withType<MavenPublication> + signing useGpgCmd conditionnel
+**10 boroughs migrés** vers les convention plugins v0.0.1 :
+- Batch 1 : hyperframes (-54 lignes), plantuml (-46), readme (-46), slider (-96)
+- Batch 2 : graphify (-62), api-key-pool (-47, library pure), planner (-53), codex (-61)
+- Batch 3 : review + flow (stubs CNV-6 natif), agile + ticket (bootstrap, CNV-6 natif session 001), runner (N/A), document (nettoyé pattern capsule)
 
-== Statut - PUB
+**Total** : ~470 lignes de build supprimées, 10 compileKotlin SUCCESS.
 
-- US-PUB-1 (signing) : ✅ TERMINE
-- US-PUB-2 (Maven Central) : ✅ TERMINE
-- US-PUB-3 (Plugin Portal) : ✅ TERMINE
-- US-PUB-4 (doc AGENT.adoc boroughs) : RESTANT (P2, doc consommateur)
+**Patterns** :
+- Bakery (gradle-plugin + publishing) : 7 boroughs avec variantes
+- Capsule (4 conventions) : 3 boroughs simples/neufs
+- Library pure (publishing seul) : api-key-pool
 
 == Statut global
 
 - CNV-0→CNV-5 : ✅ TERMINE
-- CNV-6 Fix : ✅ TERMINE (TDD 100%)
-- CNV-6 Gen : 🔄 EN COURS (15 projets restants)
+- CNV-6 Fix : ✅ TERMINE
+- CNV-6 Gen : ✅ TERMINE (10 boroughs migrés, 5 non applicables)
 - PUB : ✅ TERMINE (3/4 US)
 
-== Prochaine session (009) — CNV-6 Généralisation
+== Prochaine session (010)
 
-Priorite P2 : Migrer les 15 boroughs consommateurs vers les conventions plugins.
+Priorités :
+1. US-PUB-4 (P2) : Documenter la migration CNV-6 dans AGENT.adoc de chaque borough consommateur
+2. MEM-2 (P1) : Implémenter pipeline-contracts dans workspace-bom (code pas créé, cadré seulement)
+3. DOC-8.1 (P2) : releaseNotesGenerate dans document-gradle (post MEM-2)
 
-Projets cibles (ordre) :
-1. bakery-gradle (gold standard)
-2. plantuml-gradle
-3. slider-gradle
-4. readme-gradle, hyperframes-gradle
-5. graphify-gradle, api-key-pool-gradle
-6. planner-gradle, codex-gradle
-7. agile-gradle, ticket-gradle, review-gradle, flow-gradle
-8. runner-gradle, document-gradle
+== Règles absolues (rappel)
 
-Méthode : baby-step TDD/BDD (DDD ubiquitous language, Red-Green-Refactor, Cucumber .feature en amont).
+. COMMITS/GIT — INTERDICTION FORMELLE sans permission
+. PUBLISH — INTERDICTION FORMELLE sans permission
+. PUBLISH TO MAVEN LOCAL — OBLIGATOIRE après modification du code source du plugin
+. PROCEDURE DE FIN DE SESSION — 6 ETAPES OBLIGATOIRES
+. HOOK OUVERTURE — Checklist SESSION_CHECKLIST.adoc obligatoire
+. ZERO secret/token/api key en dur

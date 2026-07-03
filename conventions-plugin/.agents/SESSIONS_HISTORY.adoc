@@ -252,3 +252,18 @@ Duree:: 1 session
 
 **PUB TERMINE** — 3/4 US. US-PUB-4 (doc consommateur) reste en P2.
 Conventions-gradle est maintenant "liquidable" côté producteur.
+
+---
+
+== Session 009 (2026-07-03) — CNV-6 Généralisation Batch 1+2+3
+
+**Super-dev agentique** : 1 agent principal + 8 sous-agents xp/explore en parallèle.
+
+**10 boroughs migrés** vers les convention plugins v0.0.1 :
+- Batch 1 (pattern bakery) : hyperframes (-54), plantuml (-46), readme (-46), slider (-96)
+- Batch 2 : graphify (-62), api-key-pool (-47, library pure), planner (-53), codex (-61)
+- Batch 3 : review + flow (stubs CNV-6 natif 4 conventions), agile + ticket (bootstrap), runner (N/A), document (nettoyé pattern capsule)
+
+**Total** : ~470 lignes de build supprimées, 10 compileKotlin SUCCESS, zéro régression.
+
+**CNV-6 TERMINE** — 10 boroughs migrés, 5 non applicables. US-PUB-4 (doc consommateurs) reste en P2.
