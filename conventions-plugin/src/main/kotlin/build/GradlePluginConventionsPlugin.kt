@@ -20,6 +20,7 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         configureKotlin(project)
         configureRepositories(project)
         configureTestTasks(project)
+        configureTestDependencies(project)
     }
 
     private fun configureJava(project: Project) {
@@ -57,5 +58,14 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
                 )
             }
         )
+    }
+
+    // CNV-7.2 — Centralise les deps junit test + platform BOM (tue le bug 6.0.3 plantuml)
+    private fun configureTestDependencies(project: Project) {
+        project.afterEvaluate {
+            TestDependencies.addPlatformBom(project, "testImplementation")
+            TestDependencies.addPlatformBom(project, "testRuntimeOnly")
+            TestDependencies.addJunitDeps(project, "testImplementation", "testRuntimeOnly")
+        }
     }
 }

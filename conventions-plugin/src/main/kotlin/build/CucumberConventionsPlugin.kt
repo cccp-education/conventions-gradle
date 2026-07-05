@@ -29,6 +29,11 @@ open class CucumberConventionsPlugin : Plugin<Project> {
         val testSourceSet = sourceSets.getByName("test")
         val mainSourceSet = sourceSets.getByName("main")
 
+        // CNV-7.1 — Centralise les deps cucumber + platform BOM (tue le bug 6.0.3 plantuml)
+        val testImplConfig = testSourceSet.implementationConfigurationName
+        TestDependencies.addPlatformBom(project, testImplConfig)
+        TestDependencies.addCucumberDeps(project, testImplConfig)
+
         testSourceSet.resources.srcDir(extension.featuresDir)
         testSourceSet.java.srcDir(extension.scenariosDir)
 

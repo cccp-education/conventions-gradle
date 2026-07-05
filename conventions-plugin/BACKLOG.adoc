@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-06-29 — Session 008 (PUB Publication Maven Central + Plugin Portal)
+_Derniere mise a jour_ : 2026-07-05 — CNV-7 ✅ TERMINÉ (session 010)
 
 '''
 
@@ -98,6 +98,92 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central —
 
 '''
 
+== ✅ TERMINE — CNV-7 : Centralisation des dépendances de test
+
+_Dépendances JUnit + Cucumber gérées par les convention plugins — élimine la duplication et les bugs de version dans les catalogues locaux des boroughs._
+
+*Priorité* : P1 — débloque US-I18N-6 plantuml (tests `:test` cassés par `junit-platform-params = "6.0.3"` dans catalogue local)
+*Charge estimée* : ~8 pts (~2 sessions)
+*Dépend de* : CNV-4 (CucumberConventionsPlugin existe), CNV-3 (FunctionalTestConventionsPlugin existe)
+*Statut* : ✅ TERMINÉ (session 010, 2026-07-05)
+
+=== Contexte
+
+Découvert session plantuml 158 : `junit-platform-params = "6.0.3"` (version inexistante)
+dans `plantuml-plugin/gradle/libs.versions.toml` casse l'exécution des tests
+(`NoSuchMethodError: CollectionUtils.toUnmodifiableList()`).
+
+Racine : les convention plugins ne géraient **pas** les dépendances de test.
+Tous les boroughs (bakery, capsule, plantuml…) dupliquaient
+`testImplementation(kotlin("test-junit5"))`, `junit-platform-launcher`,
+`libs.bundles.cucumber`, `junit-platform-params` dans leur `build.gradle.kts`
+local avec des versions hardcodées dans leur catalogue — d'où les divergences
+et bugs.
+
+=== Architecture cible (RÉALISÉE)
+
+* `GradlePluginConventionsPlugin` (via `TestDependencies.addJunitDeps`) :
+  - `testImplementation` : `kotlin("test-junit5")`, `junit-jupiter` (fallback `5.12.2`),
+    `junit-platform-params` (fallback `5.12.2`), `assertj-core` (fallback `3.27.7`)
+  - `testRuntimeOnly` : `junit-platform-launcher` (fallback `1.14.3`)
+  - `workspace-bom` platform sur `testImplementation` + `testRuntimeOnly`
+
+* `CucumberConventionsPlugin` (via `TestDependencies.addCucumberDeps`) :
+  - `testImplementation` : `cucumber-java`, `cucumber-junit-platform-engine`,
+    `cucumber-picocontainer` (fallback `7.34.3`), `junit-platform-suite` (fallback `1.14.3`)
+  - `workspace-bom` platform
+  - `addFromCatalog` pattern existant (lit catalogue local, fallback hardcoded)
+
+* Helper DDD `TestDependencies.kt` (single responsibility = gestion deps test) :
+  - `addCucumberDeps`, `addJunitDeps`, `addPlatformBom`, `addFromCatalog`, `libs`
+  - Constantes `CUCUMBER_FALLBACKS`, `JUNIT_FALLBACKS`, `WORKSPACE_BOM_COORDINATES`
+  - Consommateurs : CucumberConventionsPlugin, GradlePluginConventionsPlugin, FunctionalTestConventionsPlugin (refactor)
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| US-CN-7.1
+| **CucumberConventionsPlugin : deps cucumber** — Ajouter `cucumber-java`,
+  `cucumber-junit-platform-engine`, `cucumber-picocontainer` (fallback `7.34.3`),
+  `junit-platform-suite` (fallback `1.14.3`) via `addFromCatalog` +
+  `workspace-bom` platform. TDD : tests unitaires vérifiant les deps ajoutées.
+| 3
+| ✅ Sess. 010
+
+| US-CN-7.2
+| **GradlePluginConventionsPlugin : deps junit test** — Ajouter
+  `kotlin("test-junit5")`, `junit-jupiter` (fallback `5.12.2`),
+  `junit-platform-params` (fallback `5.12.2`), `assertj-core` (fallback `3.27.7`)
+  en `testImplementation` + `junit-platform-launcher` (fallback `1.14.3`)
+  en `testRuntimeOnly` + `workspace-bom` platform. TDD.
+| 3
+| ✅ Sess. 010
+
+| US-CN-7.3
+| **Migration plantuml-gradle** — Appliquer `CucumberConventionsPlugin` +
+  `FunctionalTestConventionsPlugin`, supprimer les deps test locales du
+  `build.gradle.kts` et les entrées cucumber/junit du catalogue local.
+  Le bug `6.0.3` disparaît naturellement. `compileKotlin` + `:test` SUCCESS.
+| 2
+| ✅ Sess. 010
+|===
+
+=== Critères d'Acceptation
+
+* [x] `CucumberConventionsPlugin` ajoute les deps cucumber via `addFromCatalog`
+* [x] `GradlePluginConventionsPlugin` (ou `TestConventionsPlugin`) ajoute les deps junit
+* [x] `addFromCatalog` lit le catalogue local, fallback hardcoded correct
+* [x] `workspace-bom` platform appliqué sur `testImplementation` + `testRuntimeOnly`
+* [x] plantuml-gradle migré : zéro dep test locale dans `build.gradle.kts`
+* [x] plantuml `:test` exécute (plus de `NoSuchMethodError`)
+* [x] `compileKotlin` SUCCESS sur conventions + plantuml
+* [x] `publishToMavenLocal` SUCCESS sur conventions
+
+'''
+
 == Archives
 
 Session 005 (ARCH) : Architecture "Plugin Independant + Racine Consommateur".
@@ -118,7 +204,8 @@ Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && .
 | CNV-3 | Convention plugin `functional-test` | 5 | ✅ TERMINE
 | CNV-4 | Convention plugin `cucumber` | 6 | ✅ TERMINE
 | CNV-5 | Migration dogfood 3 projets | 10 | ✅ TERMINE
-| CNV-6 | Generalisation 15+ projets | 15 | 🟡 P2
-| PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
-| *Total* | | *57* |
+| CNV-6 | Generalisation 15+ projets | 15 | ✅ TERMINE |
+| CNV-7 | Centralisation deps test (junit + cucumber) | 8 | ✅ TERMINE |
+| PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE |
+| *Total* | | *65* |
 |===

@@ -1,34 +1,34 @@
 = PROMPT_REPRISE — Conventions
-:session: 010
-:date: 2026-07-03
+:session: 011
+:date: 2026-07-05
 
-== Session 009 TERMINEE — CNV-6 Généralisation ✅
+== Session 010 TERMINEE — CNV-7 Centralisation deps test ✅
 
-**10 boroughs migrés** vers les convention plugins v0.0.1 :
-- Batch 1 : hyperframes (-54 lignes), plantuml (-46), readme (-46), slider (-96)
-- Batch 2 : graphify (-62), api-key-pool (-47, library pure), planner (-53), codex (-61)
-- Batch 3 : review + flow (stubs CNV-6 natif), agile + ticket (bootstrap, CNV-6 natif session 001), runner (N/A), document (nettoyé pattern capsule)
+**3 US terminées** (8 pts) :
+- US-CN-7.1 : CucumberConventionsPlugin ajoute deps cucumber + workspace-bom platform
+- US-CN-7.2 : GradlePluginConventionsPlugin ajoute deps junit test + workspace-bom platform
+- US-CN-7.3 : Migration plantuml-gradle — bug `junit-platform-params = "6.0.3"` ÉLIMINÉ
 
-**Total** : ~470 lignes de build supprimées, 10 compileKotlin SUCCESS.
+**Nouveau helper DDD** : `TestDependencies.kt` (single responsibility = gestion deps test).
+Consommateurs : CucumberConventionsPlugin, GradlePluginConventionsPlugin,
+FunctionalTestConventionsPlugin (refactor).
 
-**Patterns** :
-- Bakery (gradle-plugin + publishing) : 7 boroughs avec variantes
-- Capsule (4 conventions) : 3 boroughs simples/neufs
-- Library pure (publishing seul) : api-key-pool
+**Vérifications** :
+- conventions : cucumberTest 16/16 PASS, functionalTest PASS, publishToMavenLocal SUCCESS
+- plantuml : compileKotlin SUCCESS, :test 956 tests (bug 6.0.3 disparu, 5 failures LLM Ollama préexistantes)
 
 == Statut global
 
-- CNV-0→CNV-5 : ✅ TERMINE
-- CNV-6 Fix : ✅ TERMINE
-- CNV-6 Gen : ✅ TERMINE (10 boroughs migrés, 5 non applicables)
-- PUB : ✅ TERMINE (3/4 US)
+- CNV-0→CNV-7 : ✅ TERMINE
+- PUB : ✅ TERMINE (3/4 US — US-PUB-4 doc reste P2)
 
-== Prochaine session (010)
+== Prochaine session (011)
 
 Priorités :
-1. US-PUB-4 (P2) : Documenter la migration CNV-6 dans AGENT.adoc de chaque borough consommateur
-2. MEM-2 (P1) : Implémenter pipeline-contracts dans workspace-bom (code pas créé, cadré seulement)
-3. DOC-8.1 (P2) : releaseNotesGenerate dans document-gradle (post MEM-2)
+1. Publication Maven Central v0.0.2 — CNV-7 = breaking change pour consommateurs (bump version obligatoire)
+2. US-PUB-4 (P2) : Documenter la migration CNV-6/CNV-7 dans AGENT.adoc de chaque borough consommateur
+3. MEM-2 (P1) : Implémenter pipeline-contracts dans workspace-bom (code pas créé, cadré seulement)
+4. DOC-8.1 (P2) : releaseNotesGenerate dans document-gradle (post MEM-2)
 
 == Règles absolues (rappel)
 

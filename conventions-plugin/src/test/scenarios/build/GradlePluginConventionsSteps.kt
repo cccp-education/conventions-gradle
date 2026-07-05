@@ -9,6 +9,7 @@ class GradlePluginConventionsSteps : En {
 
     private lateinit var testProjectDir: File
     private lateinit var taskListResult: BuildResult
+    private var depsResult: BuildResult? = null
 
     init {
         Given("a project applies the conventions plugin") {
@@ -68,6 +69,66 @@ class GradlePluginConventionsSteps : En {
 
         Then("test logging shows passed, skipped, and failed events") {
             assert(true) // verified by convention plugin source
+        }
+
+        // ── CNV-7.2 — junit test dependencies ────────────────────────────────
+        Given("a project applies the conventions plugin with dependency inspection") {
+            testProjectDir = createTempDir("conventions-test-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("""
+                rootProjectName = "test-project"
+            """.replace("rootProjectName", "rootProject.name"))
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("education.cccp.build.gradle-plugin")
+                }
+            """)
+            depsResult = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies", "--configuration", "testImplementation")
+                .withPluginClasspath()
+                .build()
+            taskListResult = depsResult!!
+        }
+
+        Then("the testImplementation configuration contains kotlin-test-junit5") {
+            assert(depsResult?.output?.contains("org.jetbrains.kotlin:kotlin-test-junit5") == true) {
+                "Expected kotlin-test-junit5 in testImplementation\n${depsResult?.output}"
+            }
+        }
+
+        Then("the testImplementation configuration contains junit-jupiter") {
+            assert(depsResult?.output?.contains("org.junit.jupiter:junit-jupiter") == true) {
+                "Expected junit-jupiter in testImplementation\n${depsResult?.output}"
+            }
+        }
+
+        Then("the testImplementation configuration contains junit-platform-params") {
+            assert(depsResult?.output?.contains("junit-jupiter-params") == true) {
+                "Expected junit-jupiter-params in testImplementation\n${depsResult?.output}"
+            }
+        }
+
+        Then("the testImplementation configuration contains assertj-core") {
+            assert(depsResult?.output?.contains("org.assertj:assertj-core") == true) {
+                "Expected assertj-core in testImplementation\n${depsResult?.output}"
+            }
+        }
+
+        Then("the testRuntimeOnly configuration contains junit-platform-launcher") {
+            val runtimeResult = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies", "--configuration", "testRuntimeOnly")
+                .withPluginClasspath()
+                .build()
+            assert(runtimeResult.output.contains("org.junit.platform:junit-platform-launcher") == true) {
+                "Expected junit-platform-launcher in testRuntimeOnly\n${runtimeResult.output}"
+            }
+        }
+
+        Then("the gradle testImplementation configuration has the workspace-bom platform") {
+            assert(depsResult?.output?.contains("education.cccp:workspace-bom") == true) {
+                "Expected workspace-bom platform in testImplementation\n${depsResult?.output}"
+            }
         }
     }
 

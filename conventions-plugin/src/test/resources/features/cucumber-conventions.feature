@@ -26,3 +26,11 @@ Feature: Cucumber BDD Conventions
     Given a project applies the cucumber plugin with additional tasks and runnerClass
     Then the additional cucumberTestEpic1 task is registered
     And the additional task uses runnerClass filter
+
+  # CNV-7.1 — Plugin ajoute les dépendances cucumber à testImplementation
+  Scenario: Plugin adds cucumber dependencies to testImplementation
+    Given a project applies the cucumber plugin with dependency inspection
+    Then the testImplementation configuration contains cucumber-java
+    And the testImplementation configuration contains cucumber-junit-platform-engine
+    And the testImplementation configuration contains junit-platform-suite
+    And the testImplementation configuration has the workspace-bom platform

@@ -108,3 +108,26 @@ Validation de la chaîne de publication :
 - `publishPlugins` ✅ (4 plugins Plugin Portal)
 
 **Couverture** : inchangée — 14/14 unit + Cucumber, 15/15 functional PASS.
+
+== Session 010
+
+**CNV-7 Centralisation deps test** — 3 US (8 pts) en baby-step TDD/BDD DDD.
+
+**Cucumber BDD** : +2 scénarios (total 16/16 PASS)
+- `Plugin adds cucumber dependencies to testImplementation` (US-CN-7.1) : 4 Then steps
+  - cucumber-java, cucumber-junit-platform-engine, junit-platform-suite, workspace-bom platform
+- `Plugin adds junit test dependencies` (US-CN-7.2) : 6 Then steps
+  - kotlin-test-junit5, junit-jupiter, junit-platform-params, assertj-core, junit-platform-launcher (runtime), workspace-bom platform
+
+**Functional tests (GradleTestKit)** : inchangés (15/15 PASS) — pas de nouveaux tests fonctionnels, les scénarios Cucumber couvrent l'inspection des deps via `dependencies --configuration testImplementation`.
+
+**Nouveau fichier testé** : `TestDependencies.kt` (82 lignes)
+- Couverture indirecte via les 2 plugins consommateurs (CucumberConventionsPlugin, GradlePluginConventionsPlugin)
+- 5 deps cucumber + 5 deps junit + platform BOM vérifiées par les steps Cucumber
+
+**Migration plantuml-gradle (dogfood CNV-7.2)** :
+- `compileKotlin` SUCCESS
+- `:test` 956 tests exécutés (bug `6.0.3` éliminé — zéro `NoSuchMethodError` dans rapports)
+- 5 failures = tests LLM Ollama timeout réseau 30s (préexistants, indépendants de CNV-7)
+
+**Couverture cumulée** : 16/16 Cucumber + 15/15 functional = 31 tests PASS.

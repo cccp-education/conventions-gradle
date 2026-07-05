@@ -20,3 +20,13 @@ Feature: Gradle Plugin Conventions
     Given a project applies the conventions plugin
     Then test tasks use JUnit Platform
     And test logging shows passed, skipped, and failed events
+
+  # CNV-7.2 — Plugin ajoute les dépendances junit test à testImplementation/testRuntimeOnly
+  Scenario: Plugin adds junit test dependencies
+    Given a project applies the conventions plugin with dependency inspection
+    Then the testImplementation configuration contains kotlin-test-junit5
+    And the testImplementation configuration contains junit-jupiter
+    And the testImplementation configuration contains junit-platform-params
+    And the testImplementation configuration contains assertj-core
+    And the testRuntimeOnly configuration contains junit-platform-launcher
+    And the gradle testImplementation configuration has the workspace-bom platform

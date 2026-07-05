@@ -115,6 +115,48 @@ class CucumberConventionsSteps : En {
                 "Expected cucumberTestEpic1 task to be available with runnerClass filter\n${taskListResult.output}"
             }
         }
+
+        // ── CNV-7.1 — cucumber dependencies on testImplementation ──────────────
+        Given("a project applies the cucumber plugin with dependency inspection") {
+            testProjectDir = createTempDir("cucumber-test-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("""
+                rootProject.name = "test-project"
+            """)
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("education.cccp.build.cucumber")
+                }
+            """)
+            checkResult = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies", "--configuration", "testImplementation")
+                .withPluginClasspath()
+                .build()
+        }
+
+        Then("the testImplementation configuration contains cucumber-java") {
+            assert(checkResult?.output?.contains("io.cucumber:cucumber-java") == true) {
+                "Expected cucumber-java in testImplementation\n${checkResult?.output}"
+            }
+        }
+
+        Then("the testImplementation configuration contains cucumber-junit-platform-engine") {
+            assert(checkResult?.output?.contains("io.cucumber:cucumber-junit-platform-engine") == true) {
+                "Expected cucumber-junit-platform-engine in testImplementation\n${checkResult?.output}"
+            }
+        }
+
+        Then("the testImplementation configuration contains junit-platform-suite") {
+            assert(checkResult?.output?.contains("org.junit.platform:junit-platform-suite") == true) {
+                "Expected junit-platform-suite in testImplementation\n${checkResult?.output}"
+            }
+        }
+
+        Then("the testImplementation configuration has the workspace-bom platform") {
+            assert(checkResult?.output?.contains("education.cccp:workspace-bom") == true) {
+                "Expected workspace-bom platform in testImplementation\n${checkResult?.output}"
+            }
+        }
     }
 
     private fun runTasks(vararg args: String): BuildResult {

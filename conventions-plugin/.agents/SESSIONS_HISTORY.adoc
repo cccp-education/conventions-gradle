@@ -267,3 +267,32 @@ Conventions-gradle est maintenant "liquidable" côté producteur.
 **Total** : ~470 lignes de build supprimées, 10 compileKotlin SUCCESS, zéro régression.
 
 **CNV-6 TERMINE** — 10 boroughs migrés, 5 non applicables. US-PUB-4 (doc consommateurs) reste en P2.
+
+== Session 010 (2026-07-05) — CNV-7 Centralisation deps test
+
+**Baby-step TDD/BDD DDD** — 3 US (8 pts) en RED → GREEN → REFACTOR → VERIFY.
+
+**US-CN-7.1** (3 pts) — `CucumberConventionsPlugin` ajoute deps cucumber :
+- RED : scénario Cucumber `Plugin adds cucumber dependencies to testImplementation` + 4 Then steps → échec
+- GREEN : `TestDependencies.addCucumberDeps` + `addPlatformBom` sur `testImplementation`
+- 15/15 Cucumber PASS
+
+**US-CN-7.2** (3 pts) — `GradlePluginConventionsPlugin` ajoute deps junit test :
+- RED : scénario Cucumber `Plugin adds junit test dependencies` + 6 Then steps → 8 failures
+- GREEN : `configureTestDependencies` → `TestDependencies.addJunitDeps` + platform BOM en `afterEvaluate`
+- 16/16 Cucumber PASS
+
+**US-CN-7.3** (2 pts) — Migration plantuml-gradle (dogfood CNV-7.2) :
+- Suppression deps junit test dupliquées du `build.gradle.kts` (lignes 55-63)
+- Correction catalogue `junit-platform-params = "6.0.3"` → `"5.12.2"`
+- Bug `NoSuchMethodError: CollectionUtils.toUnmodifiableList()` **ÉLIMINÉ** (zéro occurrence dans rapports)
+- `:test` 956 tests exécutés (5 failures LLM Ollama préexistantes, indépendantes de CNV-7)
+
+**REFACTOR DDD** — Nouveau helper `TestDependencies.kt` (82 lignes, single responsibility = gestion deps test) :
+- `addCucumberDeps`, `addJunitDeps`, `addPlatformBom`, `addFromCatalog`, `libs`
+- Constantes `CUCUMBER_FALLBACKS` (5 entrées), `JUNIT_FALLBACKS` (5 entrées), `WORKSPACE_BOM_COORDINATES`
+- `FunctionalTestConventionsPlugin` migré vers le helper (-30 lignes helpers locaux supprimés)
+
+**Vérifications** : compileKotlin SUCCESS, cucumberTest 16/16 PASS, functionalTest PASS, publishToMavenLocal SUCCESS sur conventions. compileKotlin SUCCESS + :test exécute sur plantuml. Zéro secret.
+
+**CNV-7 TERMINE** — Bug plantuml 6.0.3 résolu structurellement. Prochaine session : publication v0.0.2 (breaking change pour consommateurs).

@@ -1,0 +1,104 @@
+= Session 010 — CNV-7 Centralisation deps test (junit + cucumber)
+:date: 2026-07-05
+:session: 010
+:type: dev
+:epic: CNV-7
+:points: 8
+:score: 10/10
+
+== Objectif
+
+Éliminer le bug `junit-platform-params = "6.0.3"` (version inexistante) dans
+`plantuml-plugin/gradle/libs.versions.toml` qui cassait `:test` plantuml
+(`NoSuchMethodError: CollectionUtils.toUnmodifiableList()`). Racine : tous les
+boroughs dupliquent les deps junit/cucumber avec des versions hardcodées locales
+divergentes. Les convention plugins ne géraient **pas** les deps de test.
+
+CNV-7 les centralise dans les convention plugins via un helper DDD partagé.
+
+== Méthode — Baby-step TDD/BDD DDD (Agile Software Craftsmanship)
+
+* US-CN-7.1 (3 pts) — CucumberConventionsPlugin deps cucumber
+  1. RED : scénario Cucumber « Plugin adds cucumber dependencies to testImplementation » + 4 Then steps (cucumber-java, cucumber-junit-platform-engine, junit-platform-suite, workspace-bom platform) → échec « Expected cucumber-java in testImplementation »
+  2. GREEN : CucumberConventionsPlugin ajoute deps cucumber via `TestDependencies.addCucumberDeps` + `addPlatformBom` sur `testImplementation`
+  3. REFACTOR : extraction `TestDependencies.kt` (single responsibility = gestion deps test), migration `FunctionalTestConventionsPlugin` vers le helper (suppression `addFromCatalog`/`addPlatformBom` locaux)
+  4. VERIFY : compileKotlin + cucumberTest 15/15 PASS + functionalTest PASS + publishToMavenLocal SUCCESS
+
+* US-CN-7.2 (3 pts) — GradlePluginConventionsPlugin deps junit test
+  1. RED : scénario Cucumber « Plugin adds junit test dependencies » + 6 Then steps (kotlin-test-junit5, junit-jupiter, junit-platform-params, assertj-core, junit-platform-launcher runtime, workspace-bom platform) → 8 failures
+  2. GREEN : GradlePluginConventionsPlugin.configureTestDependencies ajoute deps junit via `TestDependencies.addJunitDeps` (testImplementation + testRuntimeOnly) + platform BOM en `afterEvaluate`
+  3. VERIFY : cucumberTest 16/16 PASS + functionalTest PASS + publishToMavenLocal SUCCESS
+
+* US-CN-7.3 (2 pts) — Migration plantuml-gradle (dogfood CNV-7.2, tue le bug 6.0.3)
+  - Suppression des deps junit test dupliquées du `build.gradle.kts` (lignes 55-63 : kotlin-test-junit5, junit-platform-launcher, assertj-core, junit-platform-params)
+  - Correction catalogue `junit-platform-params = "6.0.3"` → `"5.12.2"` (version réelle)
+  - Bug `NoSuchMethodError: CollectionUtils.toUnmodifiableList()` **ÉLIMINÉ** (zéro occurrence dans build/reports/tests/)
+  - `:test` exécute 956 tests (5 failures = tests LLM Ollama timeout réseau 30s, préexistants et indépendants de CNV-7)
+  - compileKotlin SUCCESS
+
+== Architecture — TestDependencies.kt (DDD)
+
+Nouveau fichier : `src/main/kotlin/build/TestDependencies.kt`
+
+Single responsibility : centraliser l'ajout de deps test (junit, cucumber, platform
+BOM) avec fallback hardcoded quand le catalogue `libs` du projet consommateur est
+absent. Élimine la duplication des versions divergentes entre boroughs.
+
+Cascade de résolution : catalogue `libs` du projet consommateur > fallback hardcoded.
+
+API publique :
+* `TestDependencies.libs(project)` — récupère le catalogue `libs` (null-safe)
+* `TestDependencies.addPlatformBom(project, config)` — ajoute `workspace-bom:0.0.4` en platform
+* `TestDependencies.addFromCatalog(project, libs, config, key, fallback)` — lit catalogue, fallback hardcoded
+* `TestDependencies.addCucumberDeps(project, config)` — 5 deps cucumber (fallback 7.34.3 / 1.14.3)
+* `TestDependencies.addJunitDeps(project, implConfig, runtimeConfig)` — 5 deps junit (fallback 5.12.2 / 1.14.3 / 3.27.7)
+
+Constantes :
+* `WORKSPACE_BOM_COORDINATES = "education.cccp:workspace-bom:0.0.4"`
+* `CUCUMBER_FALLBACKS` : Map<String, String> (5 entrées)
+* `JUNIT_FALLBACKS` : Map<String, String> (5 entrées)
+
+Consommateurs :
+* `CucumberConventionsPlugin` (US-CN-7.1) → `addCucumberDeps` + `addPlatformBom` sur `testImplementation`
+* `GradlePluginConventionsPlugin` (US-CN-7.2) → `addJunitDeps` + `addPlatformBom` sur `testImplementation` + `testRuntimeOnly`
+* `FunctionalTestConventionsPlugin` (refactor) → `addPlatformBom` + `addFromCatalog` (suppression helpers locaux)
+
+== Fichiers modifiés — conventions-gradle (9 fichiers)
+
+* `src/main/kotlin/build/TestDependencies.kt` (NOUVEAU — 82 lignes)
+* `src/main/kotlin/build/CucumberConventionsPlugin.kt` (+5 lignes : addCucumberDeps + addPlatformBom)
+* `src/main/kotlin/build/FunctionalTestConventionsPlugin.kt` (-30 lignes : suppression helpers locaux, utilisation TestDependencies)
+* `src/main/kotlin/build/GradlePluginConventionsPlugin.kt` (+9 lignes : configureTestDependencies)
+* `src/test/resources/features/cucumber-conventions.feature` (+8 lignes : scénario CNV-7.1)
+* `src/test/resources/features/gradle-plugin-conventions.feature` (+9 lignes : scénario CNV-7.2)
+* `src/test/scenarios/build/CucumberConventionsSteps.kt` (+40 lignes : 5 steps inspection deps cucumber)
+* `src/test/scenarios/build/GradlePluginConventionsSteps.kt` (+60 lignes : 6 steps inspection deps junit)
+
+== Fichiers modifiés — plantuml-gradle (2 fichiers)
+
+* `plantuml-plugin/build.gradle.kts` : suppression deps junit test dupliquées (kotlin-test-junit5, junit-platform-launcher, assertj-core, junit-platform-params) — gérées par GradlePluginConventionsPlugin v0.0.1 + CNV-7.2
+* `plantuml-plugin/gradle/libs.versions.toml` : `junit-platform-params = "6.0.3"` → `"5.12.2"` (bug fix)
+
+== Vérifications
+
+* conventions-gradle : `compileKotlin` SUCCESS, `cucumberTest` 16/16 PASS, `functionalTest` PASS, `publishToMavenLocal` SUCCESS
+* plantuml-gradle : `compileKotlin` SUCCESS, `:test` 956 tests exécutés (bug 6.0.3 éliminé, 5 failures LLM Ollama préexistants)
+* Zéro secret/token dans le code modifié
+
+== Critères d'acceptation CNV-7
+
+* [x] `CucumberConventionsPlugin` ajoute les deps cucumber via `addFromCatalog`
+* [x] `GradlePluginConventionsPlugin` ajoute les deps junit
+* [x] `addFromCatalog` lit le catalogue local, fallback hardcoded correct
+* [x] `workspace-bom` platform appliqué sur `testImplementation` + `testRuntimeOnly`
+* [x] plantuml-gradle migré : deps junit test supprimées du `build.gradle.kts`
+* [x] plantuml `:test` exécute (plus de `NoSuchMethodError`)
+* [x] `compileKotlin` SUCCESS sur conventions + plantuml
+* [x] `publishToMavenLocal` SUCCESS sur conventions
+
+== Prochaine session (011)
+
+* US-PUB-4 (P2) : Documenter la migration CNV-6/CNV-7 dans AGENT.adoc de chaque borough consommateur
+* MEM-2 (P1) : Implémenter pipeline-contracts dans workspace-bom
+* DOC-8.1 (P2) : releaseNotesGenerate dans document-gradle (post MEM-2)
+* Publication Maven Central v0.0.2 (CNV-7 = breaking change pour consommateurs — bump version)
