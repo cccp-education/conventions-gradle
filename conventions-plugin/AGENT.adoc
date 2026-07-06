@@ -44,6 +44,17 @@ de build Gradle. TOUT le reste (code, tests, gouvernance, documentation agent) v
 Commandes autorisees (lecture seule) : `git status`, `git diff`, `git log`, `git show`
 Commandes interdites (sauf ordre) : `git add`, `git commit`, `git push`, `git merge`, `git rebase`
 
+=== English Only — OSS Professional Standard
+
+This is an OSS project (Apache 2.0, groupId `education.cccp`).
+**English only** in all source artifacts:
+* Code, identifiers, comments
+* Gherkin features (`Feature:`, `Scenario:`, `Given/When/Then`)
+* Test names, commit messages
+* No `# language: fr` in `.feature` files. No French Gherkin keywords (`Fonctionnalité`, `Scénario`, `Etant donné`).
+
+Rationale: English is the lingua franca of OSS. French Gherkin blocks external contributors and looks unprofessional.
+
 === Tests
 
 L'agent NE DOIT JAMAIS lancer de tests (`./gradlew test`, etc.) lors de la procedure de fin de session SANS permission explicite de l'utilisateur.

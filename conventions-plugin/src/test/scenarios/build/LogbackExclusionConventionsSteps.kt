@@ -11,7 +11,7 @@ class LogbackExclusionConventionsSteps : En {
     private lateinit var depsResult: BuildResult
 
     init {
-        Given("un projet qui applique la convention d'exclusion logback") {
+        Given("a project applying the logback exclusion convention") {
             testProjectDir = createTempDir("logback-exclusion-test-")
             testProjectDir.resolve("settings.gradle.kts")
                 .writeText("rootProject.name = \"logback-exclusion-test\"")
@@ -31,7 +31,7 @@ class LogbackExclusionConventionsSteps : En {
             )
         }
 
-        Then("la configuration {string} exclut logback-classic") { configName: String ->
+        Then("the {string} configuration excludes logback-classic") { configName: String ->
             depsResult = GradleRunner.create()
                 .withProjectDir(testProjectDir)
                 .withArguments("dependencies", "--configuration", configName)
@@ -42,7 +42,7 @@ class LogbackExclusionConventionsSteps : En {
             }
         }
 
-        Then("la configuration {string} exclut logback-classic sans exclure slf4j") { configName: String ->
+        Then("the {string} configuration excludes logback-classic without excluding slf4j") { configName: String ->
             depsResult = GradleRunner.create()
                 .withProjectDir(testProjectDir)
                 .withArguments("dependencies", "--configuration", configName)
@@ -56,7 +56,7 @@ class LogbackExclusionConventionsSteps : En {
             }
         }
 
-        Then("la configuration {string} n'exclut pas slf4j-api") { configName: String ->
+        Then("the {string} configuration does not exclude slf4j-api") { configName: String ->
             depsResult = GradleRunner.create()
                 .withProjectDir(testProjectDir)
                 .withArguments("dependencies", "--configuration", configName)

@@ -1,15 +1,15 @@
-# language: fr
-Fonctionnalité: Exclusion logback-classic des classpaths de test
-  En tant que développeur de plugin dans le workspace cccp-education
-  Je veux appliquer la convention d'exclusion logback
-  Afin que mes tests n'entrent pas en conflit avec le JRuby embarqué par asciidoctor
+Feature: Exclude logback-classic from test classpaths
 
-  Scénario: Le plugin exclut logback-classic des configurations de test
-    Etant donné un projet qui applique la convention d'exclusion logback
-    Alors la configuration "testRuntimeClasspath" exclut logback-classic sans exclure slf4j
-    Et la configuration "testImplementation" exclut logback-classic sans exclure slf4j
-    Et la configuration "functionalTestRuntimeClasspath" exclut logback-classic sans exclure slf4j
+  As a plugin developer in the cccp-education workspace
+  I want the logback exclusion convention applied
+  So that my tests do not conflict with the JRuby embedded by asciidoctor
 
-  Scénario: Le plugin préserve slf4j-api dans les configurations de test
-    Etant donné un projet qui applique la convention d'exclusion logback
-    Alors la configuration "testImplementation" n'exclut pas slf4j-api
+  Scenario: Plugin excludes logback-classic from test configurations
+    Given a project applying the logback exclusion convention
+    Then the "testRuntimeClasspath" configuration excludes logback-classic without excluding slf4j
+    And the "testImplementation" configuration excludes logback-classic without excluding slf4j
+    And the "functionalTestRuntimeClasspath" configuration excludes logback-classic without excluding slf4j
+
+  Scenario: Plugin preserves slf4j-api in test configurations
+    Given a project applying the logback exclusion convention
+    Then the "testImplementation" configuration does not exclude slf4j-api
