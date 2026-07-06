@@ -68,7 +68,7 @@ class PublishingConventionsPlugin : Plugin<Project> {
 
                 pom.scm(
                     Action { scm: MavenPomScm ->
-                        val cleanUrl = vcsUrl.removePrefix("https://")
+                        val cleanUrl = vcsUrl.removePrefix("https://").removeSuffix(".git")
                         scm.connection.set("scm:git:git://$cleanUrl.git")
                         scm.developerConnection.set("scm:git:ssh://$cleanUrl.git")
                         scm.url.set(vcsUrl)

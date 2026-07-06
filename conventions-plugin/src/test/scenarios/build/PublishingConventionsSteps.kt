@@ -37,6 +37,30 @@ class PublishingConventionsSteps : En {
             """)
         }
 
+        Given("a project applies the publishing plugin with vcsUrl {string}") { vcsUrl: String ->
+            testProjectDir = createTempDir("publishing-test-vcurl-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project-vcs\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java-gradle-plugin")
+                    id("education.cccp.build.publishing")
+                }
+                group = "com.example"
+                version = "1.0.0"
+
+                gradlePlugin {
+                    website.set("https://github.com/cccp-education/sample-gradle")
+                    vcsUrl.set("$vcsUrl")
+                }
+
+                publishingConventions {
+                    publicationType = "PLUGIN"
+                }
+
+                $publicationBlock
+            """)
+        }
+
         Then("the generated POM has developer id {string}") { expectedId: String ->
             generatePom()
             assert(pomContent.contains("<id>$expectedId</id>")) {
@@ -63,6 +87,22 @@ class PublishingConventionsSteps : En {
             val matcher = Regex("<connection>([^<]+)</connection>").find(pomContent)
             assert(matcher != null && matcher.groupValues[1].startsWith(expectedPrefix)) {
                 "Expected SCM connection starting with $expectedPrefix in POM\n$pomContent"
+            }
+        }
+
+        Then("the generated POM has SCM connection {string}") { expected: String ->
+            generatePom()
+            val matcher = Regex("<connection>([^<]+)</connection>").find(pomContent)
+            assert(matcher != null && matcher.groupValues[1] == expected) {
+                "Expected SCM connection exactly '$expected' but got '${matcher?.groupValues?.getOrNull(1)}'\n$pomContent"
+            }
+        }
+
+        Then("the generated POM has SCM developer connection {string}") { expected: String ->
+            generatePom()
+            val matcher = Regex("<developerConnection>([^<]+)</developerConnection>").find(pomContent)
+            assert(matcher != null && matcher.groupValues[1] == expected) {
+                "Expected SCM developer connection exactly '$expected' but got '${matcher?.groupValues?.getOrNull(1)}'\n$pomContent"
             }
         }
 

@@ -21,3 +21,8 @@ Feature: Publishing Conventions
     When relocation group "com.old" and artifact "old-artifact" are configured
     Then the generated POM has relocation group "com.old"
     And the generated POM has relocation artifact "old-artifact"
+
+  Scenario: SCM connection strips trailing .git from vcsUrl to avoid duplication
+    Given a project applies the publishing plugin with vcsUrl "https://github.com/cccp-education/sample-gradle.git"
+    Then the generated POM has SCM connection "scm:git:git://github.com/cccp-education/sample-gradle.git"
+    And the generated POM has SCM developer connection "scm:git:ssh://github.com/cccp-education/sample-gradle.git"
