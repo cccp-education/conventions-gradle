@@ -120,6 +120,13 @@ gradlePlugin {
             implementationClass = "build.CucumberConventionsPlugin"
             tags = listOf("cccp", "conventions", "cucumber", "bdd")
         }
+        register("logbackExclusion") {
+            id = "education.cccp.build.logback-exclusion"
+            displayName = "Logback Exclusion Conventions"
+            description = "Excludes logback-classic from test classpaths to avoid conflicts with asciidoctor JRuby logging stack, while preserving slf4j-api"
+            implementationClass = "build.LogbackExclusionConventionsPlugin"
+            tags = listOf("cccp", "conventions", "logback", "asciidoctor")
+        }
     }
 }
 
