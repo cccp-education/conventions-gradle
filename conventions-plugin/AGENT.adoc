@@ -44,16 +44,18 @@ de build Gradle. TOUT le reste (code, tests, gouvernance, documentation agent) v
 Commandes autorisees (lecture seule) : `git status`, `git diff`, `git log`, `git show`
 Commandes interdites (sauf ordre) : `git add`, `git commit`, `git push`, `git merge`, `git rebase`
 
-=== English Only — OSS Professional Standard
+=== English Only — Code, Gherkin, Commentaires
 
-This is an OSS project (Apache 2.0, groupId `education.cccp`).
-**English only** in all source artifacts:
-* Code, identifiers, comments
-* Gherkin features (`Feature:`, `Scenario:`, `Given/When/Then`)
-* Test names, commit messages
-* No `# language: fr` in `.feature` files. No French Gherkin keywords (`Fonctionnalité`, `Scénario`, `Etant donné`).
+Ce projet est OSS (Apache 2.0, groupId `education.cccp`).
+**English only** dans les artefacts de **code** :
+* Code, identifiants, commentaires
+* Features Gherkin (`Feature:`, `Scenario:`, `Given/When/Then`)
+* Noms de tests, messages de commit
+* Pas de `# language: fr` dans les `.feature` files. Pas de Gherkin français (`Fonctionnalité`, `Scénario`, `Etant donné`).
 
-Rationale: English is the lingua franca of OSS. French Gherkin blocks external contributors and looks unprofessional.
+*Exception* : les documents de gouvernance (`.adoc`) restent en français.
+
+Raison : l'anglais est la lingua franca de l'OSS. Le Gherkin français bloque les contributeurs externes.
 
 === Tests
 
