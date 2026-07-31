@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-07-05 — CNV-7 ✅ TERMINÉ (session 010)
+_Derniere mise a jour_ : 2026-07-31 — CNV-9 ✅ TERMINÉ (session 012)
 
 '''
 
@@ -193,6 +193,78 @@ Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && .
 
 '''
 
+== A FAIRE — CNV-10 : Test Coverage Gaps (TDD rétroactif)
+
+_Gaps de couverture identifiés session 012 — audit complet des 6 plugins + TestDependencies._
+
+*Priorite* : P0 — 0 test unitaire, branches internes non couvertes, feature file désynchronisé
+*Charge estimee* : ~14 pts (~2-3 sessions)
+*Depend de* : CNV-9
+
+=== Gaps par plugin
+
+[cols="1,3,2,2"]
+|===
+| # | Gap | Pts | Impact
+| US-CN-10.1
+| **GradlePluginConventionsPlugin** — `configureBuildCache` non testé, `configureRepositories` non testé, feature file vérifie Java 24 mais le code compile Java 25 (désynchro)
+| 3
+| Tous les boroughs
+
+| US-CN-10.2
+| **PublishingConventionsPlugin** — `publicationType = "LIBRARY"` (fallback website/vcsUrl) non testé
+| 2
+| graphify, api-key-pool
+
+| US-CN-10.3
+| **FunctionalTestConventionsPlugin** — `extendsFrom(testImplementation)` non testé, `additionalDependencies` non testé
+| 2
+| 12+ boroughs
+
+| US-CN-10.4
+| **CucumberConventionsPlugin** — `parallel`, `timeoutMinutes`, `cucumberTestTaskName` configurable, `additionalTasks.features/tags` non testés
+| 3
+| 8+ boroughs
+
+| US-CN-10.5
+| **LintConventionsPlugin** — branche detekt (non-Java-25) jamais exécutée, zéro test unitaire
+| 2
+| bakery
+
+| US-CN-10.6
+| **LogbackExclusionConventionsPlugin** — zéro functional test, seulement 2 scénarios Cucumber
+| 1
+| bakery, codex, document
+
+| US-CN-10.7
+| **TestDependencies** — fallback hardcoded (catalogue absent), `addPlatformBom` exception path non testés
+| 1
+| Tous les boroughs
+|===
+
+=== Problème structurel
+
+*Zéro test unitaire* (`src/test/kotlin/` est vide). Tout repose sur functional + Cucumber
+(testent l'intégration mais pas les branches internes). Baby-step TDD/BDD DDD exige
+les 3 niveaux : unit → functional → cucumber.
+
+=== Critères d'Acceptation
+
+* [ ] `src/test/kotlin/` contient des tests unitaires pour chaque plugin
+* [ ] `configureBuildCache` testé unitairement
+* [ ] `configureRepositories` testé unitairement
+* [ ] Feature file `gradle-plugin-conventions.feature` corrigé Java 24 → 25
+* [ ] `publicationType = "LIBRARY"` testé (functional + cucumber)
+* [ ] `extendsFrom(testImplementation)` testé (functional)
+* [ ] `additionalDependencies` testé (functional)
+* [ ] `parallel`, `timeoutMinutes`, `cucumberTestTaskName` testés (cucumber)
+* [ ] `additionalTasks.features/tags` testés (cucumber)
+* [ ] Branche detekt testée (mock Java version)
+* [ ] `LogbackExclusionConventionsPlugin` a un functional test
+* [ ] `TestDependencies` fallback hardcoded testé
+* [ ] `addPlatformBom` exception path testé
+
+'''
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]
@@ -204,8 +276,11 @@ Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && .
 | CNV-3 | Convention plugin `functional-test` | 5 | ✅ TERMINE
 | CNV-4 | Convention plugin `cucumber` | 6 | ✅ TERMINE
 | CNV-5 | Migration dogfood 3 projets | 10 | ✅ TERMINE
-| CNV-6 | Generalisation 15+ projets | 15 | ✅ TERMINE |
-| CNV-7 | Centralisation deps test (junit + cucumber) | 8 | ✅ TERMINE |
-| PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE |
-| *Total* | | *65* |
+| CNV-6 | Generalisation 15+ projets | 15 | ✅ TERMINE
+| CNV-7 | Centralisation deps test (junit + cucumber) | 8 | ✅ TERMINE
+| CNV-8 | Linter Kotlin + Configuration Cache | 10 | ✅ TERMINE
+| CNV-9 | Publication 0.0.3 Maven Central + Plugin Portal + doc boroughs + bump BOM | 6 | ✅ TERMINE
+| CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | 14 | 🔴 P0
+| PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
+| *Total* | | *95* |
 |===

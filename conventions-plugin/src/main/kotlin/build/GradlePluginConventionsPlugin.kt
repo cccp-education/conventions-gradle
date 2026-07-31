@@ -19,6 +19,7 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         configureJava(project)
         configureKotlin(project)
         configureRepositories(project)
+        configureBuildCache(project)
         configureTestTasks(project)
         configureTestDependencies(project)
     }
@@ -40,6 +41,10 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         project.repositories.mavenLocal()
         project.repositories.mavenCentral()
         project.repositories.gradlePluginPortal()
+    }
+
+    private fun configureBuildCache(project: Project) {
+        project.gradle.startParameter.isBuildCacheEnabled = true
     }
 
     private fun configureTestTasks(project: Project) {

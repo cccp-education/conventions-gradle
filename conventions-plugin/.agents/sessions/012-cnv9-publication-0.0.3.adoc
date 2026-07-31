@@ -1,0 +1,75 @@
+= Session 012 — CNV-9 Publication 0.0.3 Maven Central + Plugin Portal
+:date: 2026-07-31
+:type: dev
+:epic: CNV-9
+:score: 10/10
+:duree: 1 session
+
+== Résumé
+
+Publication de conventions-gradle 0.0.3 (6 plugins) sur Maven Central et Gradle Plugin Portal.
+Documentation de la migration dans les AGENT.adoc des 9 boroughs consommateurs.
+Bump workspace-bom 0.0.12 → 0.0.13 avec conventions-plugin:0.0.3.
+
+== US livrées
+
+=== US-CN-9.1 — Publier 0.0.3 sur Maven Central (2 pts) ✅
+
+- `./gradlew publishAggregationToCentralPortal --no-daemon` → BUILD SUCCESSFUL
+- Bundle `e58930fd-2130-46b0-b6df-5845dc2daed9` uploadé, statut PUBLISHING
+- 6 plugins : gradle-plugin, publishing, functional-test, cucumber, logback-exclusion, lint
+
+=== US-CN-9.2 — Publier 0.0.3 sur Gradle Plugin Portal (1 pt) ✅
+
+- `./gradlew publishPlugins` → BUILD SUCCESSFUL
+- 6 plugins publiés, nouveau `education.cccp.build.cucumber` soumis pour approbation
+- Warning config-cache sur `publishPlugins` (connu, plugin-publish 1.3.0)
+
+=== US-CN-9.3 — Documenter migration dans AGENT.adoc boroughs (2 pts) ✅
+
+9 AGENT.adoc mis à jour avec section "Conventions Plugins (ABIDJAN N0)" :
+
+- bakery-gradle (gold standard) : gradle-plugin + publishing + lint
+- hyperframes-gradle : gradle-plugin + publishing
+- plantuml-gradle : gradle-plugin + publishing + cucumber + functional-test
+- readme-gradle : gradle-plugin + publishing
+- slider-gradle : gradle-plugin + publishing
+- graphify-gradle : publishing seul (library pure)
+- api-key-pool-gradle : publishing seul (library pure)
+- review-gradle : 4 conventions (stub CNV-6 natif)
+- flow-gradle : 4 conventions (stub CNV-6 natif)
+
+Planner et codex n'ont pas d'AGENT.adoc (non applicable).
+
+=== US-CN-9.4 — Bump workspace-bom (1 pt) ✅
+
+- BOM 0.0.12 → 0.0.13
+- `gradle/libs.versions.toml` : ajout `conventions-plugin = "0.0.3"` + library entry
+- `build.gradle.kts` : ajout `api(libs.conventions.plugin)` dans constraints
+- `publishToMavenLocal` SUCCESS
+
+== Fichiers modifiés
+
+- `conventions-plugin/build.gradle.kts` (version 0.0.3, déjà modifié S011)
+- `bakery-gradle/bakery-plugin/AGENT.adoc` (+section conventions)
+- `hyperframes-gradle/hyperframes-plugin/AGENT.adoc` (+section conventions)
+- `plantuml-gradle/plantuml-plugin/AGENT.adoc` (+section conventions)
+- `readme-gradle/readme-plugin/AGENT.adoc` (+section conventions)
+- `slider-gradle/slider-plugin/AGENT.adoc` (+section conventions)
+- `graphify-gradle/graphify-plugin/AGENT.adoc` (+section conventions)
+- `api-key-pool-gradle/api-key-pool-plugin/AGENT.adoc` (+section conventions)
+- `review-gradle/review-plugin/AGENT.adoc` (+section conventions)
+- `flow-gradle/flow-plugin/AGENT.adoc` (+section conventions)
+- `workspace-bom/build.gradle.kts` (version 0.0.13 + conventions constraint)
+- `workspace-bom/gradle/libs.versions.toml` (+conventions-plugin entry)
+
+== Vérifications
+
+- conventions-plugin `compileKotlin` ✅ (UP-TO-DATE)
+- workspace-bom `build -x check` ✅
+- workspace-bom `publishToMavenLocal` ✅
+- Zéro secret, zéro token
+
+== Prochaine session
+
+Session 013 — US-PUB-4 restante (doc consommateurs) + publication BOM 0.0.13 sur Central.

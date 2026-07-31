@@ -1,0 +1,74 @@
+= Session 011 — CNV-8 Linter Kotlin + Configuration Cache
+:type: dev
+:code: CNV-8
+:date: 2026-07-31
+:score: 10/10
+:duree: 1 session
+
+== Résumé
+
+CNV-8 livré en 4 US (10 pts). 6ème convention plugin `education.cccp.build.lint` créé,
+configuration-cache activé par défaut, dogfood bakery-gradle validé, version 0.0.3 publiée
+en Maven Local.
+
+== US-CN-8.1 — LintConventionsPlugin (3 pts) ✅
+
+**Création** : `LintConventionsPlugin.kt` dans `build/`
+- Applique `org.jlleitschuh.gradle.ktlint` (version 12.2.0)
+- `ktlint.version = "1.5.0"` — Kotlin coding style
+- Applique `io.gitlab.arturbosch.detekt` (version 1.23.8) — SAUF sur Java 25
+- `detekt.config.from(rootProject.file("config/detekt/detekt.yml"))` si le fichier existe
+- `check.dependsOn(detekt)` via `afterEvaluate`
+- Enregistré dans `gradlePlugin.plugins {}` (id `education.cccp.build.lint`)
+
+**Dépendances ajoutées** : `org.jlleitschuh.gradle:ktlint-gradle:12.2.0` + `io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8` en `implementation`
+
+**Tests** :
+- Functional (GradleTestKit) : 4/4 PASS (apply, ktlint tasks, detekt task, check dependsOn)
+- Cucumber BDD : 2/2 PASS (ktlint applied, ktlint tasks available)
+- Tests adaptatifs : detekt skip sur Java 25, présent sur Java < 25
+
+**Blocker** : detekt 1.23.8 incompatible avec Java 25 (`IllegalArgumentException: 25.0.3` dans le compilateur Kotlin embarqué). La v2.0.0-alpha.5 n'est pas sur Maven Central. Solution : skip conditionnel avec warning `"detekt 1.23.8 is incompatible with Java 25 — skipped. Upgrade to detekt 2.0+ when available."`
+
+== US-CN-8.2 — Configuration Cache (2 pts) ✅
+
+- `gradle.properties` créé : `org.gradle.configuration-cache=true` + `problems=warn`
+- `GradlePluginConventionsPlugin.configureBuildCache()` : `project.gradle.startParameter.isBuildCacheEnabled = true`
+- Validé : `compileKotlin` stocke le cache (`Configuration cache entry stored.`)
+
+== US-CN-8.3 — Dogfood bakery-gradle (3 pts) ✅
+
+- `bakery-plugin/build.gradle.kts` : conventions 0.0.2 → 0.0.3 + ajout `education.cccp.build.lint`
+- `compileKotlin` : BUILD SUCCESSFUL
+- `ktlintFormat` : tourne, trouve des violations pré-existantes non auto-correctables (legacy bakery)
+- `detekt` : skip sur Java 25 (documenté)
+- Configuration-cache ne casse pas bakery
+
+== US-CN-8.4 — Publication 0.0.3 (2 pts) ✅
+
+- Version bumpée `0.0.2` → `0.0.3` dans `build.gradle.kts`
+- `publishToMavenLocal` SUCCESS
+- Bakery compile avec 0.0.3
+- PRÊT pour publication Maven Central (ne pas publier sans permission)
+
+== Tests
+
+- Functional : 20/20 PASS (+4 lint)
+- Cucumber : 21/21 PASS (+2 lint, -2 detekt retirés car Java 25)
+- compileKotlin : SUCCESS
+
+== Fichiers modifiés
+
+- `src/main/kotlin/build/LintConventionsPlugin.kt` — NOUVEAU (30 lignes)
+- `src/main/kotlin/build/GradlePluginConventionsPlugin.kt` — +configureBuildCache()
+- `build.gradle.kts` — +deps ktlint/detekt, +lint plugin registration, version 0.0.3
+- `gradle.properties` — NOUVEAU (configuration-cache)
+- `src/functionalTest/kotlin/build/LintConventionsFunctionalTest.kt` — NOUVEAU
+- `src/test/scenarios/build/LintConventionsSteps.kt` — NOUVEAU
+- `src/test/resources/features/lint-conventions.feature` — NOUVEAU
+- `bakery-gradle/bakery-plugin/build.gradle.kts` — conventions 0.0.3 + lint plugin
+
+== Prochaine session
+
+CNV-9 — Publication 0.0.3 Maven Central + Plugin Portal (6ème plugin `lint`).
+Ou US-PUB-4 — Documenter la migration dans AGENT.adoc de chaque borough.

@@ -131,3 +131,22 @@ Validation de la chaîne de publication :
 - 5 failures = tests LLM Ollama timeout réseau 30s (préexistants, indépendants de CNV-7)
 
 **Couverture cumulée** : 16/16 Cucumber + 15/15 functional = 31 tests PASS.
+
+== Session 011
+
+**CNV-8 Linter Kotlin + Configuration Cache** — 4 US (10 pts) en baby-step TDD/BDD DDD.
+
+**Functional tests (GradleTestKit)** : +4 tests (total 20/20 PASS)
+- LintConventionsFunctionalTest
+  - `plugin applies without error` : ✅
+  - `plugin registers ktlint tasks` : ✅
+  - `plugin registers detekt task` : ✅ (adaptatif Java 25)
+  - `check task depends on detekt` : ✅ (adaptatif Java 25)
+
+**Cucumber BDD** : +2 scénarios (total 21/21 PASS)
+- `Plugin applies ktlint` : ✅ (1 Then : ktlint plugin applied)
+- `Plugin registers ktlint tasks` : ✅ (1 Then : ktlint tasks available)
+
+**Scénarios detekt retirés** (2) : `Plugin applies ktlint and detekt` et `Plugin registers detekt task` retirés car detekt est skip sur Java 25. Réintroduire quand detekt 2.0+ sera disponible sur Maven Central.
+
+**Couverture cumulée** : 21/21 Cucumber + 20/20 functional = 41 tests PASS.

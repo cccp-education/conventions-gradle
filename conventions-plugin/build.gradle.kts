@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.2"
+version = "0.0.3"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -39,6 +39,8 @@ sourceSets.test {
 
 dependencies {
     compileOnly(gradleApi())
+    implementation("org.jlleitschuh.gradle:ktlint-gradle:12.2.0")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
     implementation(libs.kotlin.gradle.plugin)
 
     testImplementation(platform("education.cccp:workspace-bom:0.0.4"))
@@ -126,6 +128,13 @@ gradlePlugin {
             description = "Excludes logback-classic from test classpaths to avoid conflicts with asciidoctor JRuby logging stack, while preserving slf4j-api"
             implementationClass = "build.LogbackExclusionConventionsPlugin"
             tags = listOf("cccp", "conventions", "logback", "asciidoctor")
+        }
+        register("lint") {
+            id = "education.cccp.build.lint"
+            displayName = "Lint Conventions"
+            description = "Applies ktlint (Kotlin coding style) and detekt (code smells) with check.dependsOn(detekt)"
+            implementationClass = "build.LintConventionsPlugin"
+            tags = listOf("cccp", "conventions", "lint", "ktlint", "detekt")
         }
     }
 }
