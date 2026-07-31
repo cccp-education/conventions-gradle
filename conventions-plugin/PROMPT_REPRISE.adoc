@@ -1,19 +1,20 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 017
+:session: 018
 :date: 2026-07-31
 :epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
 
-Session 016 (2026-07-31) — CNV-12 ✅ TERMINÉ. 3/3 US livrées (8 pts).
-44/44 Cucumber + 23/23 functional = 67 tests PASS.
-7 plugins 0.0.3 sur Maven Local.
-
+Session 017 (2026-07-31) — Maintenance réactive. Aucun bug remonté.
+Session 016 — CNV-12 ✅ TERMINÉ. 3/3 US livrées (8 pts).
 Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
 Borough LIQUIDÉ côté producteur.
 
-== Mission session 017 — Maintenance réactive
+CNV-8 (LintConventionsPlugin + config-cache) était déjà TERMINE (Session 011, 2026-07-31).
+Le PROMPT_REPRISE global session 099 le listait à tort comme "à faire".
+
+== Mission session 018 — Maintenance réactive
 
 Aucun EPIC actif. Le borough est en maintenance réactive uniquement :
 bugs remontés par les boroughs consommateurs.
@@ -22,7 +23,7 @@ bugs remontés par les boroughs consommateurs.
 
 - Vérifier `git status` → constater état clean
 - Vérifier `./gradlew check` → BUILD SUCCESSFUL
-- Mettre à jour PROMPT_REPRISE pour session 018 (même contenu)
+- Mettre à jour PROMPT_REPRISE pour session 019 (même contenu)
 - Fermer la session
 
 === Si bug remonté
