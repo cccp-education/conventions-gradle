@@ -10,14 +10,14 @@ group = "education.cccp.build"
 version = "0.0.2"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
     withSourcesJar()
     withJavadocJar()
 }
 
 kotlin {
-    jvmToolchain(24)
+    jvmToolchain(25)
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }

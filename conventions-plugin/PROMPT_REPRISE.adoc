@@ -1,40 +1,81 @@
-= PROMPT_REPRISE — Conventions
+= PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
 :session: 011
-:date: 2026-07-05
+:date: 2026-07-31
+:epic: CNV-8 — Linter Kotlin + Configuration Cache
+:max-lines: 70
 
-== Session 010 TERMINEE — CNV-7 Centralisation deps test ✅
+== Contexte hérité
 
-**3 US terminées** (8 pts) :
-- US-CN-7.1 : CucumberConventionsPlugin ajoute deps cucumber + workspace-bom platform
-- US-CN-7.2 : GradlePluginConventionsPlugin ajoute deps junit test + workspace-bom platform
-- US-CN-7.3 : Migration plantuml-gradle — bug `junit-platform-params = "6.0.3"` ÉLIMINÉ
+Session 010 (2026-07-05) — CNV-7 ✅ TERMINÉ. TestDependencies.kt DDD helper,
+CucumberConventionsPlugin + GradlePluginConventionsPlugin deps test centralisées,
+migration plantuml (bug 6.0.3 éliminé). 16/16 Cucumber PASS.
 
-**Nouveau helper DDD** : `TestDependencies.kt` (single responsibility = gestion deps test).
-Consommateurs : CucumberConventionsPlugin, GradlePluginConventionsPlugin,
-FunctionalTestConventionsPlugin (refactor).
+CNV-0→CNV-7 + PUB : tous TERMINÉS. Plugin 0.0.2 publié Maven Central + Portal.
 
-**Vérifications** :
-- conventions : cucumberTest 16/16 PASS, functionalTest PASS, publishToMavenLocal SUCCESS
-- plantuml : compileKotlin SUCCESS, :test 956 tests (bug 6.0.3 disparu, 5 failures LLM Ollama préexistantes)
+== Mission session 011 — CNV-8 : Linter Kotlin + Configuration Cache
 
-== Statut global
+=== US-CN-8.1 — Convention plugin `education.cccp.build.lint` (3 pts)
 
-- CNV-0→CNV-7 : ✅ TERMINE
-- PUB : ✅ TERMINE (3/4 US — US-PUB-4 doc reste P2)
+Créer `LintConventionsPlugin.kt` dans `build/` :
+- Applique `org.jlleitschuh.gradle.ktlint` (version 12.2.0)
+- Applique `io.gitlab.arturbosch.detekt` (version 1.23.8)
+- `ktlint { version = "1.5.0" }` — Kotlin coding style
+- `detekt { config.from(rootProject.file("config/detekt/detekt.yml")) }` — code smells
+- `tasks.check { dependsOn(tasks.named("detekt")) }` — detekt runs on check
+- Enregistrer dans `gradlePlugin.plugins {}` (id, displayName, description, implementationClass, tags)
+- TDD : test unitaire vérifiant que les plugins sont appliqués + test fonctionnel GradleTestKit
 
-== Prochaine session (011)
+=== US-CN-8.2 — Activer configuration-cache par défaut (2 pts)
 
-Priorités :
-1. Publication Maven Central v0.0.2 — CNV-7 = breaking change pour consommateurs (bump version obligatoire)
-2. US-PUB-4 (P2) : Documenter la migration CNV-6/CNV-7 dans AGENT.adoc de chaque borough consommateur
-3. MEM-2 (P1) : Implémenter pipeline-contracts dans workspace-bom (code pas créé, cadré seulement)
-4. DOC-8.1 (P2) : releaseNotesGenerate dans document-gradle (post MEM-2)
+Dans `GradlePluginConventionsPlugin.kt` :
+- Ajouter `project.gradle.startParameter.isBuildCacheEnabled = true` (si pas déjà)
+- Ajouter dans `gradle.properties` du plugin : `org.gradle.configuration-cache=true`
+- Ajouter `org.gradle.configuration-cache.problems=warn`
+- Documenter que les boroughs avec Testcontainers/tâches dynamiques peuvent override à `false`
 
-== Règles absolues (rappel)
+=== US-CN-8.3 — Dogfood bakery-gradle (3 pts)
 
-. COMMITS/GIT — INTERDICTION FORMELLE sans permission
-. PUBLISH — INTERDICTION FORMELLE sans permission
-. PUBLISH TO MAVEN LOCAL — OBLIGATOIRE après modification du code source du plugin
-. PROCEDURE DE FIN DE SESSION — 6 ETAPES OBLIGATOIRES
-. HOOK OUVERTURE — Checklist SESSION_CHECKLIST.adoc obligatoire
-. ZERO secret/token/api key en dur
+- Appliquer `id("education.cccp.build.lint") version "0.0.3"` dans bakery-plugin/build.gradle.kts
+- `./gradlew detekt` → corriger les violations (ou générer baseline)
+- `./gradlew ktlintFormat` → formater
+- `./gradlew check` → BUILD SUCCESSFUL (detekt passe)
+- Valider que configuration-cache=true ne casse pas bakery
+
+=== US-CN-8.4 — Publication 0.0.3 (2 pts)
+
+- Bump version `0.0.2` → `0.0.3` dans build.gradle.kts
+- `./gradlew publishToMavenLocal`
+- Vérifier que bakery compile avec 0.0.3
+- PRÊT pour publication Maven Central (ne pas publier sans permission)
+
+== Ordre d'exécution
+
+. `git status` → constater les bumps non commités
+. Commiter les bumps propres d'abord (séparer le bruit du signal)
+. US-CN-8.1 : LintConventionsPlugin (TDD : test → code → refacto)
+. US-CN-8.2 : configuration-cache dans GradlePluginConventionsPlugin
+. `./gradlew publishToMavenLocal` (0.0.3-SNAPSHOT ou 0.0.3)
+. US-CN-8.3 : Dogfood bakery-gradle
+. US-CN-8.4 : Bump version finale + publishToMavenLocal
+
+== Rappels
+
+- Racine de travail : `conventions-plugin/`
+- `./gradlew publishToMavenLocal` OBLIGATOIRE après modif code
+- 4 plugins publiés : gradle-plugin, publishing, functional-test, cucumber, logback-exclusion
+- Version publiée : 0.0.2 (Maven Central bundle 72a98761)
+- BOM : workspace-bom:0.0.4 (à bumper → 0.0.11)
+- Java 25, Kotlin 2.3.20, Gradle 9.6.1
+- Baby-step DDD/TDD/BDD : 1 fichier à la fois, compile entre chaque étape
+- Zéro subagent, zéro parallélisation
+
+== Contexte global — Pourquoi CNV-8 est P0
+
+Les 3 concerns transverses du BACKLOG global :
+. ~~Toolchain JDK~~ → résorbé session 095 (jvmToolchain(25) dans GradlePluginConventionsPlugin)
+. **Linter Kotlin** → 0 borough sur 23 a ktlint/detekt. Qualité non uniforme.
+. **Configuration cache** → `false` dans 9 boroughs. -30 à 50% sur builds incrémentaux.
+
+CNV-8 est le dernier multiplicateur de qualité manquant. Après lui, conventions-gradle
+couvre TOUS les patterns de build cross-borough : plugin structure, publishing, tests,
+cucumber, logback, linter, config cache. Le socle N0 est complet.

@@ -25,15 +25,15 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
 
     private fun configureJava(project: Project) {
         val java = project.extensions.getByType(JavaPluginExtension::class.java)
-        java.sourceCompatibility = JavaVersion.VERSION_24
-        java.targetCompatibility = JavaVersion.VERSION_24
+        java.sourceCompatibility = JavaVersion.VERSION_25
+        java.targetCompatibility = JavaVersion.VERSION_25
         java.withSourcesJar()
         java.withJavadocJar()
     }
 
     private fun configureKotlin(project: Project) {
         val kotlinExt = project.extensions.getByType(KotlinJvmProjectExtension::class.java)
-        kotlinExt.jvmToolchain(24)
+        kotlinExt.jvmToolchain(25)
     }
 
     private fun configureRepositories(project: Project) {
