@@ -2,10 +2,13 @@
 
 == Completed
 
-- PUB : Publication Maven Central (nmcp) + Gradle Plugin Portal — 4 plugins v0.0.1 (session 008)
-- CNV-6 : 4 bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name)
+- CNV-0→CNV-10 + PUB : tous TERMINÉS (sessions 000→014)
+- 6 plugins 0.0.3 sur Maven Central + Gradle Plugin Portal
+- BOM 0.0.13 sur Maven Central
+- 9 AGENT.adoc boroughs documentés
+- 32 Cucumber + 23 functional = 55 tests PASS
 
 == Restant
 
-- US-PUB-4 : Documenter la migration dans AGENT.adoc de chaque borough (P2)
-- CNV-6 Gen : Migrer 15 boroughs vers les conventions plugins (P2)
+- Rien. Borough LIQUIDÉ côté producteur.
+- Maintenance réactive uniquement (bugs remontés par les boroughs consommateurs).

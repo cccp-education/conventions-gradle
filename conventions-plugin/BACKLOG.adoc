@@ -280,7 +280,7 @@ les 3 niveaux : unit → functional → cucumber.
 | CNV-7 | Centralisation deps test (junit + cucumber) | 8 | ✅ TERMINE
 | CNV-8 | Linter Kotlin + Configuration Cache | 10 | ✅ TERMINE
 | CNV-9 | Publication 0.0.3 Maven Central + Plugin Portal + doc boroughs + bump BOM | 6 | ✅ TERMINE
-| CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | 14 | 🔴 P0
+| CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | 14 | ✅ TERMINE
 | PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
 | *Total* | | *95* |
 |===

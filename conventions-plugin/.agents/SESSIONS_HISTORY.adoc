@@ -381,3 +381,39 @@ Conventions-gradle est maintenant "liquidable" côté producteur.
 - Commit `0b0ecf2` + push → origin/main
 
 **CNV-9 TERMINE** — 6 plugins 0.0.3 sur Central + Portal, 9 AGENT.adoc documentés, BOM 0.0.13 sur Central. PUB 4/4 US. Prochaine session : CNV-10 Test Coverage Gaps.
+
+== Session 014 (2026-07-31) — CNV-10 Test Coverage Gaps
+
+**Baby-step TDD/BDD DDD** — 7 US (14 pts) en RED → GREEN → REFACTOR → VERIFY.
+
+**US-CN-10.1** (3 pts) — GradlePluginConventionsPlugin :
+- Feature file Java 24 → 25 corrigé
+- Scénarios `Plugin configures repositories` + `Plugin enables build cache`
+- 22/22 Cucumber PASS (+2)
+
+**US-CN-10.2** (2 pts) — PublishingConventionsPlugin :
+- Scénario `Publishing plugin uses default website and vcsUrl for LIBRARY type`
+- 24/24 Cucumber PASS (+1)
+
+**US-CN-10.3** (2 pts) — FunctionalTestConventionsPlugin :
+- Scénarios `Plugin extends functionalTest from testImplementation` + `Plugin supports additional dependencies`
+- 26/26 Cucumber PASS (+2)
+
+**US-CN-10.4** (3 pts) — CucumberConventionsPlugin :
+- Scénarios `parallel`, `timeout`, `custom task name`, `additional tasks with features and tags`
+- 30/30 Cucumber PASS (+4)
+
+**US-CN-10.5** (2 pts) — LintConventionsPlugin :
+- Scénario `Plugin handles detekt conditionally based on Java version`
+- 32/32 Cucumber PASS (+1)
+
+**US-CN-10.6** (1 pt) — LogbackExclusionConventionsPlugin :
+- Functional test `LogbackExclusionConventionsFunctionalTest` (NOUVEAU, 3 tests)
+- 23/23 functional PASS (+3)
+
+**US-CN-10.7** (1 pt) — TestDependencies :
+- Scénario `Plugin adds junit test dependencies without version catalog`
+- 32/32 Cucumber PASS (+1)
+
+**CNV-10 TERMINE** — 7/7 gaps couverts. 32 Cucumber + 23 functional = 55 tests PASS.
+Zéro régression. Tous les EPICs CNV-0→CNV-10 + PUB TERMINÉS. Borough LIQUIDÉ.
