@@ -6,9 +6,9 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-07-31
-_session terminee_ : 014
-_session en cours_ : 015 — À définir
-_Prochaine session_ : 016 — À définir
+_session terminee_ : 016
+_session en cours_ : 017 — Maintenance réactive (borough liquidé)
+_Prochaine session_ : 018 — Maintenance réactive
 
 '''
 
@@ -54,6 +54,10 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
   | 010 | 2026-07-05 | dev | CNV-7 Centralisation deps test — TestDependencies.kt (DDD helper) + CucumberConventionsPlugin deps cucumber + GradlePluginConventionsPlugin deps junit + migration plantuml (bug 6.0.3 éliminé). 16/16 Cucumber PASS, publishToMavenLocal SUCCESS. | 10/10
   | 011 | 2026-07-31 | dev | CNV-8 Linter Kotlin + Configuration Cache — LintConventionsPlugin (ktlint + detekt conditionnel Java 25), configuration-cache activé par défaut, dogfood bakery-gradle, version 0.0.3 Maven Local. 20/20 functional + 21/21 Cucumber PASS. | 10/10
   | 012 | 2026-07-31 | dev | CNV-9 Publication 0.0.3 — Maven Central (bundle e58930fd) + Gradle Plugin Portal (6 plugins). 9 AGENT.adoc boroughs documentés avec section conventions. BOM 0.0.13 bumpé avec conventions-plugin:0.0.3. | 10/10
+  | 013 | 2026-07-31 | dev | CNV-9 Finalisation — Vérification cohérence 9 AGENT.adoc + publication BOM 0.0.13 Central + commit workspace-bom. Zéro changement code source. | 10/10
+  | 014 | 2026-07-31 | dev | CNV-10 Test Coverage Gaps — 7/7 gaps couverts (14 pts). 32/32 Cucumber + 23/23 functional = 55 tests PASS. | 10/10
+  | 015 | 2026-07-31 | dev | CNV-11 GradlePluginConventionsExtension + Kover — Extension 3 props + configureTestTasks enrichi + KoverConventionsPlugin. 40/40 Cucumber + 23/23 functional = 63 tests PASS. Dogfood bakery-gradle. | 10/10
+  | 016 | 2026-07-31 | dev | CNV-12 Version alignment — Bump fallbacks (kotlin-test-junit5 2.4.10, BOM 0.0.13) + fixAnnotationsConflict + publicationType default PLUGIN. 44/44 Cucumber + 23/23 functional = 67 tests PASS. Dogfood graphify + api-key-pool. | 10/10
   |===
 
 '''
@@ -73,6 +77,8 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
 | CNV-8 | Linter Kotlin + Configuration Cache — LintConventionsPlugin (ktlint + detekt conditionnel Java 25) + config-cache par défaut | ✅ TERMINE | P0
 | CNV-9 | Publication 0.0.3 Maven Central + Plugin Portal + doc boroughs + bump BOM | ✅ TERMINE | P0
 | CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | ✅ TERMINE | P0
+| CNV-11 | GradlePluginConventionsExtension — JVM options + Kover (vision Famille 1 + 7) | ✅ TERMINE | P0
+| CNV-12 | Version alignment — fallbacks bump + BOM + annotations hack + publicationType (vision Famille 6 + 8) | ✅ TERMINE | P0
 | PUB | Publication Gradle Plugin Portal + Maven Central | ✅ TERMINE (4/4 US) | P1
 |===
 

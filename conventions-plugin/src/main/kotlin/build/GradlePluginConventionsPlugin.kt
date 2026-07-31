@@ -16,12 +16,18 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         project.pluginManager.apply("maven-publish")
         project.pluginManager.apply("org.jetbrains.kotlin.jvm")
 
+        val extension = project.extensions.create(
+            "gradlePluginConventions",
+            GradlePluginConventionsExtension::class.java
+        )
+
         configureJava(project)
         configureKotlin(project)
         configureRepositories(project)
         configureBuildCache(project)
-        configureTestTasks(project)
+        configureTestTasks(project, extension)
         configureTestDependencies(project)
+        configureAnnotationsConflict(project, extension)
     }
 
     private fun configureJava(project: Project) {
@@ -47,7 +53,7 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         project.gradle.startParameter.isBuildCacheEnabled = true
     }
 
-    private fun configureTestTasks(project: Project) {
+    private fun configureTestTasks(project: Project, extension: GradlePluginConventionsExtension) {
         project.tasks.withType(Test::class.java).configureEach(
             Action { test ->
                 test.useJUnitPlatform()
@@ -61,6 +67,15 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
                         logging.showStandardStreams = true
                     }
                 )
+                if (extension.enableDynamicAgentLoading) {
+                    test.jvmArgs("-XX:+EnableDynamicAgentLoading")
+                }
+                extension.maxHeapSize?.let { heap ->
+                    test.maxHeapSize = heap
+                }
+                if (extension.parallelExecution) {
+                    test.systemProperty("junit.jupiter.execution.parallel.enabled", "true")
+                }
             }
         )
     }
@@ -71,6 +86,19 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
             TestDependencies.addPlatformBom(project, "testImplementation")
             TestDependencies.addPlatformBom(project, "testRuntimeOnly")
             TestDependencies.addJunitDeps(project, "testImplementation", "testRuntimeOnly")
+        }
+    }
+
+    // CNV-12.2 — fixAnnotationsConflict (Famille 6 CODE_REVIEW_GLOBALE)
+    private fun configureAnnotationsConflict(project: Project, extension: GradlePluginConventionsExtension) {
+        if (extension.fixAnnotationsConflict) {
+            project.buildscript.configurations.all { config ->
+                config.resolutionStrategy.eachDependency { details ->
+                    if (details.requested.group == "org.jetbrains" && details.requested.name == "annotations") {
+                        details.useVersion("26.0.2-1")
+                    }
+                }
+            }
         }
     }
 }

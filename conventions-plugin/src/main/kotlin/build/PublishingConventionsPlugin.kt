@@ -16,7 +16,7 @@ import org.gradle.api.publish.maven.MavenPomRelocation
 import javax.inject.Inject
 
 open class PublishingConventionsExtension @Inject constructor() {
-    var publicationType: String = "LIBRARY"
+    var publicationType: String = "PLUGIN"
     var relocationGroupId: String? = null
     var relocationArtifactId: String? = null
 }

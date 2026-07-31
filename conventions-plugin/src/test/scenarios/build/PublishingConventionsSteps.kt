@@ -195,6 +195,27 @@ class PublishingConventionsSteps : En {
                 "Expected SCM url '$expectedScmUrl' but got '$scmUrl'\n$pomContent"
             }
         }
+
+        // ── CNV-12.3 — publicationType default PLUGIN ────────────────────────
+        Given("a project applies the publishing plugin with default publicationType") {
+            testProjectDir = createTempDir("publishing-default-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project-default\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java-gradle-plugin")
+                    id("education.cccp.build.publishing")
+                }
+                group = "com.example"
+                version = "1.0.0"
+
+                gradlePlugin {
+                    website.set("https://github.com/cccp-education/sample-gradle")
+                    vcsUrl.set("https://github.com/cccp-education/sample-gradle.git")
+                }
+
+                $publicationBlock
+            """)
+        }
     }
 
     private fun generatePom() {

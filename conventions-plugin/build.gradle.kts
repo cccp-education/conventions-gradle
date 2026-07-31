@@ -41,6 +41,7 @@ dependencies {
     compileOnly(gradleApi())
     implementation("org.jlleitschuh.gradle:ktlint-gradle:12.2.0")
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
+    implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.9.8")
     implementation(libs.kotlin.gradle.plugin)
 
     testImplementation(platform("education.cccp:workspace-bom:0.0.4"))
@@ -135,6 +136,13 @@ gradlePlugin {
             description = "Applies ktlint (Kotlin coding style) and detekt (code smells) with check.dependsOn(detekt)"
             implementationClass = "build.LintConventionsPlugin"
             tags = listOf("cccp", "conventions", "lint", "ktlint", "detekt")
+        }
+        register("kover") {
+            id = "education.cccp.build.kover"
+            displayName = "Kover Conventions"
+            description = "Applies Kover code coverage with configurable threshold, includedSourceSets (main, functionalTest), and HTML/XML reports on check"
+            implementationClass = "build.KoverConventionsPlugin"
+            tags = listOf("cccp", "conventions", "kover", "coverage")
         }
     }
 }

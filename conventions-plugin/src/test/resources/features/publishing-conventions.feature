@@ -32,3 +32,9 @@ Feature: Publishing Conventions
     Given a project applies the publishing plugin with publicationType LIBRARY
     Then the generated POM has url "https://github.com/cccp-education"
     And the generated POM has SCM url "https://github.com/cccp-education"
+
+  # CNV-12.3 — publicationType default is PLUGIN
+  Scenario: Publishing plugin default publicationType is PLUGIN
+    Given a project applies the publishing plugin with default publicationType
+    Then the generated POM has url "https://github.com/cccp-education/sample-gradle"
+    And the generated POM has SCM url "https://github.com/cccp-education/sample-gradle.git"

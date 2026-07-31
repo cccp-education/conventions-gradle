@@ -2,13 +2,13 @@
 
 == Completed
 
-- CNV-0→CNV-10 + PUB : tous TERMINÉS (sessions 000→014)
-- 6 plugins 0.0.3 sur Maven Central + Gradle Plugin Portal
+- CNV-0→CNV-12 + PUB : tous TERMINÉS (sessions 000→016)
+- 7 plugins 0.0.3 sur Maven Central + Gradle Plugin Portal
 - BOM 0.0.13 sur Maven Central
 - 9 AGENT.adoc boroughs documentés
-- 32 Cucumber + 23 functional = 55 tests PASS
+- 44 Cucumber + 23 functional = 67 tests PASS
+- Borough LIQUIDÉ côté producteur
 
 == Restant
 
-- Rien. Borough LIQUIDÉ côté producteur.
-- Maintenance réactive uniquement (bugs remontés par les boroughs consommateurs).
+- Rien. Maintenance réactive uniquement (bugs remontés par les boroughs consommateurs).

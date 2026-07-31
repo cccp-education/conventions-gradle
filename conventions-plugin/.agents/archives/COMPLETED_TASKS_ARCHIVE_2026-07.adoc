@@ -99,3 +99,45 @@
 *US-CN-9.6* (1 pt) — Commit workspace-bom (Kotlin 2.3.20 → 2.4.10, 7 catalogues contrats N0)
 
 *EPIC* : CNV-9 + PUB ✅ TERMINÉS
+
+=== Session 014 (2026-07-31) — CNV-10 Test Coverage Gaps
+
+*Tâche* : CNV-10 Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test)
+*Statut* : ✅ TERMINÉ (7 US, 14 pts)
+*Résultat* : 32/32 Cucumber + 23/23 functional = 55 tests PASS
+
+*US-CN-10.1* (3 pts) — GradlePluginConventionsPlugin (repositories, buildCache, Java 25)
+*US-CN-10.2* (2 pts) — PublishingConventionsPlugin (LIBRARY defaults)
+*US-CN-10.3* (2 pts) — FunctionalTestConventionsPlugin (extendsFrom, additionalDependencies)
+*US-CN-10.4* (3 pts) — CucumberConventionsPlugin (parallel, timeout, custom name, additionalTasks)
+*US-CN-10.5* (2 pts) — LintConventionsPlugin (detekt conditionnel Java 25)
+*US-CN-10.6* (1 pt) — LogbackExclusionConventionsPlugin (functional test)
+*US-CN-10.7* (1 pt) — TestDependencies (fallback no catalog)
+
+*EPIC* : CNV-10 ✅ TERMINÉ
+
+=== Session 015 (2026-07-31) — CNV-11 GradlePluginConventionsExtension + Kover
+
+*Tâche* : CNV-11 GradlePluginConventionsExtension — JVM options + Kover (vision Famille 1 + 7)
+*Statut* : ✅ TERMINÉ (3 US, 10 pts)
+*Résultat* : 40/40 Cucumber + 23/23 functional = 63 tests PASS. 7 plugins 0.0.3 Maven Local.
+
+*US-CN-11.1* (3 pts) — GradlePluginConventionsExtension (enableDynamicAgentLoading, maxHeapSize, parallelExecution)
+*US-CN-11.2* (3 pts) — configureTestTasks enrichi (jvmArgs, maxHeapSize, parallel)
+*US-CN-11.3* (4 pts) — KoverConventionsPlugin (7ème plugin, extension koverConventions)
+
+*EPIC* : CNV-11 ✅ TERMINÉ
+
+=== Session 016 (2026-07-31) — CNV-12 Version alignment
+
+*Tâche* : CNV-12 Version alignment — fallbacks bump + BOM + annotations hack + publicationType
+*Statut* : ✅ TERMINÉ (3 US, 8 pts)
+*Résultat* : 44/44 Cucumber + 23/23 functional = 67 tests PASS. Borough LIQUIDÉ.
+
+*US-CN-12.1* (2 pts) — Bump fallbacks (kotlin-test-junit5 2.4.10, BOM 0.0.13)
+*US-CN-12.2* (3 pts) — fixAnnotationsConflict dans GradlePluginConventionsExtension
+*US-CN-12.3* (3 pts) — publicationType default PLUGIN
+
+*Dogfood* : graphify + api-key-pool explicitent publicationType = "LIBRARY"
+
+*EPIC* : CNV-12 ✅ TERMINÉ. Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).

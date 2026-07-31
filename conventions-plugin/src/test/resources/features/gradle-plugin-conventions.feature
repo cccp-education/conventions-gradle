@@ -47,3 +47,49 @@ Feature: Gradle Plugin Conventions
   Scenario: Plugin adds junit test dependencies without version catalog
     Given a project applies the conventions plugin without version catalog
     Then the testImplementation configuration contains junit-jupiter from fallback
+
+  # CNV-11.1 — GradlePluginConventionsExtension defaults
+  Scenario: Extension has default values
+    Given a project applies the conventions plugin
+    Then the gradlePluginConventions extension has enableDynamicAgentLoading default true
+    And the gradlePluginConventions extension has maxHeapSize default null
+    And the gradlePluginConventions extension has parallelExecution default false
+
+  # CNV-11.1 — GradlePluginConventionsExtension override
+  Scenario: Extension values can be overridden via DSL
+    Given a project applies the conventions plugin with custom extension values
+    Then the gradlePluginConventions extension has enableDynamicAgentLoading set to false
+    And the gradlePluginConventions extension has maxHeapSize set to "2g"
+    And the gradlePluginConventions extension has parallelExecution set to true
+
+  # CNV-11.2 — configureTestTasks enriched with JVM options
+  Scenario: Test tasks receive jvmArgs when enableDynamicAgentLoading is true
+    Given a project applies the conventions plugin
+    Then the build succeeds with default extension
+
+  Scenario: Test tasks do not receive jvmArgs when enableDynamicAgentLoading is false
+    Given a project applies the conventions plugin with enableDynamicAgentLoading false
+    Then the build succeeds with enableDynamicAgentLoading false
+
+  Scenario: Test tasks receive maxHeapSize when configured
+    Given a project applies the conventions plugin with maxHeapSize "4g"
+    Then the build succeeds with maxHeapSize "4g"
+
+  Scenario: Test tasks receive parallel execution system property when enabled
+    Given a project applies the conventions plugin with parallelExecution true
+    Then the build succeeds with parallelExecution true
+
+  # CNV-12.1 — Bump fallbacks (kotlin-test-junit5 2.4.10, BOM 0.0.13)
+  Scenario: Fallback versions are up-to-date
+    Given a project applies the conventions plugin without version catalog
+    Then the testImplementation configuration contains workspace-bom version "0.0.13"
+    And the testImplementation configuration contains kotlin-test-junit5 version "2.4.10"
+
+  # CNV-12.2 — fixAnnotationsConflict
+  Scenario: Extension has fixAnnotationsConflict default false
+    Given a project applies the conventions plugin
+    Then the gradlePluginConventions extension has fixAnnotationsConflict default false
+
+  Scenario: fixAnnotationsConflict can be enabled via DSL
+    Given a project applies the conventions plugin with fixAnnotationsConflict true
+    Then the build succeeds with fixAnnotationsConflict true

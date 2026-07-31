@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-07-31 — CNV-9 ✅ TERMINÉ (session 013), PUB 4/4 US
+_Derniere mise a jour_ : 2026-07-31 — CNV-12 ✅ TERMINÉ (session 016), borough LIQUIDÉ
 
 '''
 
@@ -265,6 +265,151 @@ les 3 niveaux : unit → functional → cucumber.
 * [ ] `addPlatformBom` exception path testé
 
 '''
+== A FAIRE — CNV-11 : GradlePluginConventionsExtension — JVM options + Kover
+
+_Alignement sur la vision fondatrice CODE_REVIEW_GLOBALE (Famille 1 + Famille 7)._
+
+*Priorite* : P0 — 4 boroughs dupliquent encore `jvmArgs("-XX:+EnableDynamicAgentLoading")` et `maxHeapSize`, 6 boroughs dupliquent leur config Kover
+*Charge estimee* : ~10 pts (~2 sessions)
+*Depend de* : CNV-10
+*Statut* : ✅ TERMINE (session 015, 2026-07-31)
+
+=== Contexte
+
+La CODE_REVIEW_GLOBALE (session 000) prévoyait 3 options configurables dans
+`GradlePluginConventionsPlugin` :
+- `enableDynamicAgentLoading` (default true) — utilisé par bakery, plantuml, codebase, capsule
+- `maxHeapSize` (default null) — utilisé par codebase, plantuml
+- `parallelExecution` (default false) — utilisé par codebase
+
+Et 2 options Kover :
+- `koverEnabled` (default false) — utilisé par codebase, codex, bakery, plantuml, capsule, dashboard
+- `koverThreshold` (default null)
+
+**Aucune n'a été implémentée.** Les boroughs dupliquent encore ces ~15 lignes chacun.
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Statut
+| US-CN-11.1
+| **GradlePluginConventionsExtension** — Créer l'extension `gradlePluginConventions`
+  avec `enableDynamicAgentLoading` (default true), `maxHeapSize` (default null),
+  `parallelExecution` (default false). TDD : Cucumber scénario vérifiant les
+  defaults + override.
+| 3
+| ✅ Sess. 015
+
+| US-CN-11.2
+| **configureTestTasks enrichi** — Appliquer `jvmArgs("-XX:+EnableDynamicAgentLoading")`
+  si `enableDynamicAgentLoading = true`, `maxHeapSize` si non-null,
+  `systemProperty("junit.jupiter.execution.parallel.enabled", "true")` si
+  `parallelExecution = true`. TDD : Cucumber scénarios par option.
+| 3
+| ✅ Sess. 015
+
+| US-CN-11.3
+| **KoverConventionsPlugin** — Nouveau plugin `education.cccp.build.kover` :
+  applique `org.jetbrains.kotlinx.kover`, configure `sources { includedSourceSets.addAll("main", "functionalTest") }`,
+  `reports { total { xml { onCheck = true }; html { onCheck = true } } }`.
+  Extension `koverConventions` : `enabled` (default false), `threshold` (default null).
+  TDD : Cucumber + functional.
+| 4
+| ✅ Sess. 015
+|===
+
+=== Critères d'Acceptation
+
+* [ ] Extension `gradlePluginConventions` créée avec 3 propriétés
+* [ ] `enableDynamicAgentLoading` applique `jvmArgs` sur les tasks Test
+* [ ] `maxHeapSize` applique `maxHeapSize` sur les tasks Test
+* [ ] `parallelExecution` applique la system property JUnit
+* [ ] Plugin `education.cccp.build.kover` enregistré dans `gradlePlugin {}`
+* [ ] Kover configuré avec `includedSourceSets` + `reports`
+* [ ] Extension `koverConventions` avec `enabled` + `threshold`
+* [ ] 3 scénarios Cucumber minimum (JVM options + Kover)
+* [ ] 2 functional tests minimum (Kover)
+* [ ] `publishToMavenLocal` SUCCESS
+* [ ] Dogfood sur bakery-gradle (supprime `jvmArgs` + `kover` locaux)
+
+'''
+== ✅ TERMINE — CNV-12 : Version alignment — fallbacks bump + BOM + annotations hack + publicationType
+
+_Alignement sur la vision fondatrice CODE_REVIEW_GLOBALE (Famille 6 + 8)._
+
+*Priorite* : P0 — fallbacks périmés (Kotlin 2.3.20 vs 2.4.10, BOM 0.0.4 vs 0.0.13), annotations hack non intégré
+*Charge estimee* : ~8 pts (~1-2 sessions)
+*Depend de* : CNV-11
+*Statut* : ✅ TERMINE (session 016, 2026-07-31)
+
+=== Contexte
+
+**Problème 1 — Fallbacks périmés** :
+- `TestDependencies.JUNIT_FALLBACKS["kotlin-test-junit5"]` = `2.3.20` → devrait être `2.4.10`
+- `TestDependencies.WORKSPACE_BOM_COORDINATES` = `0.0.4` → devrait être `0.0.13`
+- Un borough sans catalogue `libs` prend des versions obsolètes.
+
+**Problème 2 — Famille 6 (buildscript resolutionStrategy annotations)** :
+5 boroughs (codex, plantuml, slider, readme, capsule) dupliquent :
+```kotlin
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            force("org.jetbrains:annotations:26.0.2-1")
+        }
+    }
+}
+```
+La CODE_REVIEW_GLOBALE prévoyait `fixAnnotationsConflict` (default false) dans `gradle-plugin`.
+
+**Problème 3 — PublishingConventionsPlugin** :
+`publicationType` par défaut = `"LIBRARY"` mais 10+ boroughs sont des plugins Gradle.
+Le défaut devrait être `"PLUGIN"` (cas majoritaire) ou auto-détecté.
+
+=== User Stories
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Statut
+| US-CN-12.1
+| **Bump fallbacks** — `kotlin-test-junit5` 2.3.20 → 2.4.10,
+  `WORKSPACE_BOM_COORDINATES` 0.0.4 → 0.0.13.
+  TDD : Cucumber scénario vérifiant les versions dans le fallback.
+| 2
+| ✅ Sess. 016
+
+| US-CN-12.2
+| **fixAnnotationsConflict** — Ajouter `fixAnnotationsConflict` (default false)
+  dans `GradlePluginConventionsExtension`. Si true, appliquer
+  `resolutionStrategy { force("org.jetbrains:annotations:26.0.2-1") }`
+  dans `buildscript.configurations.all`.
+  TDD : Cucumber scénario.
+| 3
+| ✅ Sess. 016
+
+| US-CN-12.3
+| **publicationType default → PLUGIN** — Changer le défaut de `"LIBRARY"` à
+  `"PLUGIN"` (cas majoritaire : 10+ boroughs sont des plugins Gradle).
+  Mettre à jour les 2 boroughs library pure (graphify, api-key-pool)
+  pour explicitement déclarer `publicationType = "LIBRARY"`.
+  TDD : Cucumber scénario vérifiant le défaut PLUGIN.
+| 3
+| ✅ Sess. 016
+|===
+
+=== Critères d'Acceptation
+
+* [x] `kotlin-test-junit5` fallback = `2.4.10`
+* [x] `WORKSPACE_BOM_COORDINATES` = `0.0.13`
+* [x] `fixAnnotationsConflict` dans l'extension, appliqué si true
+* [x] `publicationType` défaut = `"PLUGIN"`
+* [x] graphify + api-key-pool explicitent `publicationType = "LIBRARY"`
+* [x] 3 scénarios Cucumber minimum
+* [x] `publishToMavenLocal` SUCCESS
+* [x] `./gradlew check` VERT (zéro régression)
+
+'''
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]
@@ -281,6 +426,8 @@ les 3 niveaux : unit → functional → cucumber.
 | CNV-8 | Linter Kotlin + Configuration Cache | 10 | ✅ TERMINE
 | CNV-9 | Publication 0.0.3 Maven Central + Plugin Portal + doc boroughs + bump BOM | 6 | ✅ TERMINE
 | CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | 14 | ✅ TERMINE
+| CNV-11 | GradlePluginConventionsExtension — JVM options + Kover (vision Famille 1 + 7) | 10 | ✅ TERMINE
+| CNV-12 | Version alignment — fallbacks bump + BOM publicationType + annotations hack (vision Famille 6 + 8) | 8 | ✅ TERMINE
 | PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
-| *Total* | | *95* |
+| *Total* | | *113* |
 |===

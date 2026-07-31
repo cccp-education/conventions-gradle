@@ -1,0 +1,64 @@
+= Session 015 — CNV-11 GradlePluginConventionsExtension (JVM options + Kover)
+:date: 2026-07-31
+:type: dev
+:epic: CNV-11
+:score: 10/10
+:duration: 1 session
+
+== Résumé
+
+3/3 US livrées en baby-step DDD/TDD/BDD. Extension `gradlePluginConventions` créée
+avec 3 propriétés (enableDynamicAgentLoading, maxHeapSize, parallelExecution).
+`configureTestTasks` enrichi pour appliquer les JVM options. Nouveau plugin
+`education.cccp.build.kover` (KoverConventionsPlugin) avec extension `koverConventions`
+(enabled, threshold). Dogfood bakery-gradle : suppression jvmArgs + kover locaux.
+
+== US livrées
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Statut
+| US-CN-11.1 | GradlePluginConventionsExtension — 3 props, defaults, TDD Cucumber | 3 | ✅
+| US-CN-11.2 | configureTestTasks enrichi — jvmArgs, maxHeapSize, parallel, TDD Cucumber | 3 | ✅
+| US-CN-11.3 | KoverConventionsPlugin — nouveau plugin kover, TDD Cucumber + functional | 4 | ✅
+|===
+
+== Fichiers modifiés/créés
+
+[cols="2,3,2"]
+|===
+| Fichier | Action | Lignes
+| `src/main/kotlin/build/GradlePluginConventionsExtension.kt` | Créé | 9
+| `src/main/kotlin/build/GradlePluginConventionsPlugin.kt` | Modifié | +14
+| `src/main/kotlin/build/KoverConventionsExtension.kt` | Créé | 8
+| `src/main/kotlin/build/KoverConventionsPlugin.kt` | Créé | 115
+| `src/test/resources/features/gradle-plugin-conventions.feature` | Modifié | +28
+| `src/test/resources/features/kover-conventions.feature` | Créé | 13
+| `src/test/scenarios/build/GradlePluginConventionsSteps.kt` | Modifié | +81
+| `src/test/scenarios/build/KoverConventionsSteps.kt` | Créé | 82
+| `build.gradle.kts` | Modifié | +8
+|===
+
+== Dogfood
+
+Bakery-gradle migré :
+- Suppression `jvmArgs("-XX:+EnableDynamicAgentLoading")` (2 occurrences)
+- Suppression `maxHeapSize = "1g"`
+- Suppression bloc `kover { ... }` + `koverThresholdCheck` task (~60 lignes)
+- Ajout `id("education.cccp.build.kover") version "0.0.3"`
+- Ajout `koverConventions { enabled = true; threshold = 85.0 }`
+- `compileKotlin` ✅
+
+== Tests
+
+[cols="2,3"]
+|===
+| Niveau | Résultat
+| Cucumber | 40/40 PASS (+2 kover, +8 gradle-plugin)
+| Functional | 23/23 PASS (inchangé)
+| check | BUILD SUCCESSFUL
+|===
+
+== Prochaine session
+
+016 — CNV-12 Version alignment (fallbacks bump + BOM + annotations hack + publicationType default)

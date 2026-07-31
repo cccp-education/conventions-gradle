@@ -1,33 +1,39 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 015
+:session: 017
 :date: 2026-07-31
-:epic: À définir
+:epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
 
-Session 014 (2026-07-31) — CNV-10 ✅ TERMINÉ. 7/7 gaps couverts (14 pts).
-32/32 Cucumber + 23/23 functional = 55 tests PASS. Zéro régression.
+Session 016 (2026-07-31) — CNV-12 ✅ TERMINÉ. 3/3 US livrées (8 pts).
+44/44 Cucumber + 23/23 functional = 67 tests PASS.
+7 plugins 0.0.3 sur Maven Local.
 
-CNV-0→CNV-10 + PUB : tous TERMINÉS. Plugin 0.0.3 sur Central + Portal.
-BOM 0.0.13 sur Central. 6 plugins, couverture BDD complète.
+Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
+Borough LIQUIDÉ côté producteur.
 
-== Mission session 015 — À définir
+== Mission session 017 — Maintenance réactive
 
-Tous les EPICs planifiés (CNV-0→CNV-10 + PUB) sont TERMINÉS.
-Le borough ABIDJAN est LIQUIDÉ côté producteur.
+Aucun EPIC actif. Le borough est en maintenance réactive uniquement :
+bugs remontés par les boroughs consommateurs.
 
-=== Pistes possibles
+=== Si aucun bug remonté
 
-- Publication 0.0.4 (bump versions, Kotlin 2.4.10 dans fallbacks TestDependencies)
-- Migration des boroughs restants non encore migrés (agile, ticket, runner, document)
-- Maintenance réactive (bugs remontés par les boroughs consommateurs)
+- Vérifier `git status` → constater état clean
+- Vérifier `./gradlew check` → BUILD SUCCESSFUL
+- Mettre à jour PROMPT_REPRISE pour session 018 (même contenu)
+- Fermer la session
+
+=== Si bug remonté
+
+- Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR → VERIFY
+- 1 fichier à la fois, compile après chaque modif
+- Zéro subagent, zéro parallélisation
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 6 plugins publiés 0.0.3
-- Java 25, Kotlin 2.4.10, Gradle 9.6.1
-- Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR → VERIFY
-- 1 fichier à la fois, compile après chaque modif
+- 7 plugins 0.0.3, Java 25, Kotlin 2.4.10, Gradle 9.6.1
+- 44 Cucumber + 23 functional = 67 tests PASS
 - Zéro subagent, zéro parallélisation

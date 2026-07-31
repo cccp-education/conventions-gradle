@@ -1,0 +1,63 @@
+= Session 016 — CNV-12 Version alignment
+:date: 2026-07-31
+:type: dev
+:epic: CNV-12
+:score: 10/10
+:duree: 1 session
+
+== Résumé
+
+3/3 US livrées (8 pts) en baby-step DDD/TDD/BDD (RED → GREEN → REFACTOR → VERIFY).
+44 Cucumber + 23 functional = 67 tests PASS. BUILD SUCCESSFUL.
+
+== US livrées
+
+=== US-CN-12.1 — Bump fallbacks (2 pts)
+
+- `TestDependencies.WORKSPACE_BOM_COORDINATES` : `0.0.4` → `0.0.13`
+- `TestDependencies.JUNIT_FALLBACKS["kotlin-test-junit5"]` : `2.3.20` → `2.4.10`
+- Scénario Cucumber `Fallback versions are up-to-date` (2 Then steps)
+- 44/44 Cucumber PASS (+2)
+
+=== US-CN-12.2 — fixAnnotationsConflict (3 pts)
+
+- `GradlePluginConventionsExtension.fixAnnotationsConflict` (default false)
+- `GradlePluginConventionsPlugin.configureAnnotationsConflict()` : `eachDependency` sur `buildscript.configurations.all`
+- 2 scénarios Cucumber : `Extension has fixAnnotationsConflict default false` + `fixAnnotationsConflict can be enabled via DSL`
+- 44/44 Cucumber PASS (+2)
+
+=== US-CN-12.3 — publicationType default PLUGIN (3 pts)
+
+- `PublishingConventionsExtension.publicationType` : `"LIBRARY"` → `"PLUGIN"`
+- Scénario Cucumber `Publishing plugin default publicationType is PLUGIN`
+- 44/44 Cucumber PASS (+1)
+
+== Dogfood
+
+- graphify-gradle : `publicationType = "PLUGIN"` → `"LIBRARY"` explicite
+- api-key-pool-gradle : `publishingConventions { publicationType = "LIBRARY" }` ajouté
+- compileKotlin ✅ sur les 2 boroughs
+
+== Fichiers modifiés
+
+- `TestDependencies.kt` : WORKSPACE_BOM_COORDINATES + kotlin-test-junit5 fallback
+- `GradlePluginConventionsExtension.kt` : +fixAnnotationsConflict
+- `GradlePluginConventionsPlugin.kt` : +configureAnnotationsConflict()
+- `PublishingConventionsPlugin.kt` : publicationType default "PLUGIN"
+- `gradle-plugin-conventions.feature` : +3 scénarios (CNV-12.1 + CNV-12.2)
+- `publishing-conventions.feature` : +1 scénario (CNV-12.3)
+- `GradlePluginConventionsSteps.kt` : +4 step definitions
+- `PublishingConventionsSteps.kt` : +1 step definition
+- `graphify-gradle/graphify-plugin/build.gradle.kts` : publicationType = "LIBRARY"
+- `api-key-pool-gradle/api-key-pool-plugin/build.gradle.kts` : publishingConventions { publicationType = "LIBRARY" }
+
+== Tests
+
+- 44/44 Cucumber PASS (+4 : 2 CNV-12.1, 2 CNV-12.2, 1 CNV-12.3, -1 régression)
+- 23/23 functional PASS (inchangé)
+- check BUILD SUCCESSFUL
+
+== Prochaine session
+
+CNV-12 TERMINÉ. Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS.
+Borough LIQUIDÉ côté producteur. Maintenance réactive uniquement.

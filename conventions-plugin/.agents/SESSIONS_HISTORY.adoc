@@ -417,3 +417,83 @@ Conventions-gradle est maintenant "liquidable" côté producteur.
 
 **CNV-10 TERMINE** — 7/7 gaps couverts. 32 Cucumber + 23 functional = 55 tests PASS.
 Zéro régression. Tous les EPICs CNV-0→CNV-10 + PUB TERMINÉS. Borough LIQUIDÉ.
+
+'''
+
+== Session 015 — 2026-07-31
+Type:: dev
+Code:: CNV-11
+Titre:: GradlePluginConventionsExtension (JVM options + Kover)
+Score:: 10/10
+Duree:: 1 session
+
+**Créations** :
+- `GradlePluginConventionsExtension.kt` — 3 props (enableDynamicAgentLoading, maxHeapSize, parallelExecution)
+- `KoverConventionsExtension.kt` — 2 props (enabled, threshold)
+- `KoverConventionsPlugin.kt` — 7ème plugin `education.cccp.build.kover`
+- `kover-conventions.feature` — 2 scénarios Cucumber
+- `KoverConventionsSteps.kt` — step definitions
+
+**Modifications** :
+- `GradlePluginConventionsPlugin.kt` — extension créée + configureTestTasks enrichi (jvmArgs, maxHeapSize, parallel)
+- `gradle-plugin-conventions.feature` — +8 scénarios CNV-11.1/11.2
+- `GradlePluginConventionsSteps.kt` — +81 lignes step definitions
+- `build.gradle.kts` — kover plugin enregistré + dep kover-gradle-plugin
+
+**Dogfood** :
+- bakery-gradle : suppression jvmArgs (2 occ) + maxHeapSize + bloc kover (~60 lignes)
+- Ajout `id("education.cccp.build.kover") version "0.0.3"` + `koverConventions { enabled = true; threshold = 85.0 }`
+- compileKotlin ✅
+
+**Tests** :
+- 40/40 Cucumber PASS (+2 kover, +8 gradle-plugin)
+- 23/23 functional PASS (inchangé)
+- check BUILD SUCCESSFUL
+
+**CNV-11 TERMINE** — 3/3 US livrées (10 pts). 7 plugins 0.0.3 sur Maven Local.
+
+'''
+== Session 016 — 2026-07-31
+Type:: dev
+Code:: CNV-12
+Titre:: Version alignment — fallbacks bump + BOM + annotations hack + publicationType
+Score:: 10/10
+Duree:: 1 session
+
+**Baby-step TDD/BDD DDD** — 3 US (8 pts) en RED → GREEN → REFACTOR → VERIFY.
+
+**US-CN-12.1** (2 pts) — Bump fallbacks :
+- `TestDependencies.WORKSPACE_BOM_COORDINATES` : `0.0.4` → `0.0.13`
+- `TestDependencies.JUNIT_FALLBACKS["kotlin-test-junit5"]` : `2.3.20` → `2.4.10`
+- Scénario Cucumber `Fallback versions are up-to-date` (2 Then steps)
+
+**US-CN-12.2** (3 pts) — fixAnnotationsConflict :
+- `GradlePluginConventionsExtension.fixAnnotationsConflict` (default false)
+- `GradlePluginConventionsPlugin.configureAnnotationsConflict()` : `eachDependency` sur `buildscript.configurations.all`
+- 2 scénarios Cucumber
+
+**US-CN-12.3** (3 pts) — publicationType default PLUGIN :
+- `PublishingConventionsExtension.publicationType` : `"LIBRARY"` → `"PLUGIN"`
+- Scénario Cucumber `Publishing plugin default publicationType is PLUGIN`
+
+**Dogfood** :
+- graphify-gradle : `publicationType = "LIBRARY"` explicite
+- api-key-pool-gradle : `publishingConventions { publicationType = "LIBRARY" }` ajouté
+- compileKotlin ✅ sur les 2 boroughs
+
+**Fichiers modifiés** :
+- `TestDependencies.kt` : WORKSPACE_BOM_COORDINATES + kotlin-test-junit5 fallback
+- `GradlePluginConventionsExtension.kt` : +fixAnnotationsConflict
+- `GradlePluginConventionsPlugin.kt` : +configureAnnotationsConflict()
+- `PublishingConventionsPlugin.kt` : publicationType default "PLUGIN"
+- `gradle-plugin-conventions.feature` : +3 scénarios
+- `publishing-conventions.feature` : +1 scénario
+- `GradlePluginConventionsSteps.kt` : +4 step definitions
+- `PublishingConventionsSteps.kt` : +1 step definition
+- `graphify-gradle/graphify-plugin/build.gradle.kts` : publicationType = "LIBRARY"
+- `api-key-pool-gradle/api-key-pool-plugin/build.gradle.kts` : publishingConventions { publicationType = "LIBRARY" }
+
+**Tests** : 44/44 Cucumber + 23/23 functional = 67 tests PASS. check BUILD SUCCESSFUL.
+
+**CNV-12 TERMINE** — 3/3 US livrées (8 pts). Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
+Borough LIQUIDÉ côté producteur. Maintenance réactive uniquement.

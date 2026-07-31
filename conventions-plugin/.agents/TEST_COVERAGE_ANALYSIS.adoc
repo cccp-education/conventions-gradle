@@ -167,3 +167,57 @@ Validation de la chaîne de publication 0.0.3 :
 
 Vérification cohérence 9 AGENT.adoc + publication BOM 0.0.13 Central + commit workspace-bom.
 Zéro changement de code source dans conventions-plugin.
+
+== Session 014
+
+**CNV-10 Test Coverage Gaps** — 7/7 gaps couverts (14 pts) en baby-step TDD/BDD.
+
+**Cucumber BDD** : +11 scénarios (total 32/32 PASS)
+- GradlePluginConventionsPlugin : +3 (repositories, buildCache, fallback no catalog)
+- PublishingConventionsPlugin : +2 (SCM strip .git, LIBRARY defaults)
+- FunctionalTestConventionsPlugin : +2 (extendsFrom, additionalDependencies)
+- CucumberConventionsPlugin : +4 (parallel, timeout, custom name, additionalTasks)
+
+**Functional tests (GradleTestKit)** : +3 tests (total 23/23 PASS)
+- LogbackExclusionConventionsFunctionalTest (NOUVEAU, 3 tests)
+
+**Couverture cumulée** : 32/32 Cucumber + 23/23 functional = 55 tests PASS.
+
+== Session 015
+
+**CNV-11 GradlePluginConventionsExtension + Kover** — 3/3 US (10 pts) en baby-step TDD/BDD.
+
+**Cucumber BDD** : +8 scénarios (total 40/40 PASS)
+- GradlePluginConventionsPlugin : +8 (extension defaults, override DSL, jvmArgs, maxHeapSize, parallel)
+- KoverConventionsPlugin : +2 (disabled by default, applied when enabled)
+
+**Functional tests (GradleTestKit)** : inchangés (23/23 PASS)
+
+**Nouveaux fichiers testés** :
+- `GradlePluginConventionsExtension.kt` (9 lignes) — couvert par 8 scénarios Cucumber
+- `KoverConventionsExtension.kt` (8 lignes) — couvert par 2 scénarios Cucumber
+- `KoverConventionsPlugin.kt` (115 lignes) — couvert par 2 scénarios Cucumber
+
+**Couverture cumulée** : 40/40 Cucumber + 23/23 functional = 63 tests PASS.
+
+== Session 016
+
+**CNV-12 Version alignment** — 3/3 US (8 pts) en baby-step TDD/BDD.
+
+**Cucumber BDD** : +4 scénarios (total 44/44 PASS)
+- GradlePluginConventionsPlugin : +3 (fallback versions, fixAnnotationsConflict default, fixAnnotationsConflict enabled)
+- PublishingConventionsPlugin : +1 (default publicationType PLUGIN)
+
+**Functional tests (GradleTestKit)** : inchangés (23/23 PASS)
+
+**Fichiers modifiés** :
+- `TestDependencies.kt` : WORKSPACE_BOM_COORDINATES 0.0.4 → 0.0.13, kotlin-test-junit5 2.3.20 → 2.4.10
+- `GradlePluginConventionsExtension.kt` : +fixAnnotationsConflict (default false)
+- `GradlePluginConventionsPlugin.kt` : +configureAnnotationsConflict()
+- `PublishingConventionsPlugin.kt` : publicationType default "LIBRARY" → "PLUGIN"
+
+**Dogfood** :
+- graphify-gradle : publicationType = "LIBRARY" explicite
+- api-key-pool-gradle : publishingConventions { publicationType = "LIBRARY" } ajouté
+
+**Couverture cumulée** : 44/44 Cucumber + 23/23 functional = 67 tests PASS.

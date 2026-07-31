@@ -16,7 +16,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
  */
 object TestDependencies {
 
-    const val WORKSPACE_BOM_COORDINATES = "education.cccp:workspace-bom:0.0.4"
+    const val WORKSPACE_BOM_COORDINATES = "education.cccp:workspace-bom:0.0.13"
 
     val CUCUMBER_FALLBACKS: Map<String, String> = mapOf(
         "cucumber-java" to "io.cucumber:cucumber-java:7.34.3",
@@ -27,7 +27,7 @@ object TestDependencies {
     )
 
     val JUNIT_FALLBACKS: Map<String, String> = mapOf(
-        "kotlin-test-junit5" to "org.jetbrains.kotlin:kotlin-test-junit5:2.3.20",
+        "kotlin-test-junit5" to "org.jetbrains.kotlin:kotlin-test-junit5:2.4.10",
         "junit-jupiter" to "org.junit.jupiter:junit-jupiter:5.12.2",
         "junit-platform-launcher" to "org.junit.platform:junit-platform-launcher:1.14.3",
         "junit-platform-params" to "org.junit.jupiter:junit-jupiter-params:5.12.2",
