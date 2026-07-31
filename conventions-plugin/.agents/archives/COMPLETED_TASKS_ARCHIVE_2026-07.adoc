@@ -60,3 +60,42 @@
 - `FunctionalTestConventionsPlugin` migré vers le helper (-30 lignes helpers locaux)
 
 *EPIC* : CNV-7 ✅ TERMINÉ
+
+=== Session 011 (2026-07-31) — CNV-8 Linter Kotlin + Configuration Cache
+
+*Tâche* : CNV-8 Linter Kotlin + Configuration Cache — 4 US (10 pts)
+*Statut* : ✅ TERMINÉ
+*Résultat* : 6ème convention plugin livré (lint), config-cache activé par défaut
+
+*US-CN-8.1* (3 pts) — LintConventionsPlugin (ktlint 1.5.0 + detekt 1.23.8, skip Java 25)
+*US-CN-8.2* (2 pts) — Configuration cache (`gradle.properties` + `configureBuildCache`)
+*US-CN-8.3* (3 pts) — Dogfood bakery-gradle (conventions 0.0.3 + lint)
+*US-CN-8.4* (2 pts) — Publication 0.0.3 Maven Local
+
+*Tests* : 20/20 functional + 21/21 Cucumber PASS
+*EPIC* : CNV-8 ✅ TERMINÉ
+
+=== Session 012 (2026-07-31) — CNV-9 Publication 0.0.3
+
+*Tâche* : CNV-9 Publication 0.0.3 Maven Central + Plugin Portal + doc boroughs + bump BOM
+*Statut* : ✅ TERMINÉ (4 US, 6 pts)
+*Résultat* : 6 plugins 0.0.3 sur Central + Portal, 9 AGENT.adoc documentés, BOM 0.0.13 Maven Local
+
+*US-CN-9.1* (2 pts) — Maven Central (bundle e58930fd)
+*US-CN-9.2* (1 pt) — Gradle Plugin Portal (6 plugins)
+*US-CN-9.3* (2 pts) — Documentation 9 AGENT.adoc boroughs
+*US-CN-9.4* (1 pt) — Bump workspace-bom 0.0.12 → 0.0.13
+
+*EPIC* : CNV-9 ✅ TERMINÉ
+
+=== Session 013 (2026-07-31) — CNV-9 Finalisation
+
+*Tâche* : Finalisation CNV-9 — vérification AGENT.adoc + BOM Central + commit
+*Statut* : ✅ TERMINÉ (3 US, 4 pts)
+*Résultat* : PUB 4/4 US, BOM 0.0.13 sur Central, workspace-bom commité+pushé
+
+*US-PUB-4* (1 pt) — Vérification 9/9 AGENT.adoc cohérents, zéro incohérence
+*US-CN-9.5* (2 pts) — BOM 0.0.13 Maven Central (bundle 6b1b0501)
+*US-CN-9.6* (1 pt) — Commit workspace-bom (Kotlin 2.3.20 → 2.4.10, 7 catalogues contrats N0)
+
+*EPIC* : CNV-9 + PUB ✅ TERMINÉS

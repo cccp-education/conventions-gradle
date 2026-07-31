@@ -150,3 +150,20 @@ Validation de la chaîne de publication :
 **Scénarios detekt retirés** (2) : `Plugin applies ktlint and detekt` et `Plugin registers detekt task` retirés car detekt est skip sur Java 25. Réintroduire quand detekt 2.0+ sera disponible sur Maven Central.
 
 **Couverture cumulée** : 21/21 Cucumber + 20/20 functional = 41 tests PASS.
+
+== Session 012
+
+**Publication uniquement** — Aucun test modifié.
+
+Validation de la chaîne de publication 0.0.3 :
+- `check` ✅ (pas de régression)
+- `publishToMavenLocal` ✅
+- `publishAggregationToCentralPortal` ✅ (bundle e58930fd)
+- `publishPlugins` ✅ (6 plugins)
+
+== Session 013
+
+**Finalisation uniquement** — Aucun test modifié.
+
+Vérification cohérence 9 AGENT.adoc + publication BOM 0.0.13 Central + commit workspace-bom.
+Zéro changement de code source dans conventions-plugin.

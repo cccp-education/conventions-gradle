@@ -362,3 +362,22 @@ Conventions-gradle est maintenant "liquidable" côté producteur.
 **Fichiers modifiés** : 12 fichiers (9 AGENT.adoc boroughs + BOM build.gradle.kts + BOM libs.versions.toml + conventions PROMPT_REPRISE/INDEX/SESSIONS_HISTORY + rapport session)
 
 **CNV-9 TERMINE** — 0.0.3 sur Central + Portal. BOM 0.0.13 en Maven Local. Prochaine session : finalisation (US-PUB-4 + BOM Central + commit).
+
+== Session 013 (2026-07-31) — CNV-9 Finalisation
+
+**Baby-step** — 3 US (4 pts) livrées.
+
+**US-PUB-4** (1 pt) — Vérification cohérence AGENT.adoc :
+- 9/9 boroughs vérifiés, zéro incohérence, version 0.0.3 unifiée
+
+**US-CN-9.5** (2 pts) — Publication BOM 0.0.13 Maven Central :
+- `publishToMavenLocal` SUCCESS
+- `publishAggregationToCentralPortal` SUCCESS
+- Bundle `6b1b0501-33c2-4dff-9aed-2cc8f65a8852` uploadé
+
+**US-CN-9.6** (1 pt) — Nettoyage git + commit :
+- conventions-gradle : git clean (S011+S012 déjà commités)
+- workspace-bom : 7 catalogues contrats N0 (Kotlin 2.3.20 → 2.4.10)
+- Commit `0b0ecf2` + push → origin/main
+
+**CNV-9 TERMINE** — 6 plugins 0.0.3 sur Central + Portal, 9 AGENT.adoc documentés, BOM 0.0.13 sur Central. PUB 4/4 US. Prochaine session : CNV-10 Test Coverage Gaps.

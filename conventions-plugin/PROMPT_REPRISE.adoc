@@ -1,46 +1,48 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 013
+:session: 014
 :date: 2026-07-31
-:epic: CNV-9 — Suite publication + BOM
+:epic: CNV-10 — Test Coverage Gaps (TDD rétroactif)
 :max-lines: 70
 
 == Contexte hérité
 
-Session 012 (2026-07-31) — CNV-9 ✅ TERMINÉ. 6 plugins 0.0.3 publiés sur Maven Central
-(bundle e58930fd) + Gradle Plugin Portal. 9 AGENT.adoc boroughs documentés avec section
-conventions. BOM 0.0.13 bumpé avec conventions-plugin:0.0.3 en Maven Local.
+Session 013 (2026-07-31) — CNV-9 ✅ TERMINÉ. US-PUB-4 (9 AGENT.adoc cohérents),
+US-CN-9.5 (BOM 0.0.13 Central, bundle 6b1b0501), US-CN-9.6 (commit + push workspace-bom).
 
-CNV-0→CNV-9 + PUB : tous TERMINÉS. Plugin 0.0.3 sur Central + Portal.
+CNV-0→CNV-9 + PUB : tous TERMINÉS. Plugin 0.0.3 sur Central + Portal. BOM 0.0.13 sur Central.
 
-== Mission session 013 — Finalisation
+== Mission session 014 — CNV-10 Test Coverage Gaps
 
-=== US-PUB-4 — Documenter migration restante (1 pt)
+Problème structurel : zéro test unitaire (`src/test/kotlin/` vide).
+Tout repose sur functional + Cucumber (intégration, pas branches internes).
+Baby-step DDD/TDD/BDD exige les 3 niveaux : unit → functional → cucumber.
 
-- Vérifier que les 9 AGENT.adoc modifiés sont cohérents
-- Planner et codex n'ont pas d'AGENT.adoc → créer un README minimal ?
+=== Gaps à couvrir (7 US, 14 pts)
 
-=== US-CN-9.5 — Publier BOM 0.0.13 sur Maven Central (2 pts)
-
-- `./gradlew publishAggregationToCentralPortal` depuis workspace-bom
-- Vérifier bundle sur https://central.sonatype.com/
-
-=== US-CN-9.6 — Nettoyage git + commit (1 pt)
-
-- Fichiers non commités depuis S011 (lint, config-cache, gradle.properties)
-- Commit atomique : S011 (CNV-8) + S012 (CNV-9)
+. US-CN-10.1 — GradlePluginConventionsPlugin (3 pts) : configureBuildCache, configureRepositories, feature file Java 24→25
+. US-CN-10.2 — PublishingConventionsPlugin (2 pts) : publicationType LIBRARY fallback
+. US-CN-10.3 — FunctionalTestConventionsPlugin (2 pts) : extendsFrom, additionalDependencies
+. US-CN-10.4 — CucumberConventionsPlugin (3 pts) : parallel, timeoutMinutes, cucumberTestTaskName, additionalTasks
+. US-CN-10.5 — LintConventionsPlugin (2 pts) : branche detekt, zéro test unitaire
+. US-CN-10.6 — LogbackExclusionConventionsPlugin (1 pt) : zéro functional test
+. US-CN-10.7 — TestDependencies (1 pt) : fallback hardcoded, addPlatformBom exception path
 
 == Ordre d'exécution
 
-. `git status` → constater les fichiers modifiés
-. US-PUB-4 : vérifier cohérence AGENT.adoc
-. US-CN-9.5 : publish BOM 0.0.13
-. US-CN-9.6 : commit (avec permission)
+. `git status` → constater état clean
+. US-CN-10.1 : GradlePluginConventionsPlugin unit tests (RED→GREEN→REFACTOR)
+. US-CN-10.2 : PublishingConventionsPlugin unit tests
+. US-CN-10.3 : FunctionalTestConventionsPlugin unit tests
+. US-CN-10.4 : CucumberConventionsPlugin unit tests
+. US-CN-10.5 : LintConventionsPlugin unit tests
+. US-CN-10.6 : LogbackExclusionConventionsPlugin functional test
+. US-CN-10.7 : TestDependencies unit tests
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 6 plugins publiés 0.0.3 : gradle-plugin, publishing, functional-test, cucumber, logback-exclusion, lint
-- BOM 0.0.13 en Maven Local, pas encore sur Central
-- Java 25, Kotlin 2.3.20, Gradle 9.6.1
-- Baby-step DDD/TDD/BDD : 1 fichier à la fois
+- 6 plugins publiés 0.0.3
+- Java 25, Kotlin 2.4.10, Gradle 9.6.1
+- Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR → VERIFY
+- 1 fichier à la fois, compile après chaque modif
 - Zéro subagent, zéro parallélisation

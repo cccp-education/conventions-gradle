@@ -1,0 +1,47 @@
+= Session 013 — Finalisation CNV-9
+:date: 2026-07-31
+:type: dev
+:epic: CNV-9
+:score: 10/10
+:duree: 1 session
+
+== Résumé
+
+Finalisation de l'EPIC CNV-9 — 3 US livrées (4 pts).
+
+== US livrées
+
+=== US-PUB-4 — Vérification cohérence AGENT.adoc (1 pt)
+
+Vérification des 9 AGENT.adoc boroughs documentés en session 012 :
+- bakery (gradle-plugin + publishing + lint) ✅
+- hyperframes (gradle-plugin + publishing) ✅
+- plantuml (4 conventions + CNV-7) ✅
+- readme (gradle-plugin + publishing) ✅
+- slider (gradle-plugin + publishing) ✅
+- graphify (publishing seul, library pure) ✅
+- api-key-pool (publishing seul, library pure) ✅
+- review (4 conventions, stub CNV-6 natif) ✅
+- flow (4 conventions, stub CNV-6 natif) ✅
+
+Aucune incohérence. Version unifiée 0.0.3 partout.
+
+=== US-CN-9.5 — Publication BOM 0.0.13 sur Maven Central (2 pts)
+
+- `publishToMavenLocal` SUCCESS
+- `publishAggregationToCentralPortal` SUCCESS
+- Bundle `6b1b0501-33c2-4dff-9aed-2cc8f65a8852` uploadé, statut PUBLISHING
+
+=== US-CN-9.6 — Nettoyage git + commit (1 pt)
+
+- conventions-gradle : git clean (S011+S012 déjà commités)
+- workspace-bom : 7 fichiers modifiés (Kotlin 2.3.20 → 2.4.10 dans catalogues contrats N0)
+- Commit `0b0ecf2` + push → origin/main
+
+== Bilan EPIC CNV-9
+
+CNV-9 ✅ TERMINÉ — 6 plugins 0.0.3 sur Central + Portal, 9 AGENT.adoc documentés, BOM 0.0.13 sur Central.
+
+== Prochaine session
+
+CNV-10 — Test Coverage Gaps (TDD rétroactif, 14 pts, 7 gaps).

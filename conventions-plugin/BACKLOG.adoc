@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-07-31 — CNV-9 ✅ TERMINÉ (session 012)
+_Derniere mise a jour_ : 2026-07-31 — CNV-9 ✅ TERMINÉ (session 013), PUB 4/4 US
 
 '''
 
@@ -83,7 +83,7 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central —
 *Priorite* : P1
 *Charge estimee* : 7 pts (~2 sessions)
 *Depend de* : CNV-5 (tous les plugins valides sur 3 profils)
-*Statut* : ✅ TERMINE (3/4 US — US-PUB-4 doc reste P2)
+*Statut* : ✅ TERMINE (4/4 US)
 
 === User Stories
 
@@ -93,7 +93,7 @@ _Publication des convention plugins sur Gradle Plugin Portal + Maven Central —
 | US-PUB-1 | Configurer sonatype + signing pour `education.cccp.build` | 2 | ✅ Sess. 008
 | US-PUB-2 | Publier sur Maven Central (nmcp) | 2 | ✅ Sess. 008
 | US-PUB-3 | Publier sur Gradle Plugin Portal | 1 | ✅ Sess. 008
-| US-PUB-4 | Documenter la migration dans AGENT.adoc de chaque borough | 2 | 🟡 RESTANT
+| US-PUB-4 | Documenter la migration dans AGENT.adoc de chaque borough | 2 | ✅ Sess. 013
 |===
 
 '''
