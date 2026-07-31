@@ -11,8 +11,8 @@ Feature: Gradle Plugin Conventions
 
   Scenario: Plugin configures Java compatibility
     Given a project applies the conventions plugin
-    Then the project uses Java 24 source compatibility
-    And the project uses Java 24 target compatibility
+    Then the project uses Java 25 source compatibility
+    And the project uses Java 25 target compatibility
     And the project has sources jar task
     And the project has javadoc jar task
 
@@ -30,3 +30,20 @@ Feature: Gradle Plugin Conventions
     And the testImplementation configuration contains assertj-core
     And the testRuntimeOnly configuration contains junit-platform-launcher
     And the gradle testImplementation configuration has the workspace-bom platform
+
+  # CNV-10.1 — configureRepositories
+  Scenario: Plugin configures repositories
+    Given a project applies the conventions plugin
+    Then the project has mavenLocal repository configured
+    And the project has mavenCentral repository configured
+    And the project has gradlePluginPortal repository configured
+
+  # CNV-10.1 — configureBuildCache
+  Scenario: Plugin enables build cache
+    Given a project applies the conventions plugin
+    Then the build cache is enabled
+
+  # CNV-10.7 — TestDependencies fallback hardcoded (no catalog)
+  Scenario: Plugin adds junit test dependencies without version catalog
+    Given a project applies the conventions plugin without version catalog
+    Then the testImplementation configuration contains junit-jupiter from fallback

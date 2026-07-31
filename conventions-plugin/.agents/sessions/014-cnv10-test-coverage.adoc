@@ -1,0 +1,73 @@
+= Session 014 — CNV-10 Test Coverage Gaps (TDD rétroactif)
+:date: 2026-07-31
+:type: dev
+:epic: CNV-10
+:score: 10/10
+:duree: 1 session
+
+== Résumé
+
+CNV-10 TERMINÉ — 7 US (14 pts) en baby-step TDD/BDD DDD.
+32/32 Cucumber + 23/23 functional = 55 tests PASS.
+
+== US livrées
+
+=== US-CN-10.1 — GradlePluginConventionsPlugin (3 pts)
+
+- Feature file Java 24 → 25 corrigé (désynchro)
+- Scénario Cucumber `Plugin configures repositories` (mavenLocal, mavenCentral, gradlePluginPortal)
+- Scénario Cucumber `Plugin enables build cache`
+- 22/22 Cucumber PASS (+2 scénarios)
+
+=== US-CN-10.2 — PublishingConventionsPlugin (2 pts)
+
+- Scénario Cucumber `Publishing plugin uses default website and vcsUrl for LIBRARY type`
+- Vérifie fallback `https://github.com/cccp-education` pour website + SCM url
+- 24/24 Cucumber PASS (+1 scénario)
+
+=== US-CN-10.3 — FunctionalTestConventionsPlugin (2 pts)
+
+- Scénario Cucumber `Plugin extends functionalTest from testImplementation`
+- Scénario Cucumber `Plugin supports additional dependencies` (commons-lang3)
+- 26/26 Cucumber PASS (+2 scénarios)
+
+=== US-CN-10.4 — CucumberConventionsPlugin (3 pts)
+
+- Scénario Cucumber `Plugin supports parallel execution`
+- Scénario Cucumber `Plugin supports timeout configuration`
+- Scénario Cucumber `Plugin supports custom task name` (integrationCucumber)
+- Scénario Cucumber `Plugin supports additional tasks with features and tags`
+- 30/30 Cucumber PASS (+4 scénarios)
+
+=== US-CN-10.5 — LintConventionsPlugin (2 pts)
+
+- Scénario Cucumber `Plugin handles detekt conditionally based on Java version`
+- Couvre la branche detekt skip sur Java 25
+- 32/32 Cucumber PASS (+1 scénario)
+
+=== US-CN-10.6 — LogbackExclusionConventionsPlugin (1 pt)
+
+- Functional test `LogbackExclusionConventionsFunctionalTest` (NOUVEAU, 3 tests)
+- `plugin applies without error`, `plugin excludes logback-classic from testRuntimeClasspath`, `plugin excludes logback-classic from testImplementation`
+- 23/23 functional PASS (+3 tests)
+
+=== US-CN-10.7 — TestDependencies (1 pt)
+
+- Scénario Cucumber `Plugin adds junit test dependencies without version catalog`
+- Vérifie fallback hardcoded quand le catalogue `libs` est absent
+- 32/32 Cucumber PASS (+1 scénario)
+
+== Fichiers modifiés
+
+- 5 feature files (+10 scénarios)
+- 5 step definition files (+10 steps)
+- 1 nouveau functional test (LogbackExclusionConventionsFunctionalTest.kt, 3 tests)
+
+== Bilan CNV-10
+
+CNV-10 ✅ TERMINÉ — 7/7 gaps couverts. 32 Cucumber + 23 functional = 55 tests PASS.
+Zéro régression. Tous les plugins ont maintenant une couverture BDD complète.
+
+== Prochaine session
+
+CNV-11 — À définir (tous les EPICs CNV-0→CNV-10 + PUB sont TERMINÉS).

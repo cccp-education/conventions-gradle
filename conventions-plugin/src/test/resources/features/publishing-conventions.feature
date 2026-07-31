@@ -26,3 +26,9 @@ Feature: Publishing Conventions
     Given a project applies the publishing plugin with vcsUrl "https://github.com/cccp-education/sample-gradle.git"
     Then the generated POM has SCM connection "scm:git:git://github.com/cccp-education/sample-gradle.git"
     And the generated POM has SCM developer connection "scm:git:ssh://github.com/cccp-education/sample-gradle.git"
+
+  # CNV-10.2 — publicationType LIBRARY fallback
+  Scenario: Publishing plugin uses default website and vcsUrl for LIBRARY type
+    Given a project applies the publishing plugin with publicationType LIBRARY
+    Then the generated POM has url "https://github.com/cccp-education"
+    And the generated POM has SCM url "https://github.com/cccp-education"

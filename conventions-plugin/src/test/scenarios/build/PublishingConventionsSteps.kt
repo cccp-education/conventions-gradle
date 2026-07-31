@@ -158,6 +158,43 @@ class PublishingConventionsSteps : En {
                 "Expected relocation artifact $expectedArtifact in POM\n$pomContent"
             }
         }
+
+        // ── CNV-10.2 — publicationType LIBRARY fallback ──────────────────────
+        Given("a project applies the publishing plugin with publicationType LIBRARY") {
+            testProjectDir = createTempDir("publishing-lib-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project-lib\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java-library")
+                    id("education.cccp.build.publishing")
+                }
+                group = "com.example"
+                version = "1.0.0"
+
+                publishingConventions {
+                    publicationType = "LIBRARY"
+                }
+
+                $publicationBlock
+            """)
+        }
+
+        Then("the generated POM has url {string}") { expectedUrl: String ->
+            generatePom()
+            val matcher = Regex("<url>([^<]+)</url>").find(pomContent)
+            assert(matcher != null && matcher.groupValues[1] == expectedUrl) {
+                "Expected POM url '$expectedUrl' but got '${matcher?.groupValues?.getOrNull(1)}'\n$pomContent"
+            }
+        }
+
+        Then("the generated POM has SCM url {string}") { expectedScmUrl: String ->
+            generatePom()
+            val scmBlock = Regex("<scm>([\\s\\S]*?)</scm>").find(pomContent)
+            val scmUrl = scmBlock?.let { Regex("<url>([^<]+)</url>").find(it.groupValues[1])?.groupValues?.get(1) }
+            assert(scmUrl == expectedScmUrl) {
+                "Expected SCM url '$expectedScmUrl' but got '$scmUrl'\n$pomContent"
+            }
+        }
     }
 
     private fun generatePom() {

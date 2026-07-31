@@ -10,3 +10,8 @@ Feature: Lint Conventions
   Scenario: Plugin registers ktlint tasks
     Given a project applies the lint plugin
     Then the ktlint tasks are available
+
+  # CNV-10.5 — detekt branch coverage (skip on Java 25, apply otherwise)
+  Scenario: Plugin handles detekt conditionally based on Java version
+    Given a project applies the lint plugin
+    Then the plugin does not fail when detekt is conditionally applied

@@ -14,3 +14,13 @@ Feature: Functional Test Conventions
   Scenario: Plugin wires check task dependency
     Given a project applies the functional-test plugin
     Then the check task depends on functionalTest
+
+  # CNV-10.3 — extendsFrom(testImplementation)
+  Scenario: Plugin extends functionalTest from testImplementation
+    Given a project applies the functional-test plugin with java plugin
+    Then the functionalTest implementation configuration extends testImplementation
+
+  # CNV-10.3 — additionalDependencies
+  Scenario: Plugin supports additional dependencies
+    Given a project applies the functional-test plugin with additional dependencies
+    Then the functionalTest implementation configuration contains the additional dependency

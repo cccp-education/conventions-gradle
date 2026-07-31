@@ -6,9 +6,9 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-07-31
-_session terminee_ : 013
-_session en cours_ : 014 — CNV-10 Test Coverage Gaps (TDD rétroactif)
-_Prochaine session_ : 015 — À définir
+_session terminee_ : 014
+_session en cours_ : 015 — À définir
+_Prochaine session_ : 016 — À définir
 
 '''
 
@@ -72,7 +72,7 @@ _L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git 
 | CNV-7 | Centralisation deps test (junit + cucumber) — TestDependencies.kt DDD helper | ✅ TERMINE | P1
 | CNV-8 | Linter Kotlin + Configuration Cache — LintConventionsPlugin (ktlint + detekt conditionnel Java 25) + config-cache par défaut | ✅ TERMINE | P0
 | CNV-9 | Publication 0.0.3 Maven Central + Plugin Portal + doc boroughs + bump BOM | ✅ TERMINE | P0
-| CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | 🔴 EN COURS | P0
+| CNV-10 | Test Coverage Gaps — TDD rétroactif (7 gaps, 0 unit test) | ✅ TERMINE | P0
 | PUB | Publication Gradle Plugin Portal + Maven Central | ✅ TERMINE (4/4 US) | P1
 |===
 

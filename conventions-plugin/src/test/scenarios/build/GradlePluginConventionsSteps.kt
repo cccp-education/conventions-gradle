@@ -42,11 +42,11 @@ class GradlePluginConventionsSteps : En {
         }
 
         Then("the project uses Java {int} source compatibility") { version: Int ->
-            assert(version == 24) { "Expected source compatibility 24" }
+            assert(version == 25) { "Expected source compatibility 25" }
         }
 
         Then("the project uses Java {int} target compatibility") { version: Int ->
-            assert(version == 24) { "Expected target compatibility 24" }
+            assert(version == 25) { "Expected target compatibility 25" }
         }
 
         Then("the project has sources jar task") {
@@ -128,6 +128,69 @@ class GradlePluginConventionsSteps : En {
         Then("the gradle testImplementation configuration has the workspace-bom platform") {
             assert(depsResult?.output?.contains("education.cccp:workspace-bom") == true) {
                 "Expected workspace-bom platform in testImplementation\n${depsResult?.output}"
+            }
+        }
+
+        // ── CNV-10.1 — configureRepositories ─────────────────────────────────
+        Then("the project has mavenLocal repository configured") {
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.isNotEmpty()) { "Expected build to succeed with mavenLocal configured" }
+        }
+
+        Then("the project has mavenCentral repository configured") {
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.isNotEmpty()) { "Expected build to succeed with mavenCentral configured" }
+        }
+
+        Then("the project has gradlePluginPortal repository configured") {
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.isNotEmpty()) { "Expected build to succeed with gradlePluginPortal configured" }
+        }
+
+        // ── CNV-10.1 — configureBuildCache ────────────────────────────────────
+        Then("the build cache is enabled") {
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("tasks", "--build-cache")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.contains("BUILD SUCCESSFUL")) {
+                "Expected build cache to be enabled\n${result.output}"
+            }
+        }
+
+        // ── CNV-10.7 — TestDependencies fallback hardcoded (no catalog) ──────
+        Given("a project applies the conventions plugin without version catalog") {
+            testProjectDir = createTempDir("conventions-test-nocat-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("education.cccp.build.gradle-plugin")
+                }
+            """)
+            depsResult = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies", "--configuration", "testImplementation")
+                .withPluginClasspath()
+                .build()
+            taskListResult = depsResult!!
+        }
+
+        Then("the testImplementation configuration contains junit-jupiter from fallback") {
+            assert(depsResult?.output?.contains("org.junit.jupiter:junit-jupiter") == true) {
+                "Expected junit-jupiter from fallback in testImplementation\n${depsResult?.output}"
             }
         }
     }

@@ -157,6 +157,104 @@ class CucumberConventionsSteps : En {
                 "Expected workspace-bom platform in testImplementation\n${checkResult?.output}"
             }
         }
+
+        // ── CNV-10.4 — parallel execution ────────────────────────────────────
+        Given("a project applies the cucumber plugin with parallel enabled") {
+            testProjectDir = createTempDir("cucumber-parallel-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("education.cccp.build.cucumber")
+                }
+                cucumberConventions {
+                    parallel = true
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the cucumberTest task has parallel execution enabled") {
+            assert(taskListResult.output.contains("cucumberTest")) {
+                "Expected cucumberTest task with parallel enabled\n${taskListResult.output}"
+            }
+        }
+
+        // ── CNV-10.4 — timeoutMinutes ────────────────────────────────────────
+        Given("a project applies the cucumber plugin with timeout {int} minutes") { minutes: Int ->
+            testProjectDir = createTempDir("cucumber-timeout-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("education.cccp.build.cucumber")
+                }
+                cucumberConventions {
+                    timeoutMinutes = $minutes
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the cucumberTest task has timeout configured") {
+            assert(taskListResult.output.contains("cucumberTest")) {
+                "Expected cucumberTest task with timeout configured\n${taskListResult.output}"
+            }
+        }
+
+        // ── CNV-10.4 — cucumberTestTaskName configurable ──────────────────────
+        Given("a project applies the cucumber plugin with custom task name {string}") { taskName: String ->
+            testProjectDir = createTempDir("cucumber-custom-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("education.cccp.build.cucumber")
+                }
+                cucumberConventions {
+                    cucumberTestTaskName = "$taskName"
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the integrationCucumber task is registered") {
+            assert(taskListResult.output.contains("integrationCucumber")) {
+                "Expected integrationCucumber task in output\n${taskListResult.output}"
+            }
+        }
+
+        // ── CNV-10.4 — additionalTasks with features and tags ────────────────
+        Given("a project applies the cucumber plugin with additional tasks having features and tags") {
+            testProjectDir = createTempDir("cucumber-ft-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                import build.CucumberTaskSpec
+
+                plugins {
+                    id("education.cccp.build.cucumber")
+                }
+                cucumberConventions {
+                    additionalTasks = listOf(
+                        CucumberTaskSpec(
+                            name = "cucumberTestSmoke",
+                            features = listOf("classpath:features/smoke"),
+                            tags = listOf("@smoke", "@fast")
+                        )
+                    )
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the additional task has features configured") {
+            assert(taskListResult.output.contains("cucumberTestSmoke")) {
+                "Expected cucumberTestSmoke task with features configured\n${taskListResult.output}"
+            }
+        }
+
+        Then("the additional task has tags configured") {
+            assert(taskListResult.output.contains("cucumberTestSmoke")) {
+                "Expected cucumberTestSmoke task with tags configured\n${taskListResult.output}"
+            }
+        }
     }
 
     private fun runTasks(vararg args: String): BuildResult {

@@ -34,3 +34,24 @@ Feature: Cucumber BDD Conventions
     And the testImplementation configuration contains cucumber-junit-platform-engine
     And the testImplementation configuration contains junit-platform-suite
     And the testImplementation configuration has the workspace-bom platform
+
+  # CNV-10.4 — parallel execution
+  Scenario: Plugin supports parallel execution
+    Given a project applies the cucumber plugin with parallel enabled
+    Then the cucumberTest task has parallel execution enabled
+
+  # CNV-10.4 — timeoutMinutes
+  Scenario: Plugin supports timeout configuration
+    Given a project applies the cucumber plugin with timeout 5 minutes
+    Then the cucumberTest task has timeout configured
+
+  # CNV-10.4 — cucumberTestTaskName configurable
+  Scenario: Plugin supports custom task name
+    Given a project applies the cucumber plugin with custom task name "integrationCucumber"
+    Then the integrationCucumber task is registered
+
+  # CNV-10.4 — additionalTasks with features and tags
+  Scenario: Plugin supports additional tasks with features and tags
+    Given a project applies the cucumber plugin with additional tasks having features and tags
+    Then the additional task has features configured
+    And the additional task has tags configured

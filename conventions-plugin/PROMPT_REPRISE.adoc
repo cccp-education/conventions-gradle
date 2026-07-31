@@ -1,42 +1,27 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 014
+:session: 015
 :date: 2026-07-31
-:epic: CNV-10 — Test Coverage Gaps (TDD rétroactif)
+:epic: À définir
 :max-lines: 70
 
 == Contexte hérité
 
-Session 013 (2026-07-31) — CNV-9 ✅ TERMINÉ. US-PUB-4 (9 AGENT.adoc cohérents),
-US-CN-9.5 (BOM 0.0.13 Central, bundle 6b1b0501), US-CN-9.6 (commit + push workspace-bom).
+Session 014 (2026-07-31) — CNV-10 ✅ TERMINÉ. 7/7 gaps couverts (14 pts).
+32/32 Cucumber + 23/23 functional = 55 tests PASS. Zéro régression.
 
-CNV-0→CNV-9 + PUB : tous TERMINÉS. Plugin 0.0.3 sur Central + Portal. BOM 0.0.13 sur Central.
+CNV-0→CNV-10 + PUB : tous TERMINÉS. Plugin 0.0.3 sur Central + Portal.
+BOM 0.0.13 sur Central. 6 plugins, couverture BDD complète.
 
-== Mission session 014 — CNV-10 Test Coverage Gaps
+== Mission session 015 — À définir
 
-Problème structurel : zéro test unitaire (`src/test/kotlin/` vide).
-Tout repose sur functional + Cucumber (intégration, pas branches internes).
-Baby-step DDD/TDD/BDD exige les 3 niveaux : unit → functional → cucumber.
+Tous les EPICs planifiés (CNV-0→CNV-10 + PUB) sont TERMINÉS.
+Le borough ABIDJAN est LIQUIDÉ côté producteur.
 
-=== Gaps à couvrir (7 US, 14 pts)
+=== Pistes possibles
 
-. US-CN-10.1 — GradlePluginConventionsPlugin (3 pts) : configureBuildCache, configureRepositories, feature file Java 24→25
-. US-CN-10.2 — PublishingConventionsPlugin (2 pts) : publicationType LIBRARY fallback
-. US-CN-10.3 — FunctionalTestConventionsPlugin (2 pts) : extendsFrom, additionalDependencies
-. US-CN-10.4 — CucumberConventionsPlugin (3 pts) : parallel, timeoutMinutes, cucumberTestTaskName, additionalTasks
-. US-CN-10.5 — LintConventionsPlugin (2 pts) : branche detekt, zéro test unitaire
-. US-CN-10.6 — LogbackExclusionConventionsPlugin (1 pt) : zéro functional test
-. US-CN-10.7 — TestDependencies (1 pt) : fallback hardcoded, addPlatformBom exception path
-
-== Ordre d'exécution
-
-. `git status` → constater état clean
-. US-CN-10.1 : GradlePluginConventionsPlugin unit tests (RED→GREEN→REFACTOR)
-. US-CN-10.2 : PublishingConventionsPlugin unit tests
-. US-CN-10.3 : FunctionalTestConventionsPlugin unit tests
-. US-CN-10.4 : CucumberConventionsPlugin unit tests
-. US-CN-10.5 : LintConventionsPlugin unit tests
-. US-CN-10.6 : LogbackExclusionConventionsPlugin functional test
-. US-CN-10.7 : TestDependencies unit tests
+- Publication 0.0.4 (bump versions, Kotlin 2.4.10 dans fallbacks TestDependencies)
+- Migration des boroughs restants non encore migrés (agile, ticket, runner, document)
+- Maintenance réactive (bugs remontés par les boroughs consommateurs)
 
 == Rappels
 

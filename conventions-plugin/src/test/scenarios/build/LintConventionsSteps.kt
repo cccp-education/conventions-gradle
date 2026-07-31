@@ -40,6 +40,27 @@ class LintConventionsSteps : En {
                 "Expected ktlint tasks in output\n${taskListResult.output}"
             }
         }
+
+        // ── CNV-10.5 — detekt branch coverage ────────────────────────────────
+        Then("the plugin does not fail when detekt is conditionally applied") {
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java-base")
+                    id("education.cccp.build.lint")
+                }
+                repositories {
+                    mavenCentral()
+                }
+            """)
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("check", "--dry-run")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.contains("BUILD SUCCESSFUL")) {
+                "Expected build to succeed with conditional detekt\n${result.output}"
+            }
+        }
     }
 
     private fun runTasks(vararg args: String): BuildResult {

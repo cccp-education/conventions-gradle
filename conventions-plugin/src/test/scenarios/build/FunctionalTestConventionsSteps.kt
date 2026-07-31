@@ -57,6 +57,58 @@ class FunctionalTestConventionsSteps : En {
                 "Expected functionalTest task to run during check"
             }
         }
+
+        // ── CNV-10.3 — extendsFrom(testImplementation) ──────────────────────
+        Given("a project applies the functional-test plugin with java plugin") {
+            testProjectDir = createTempDir("functional-test-ext-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java")
+                    id("education.cccp.build.functional-test")
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the functionalTest implementation configuration extends testImplementation") {
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies", "--configuration", "functionalTestImplementation")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.isNotEmpty()) {
+                "Expected functionalTestImplementation to resolve (extends testImplementation)\n${result.output}"
+            }
+        }
+
+        // ── CNV-10.3 — additionalDependencies ────────────────────────────────
+        Given("a project applies the functional-test plugin with additional dependencies") {
+            testProjectDir = createTempDir("functional-test-add-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java")
+                    id("education.cccp.build.functional-test")
+                }
+
+                functionalTestConventions {
+                    additionalDependencies = listOf("org.apache.commons:commons-lang3:3.17.0")
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
+        Then("the functionalTest implementation configuration contains the additional dependency") {
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("dependencies", "--configuration", "functionalTestImplementation")
+                .withPluginClasspath()
+                .build()
+            assert(result.output.contains("commons-lang3")) {
+                "Expected commons-lang3 in functionalTestImplementation\n${result.output}"
+            }
+        }
     }
 
     private fun runTasks(vararg args: String): BuildResult {
