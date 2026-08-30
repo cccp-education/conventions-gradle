@@ -4,7 +4,6 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.junitplatform.JUnitPlatformOptions
 import java.time.Duration
@@ -41,8 +40,7 @@ open class CucumberConventionsPlugin : Plugin<Project> {
             task.testClassesDirs = testSourceSet.output.classesDirs
             task.classpath = project.configurations.getByName(testSourceSet.runtimeClasspathConfigurationName) +
                 testSourceSet.output +
-                mainSourceSet.output +
-                project.files(project.tasks.named("jar", Jar::class.java).get().archiveFile)
+                mainSourceSet.output
 
             configureJUnitPlatform(task, extension.parallel, extension.timeoutMinutes)
         }
@@ -59,9 +57,8 @@ open class CucumberConventionsPlugin : Plugin<Project> {
             project.tasks.register(spec.name, Test::class.java) { task ->
                 task.testClassesDirs = testSourceSet.output.classesDirs
                 task.classpath = project.configurations.getByName(testSourceSet.runtimeClasspathConfigurationName) +
-                    testSourceSet.output +
-                    mainSourceSet.output +
-                    project.files(project.tasks.named("jar", Jar::class.java).get().archiveFile)
+                testSourceSet.output +
+                mainSourceSet.output
 
                 if (spec.runnerClass != null) {
                     task.filter.includeTestsMatching(spec.runnerClass)

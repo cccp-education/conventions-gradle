@@ -70,8 +70,7 @@ val cucumberTest = tasks.register<Test>("cucumberTest") {
     testClassesDirs = sourceSets.test.get().output.classesDirs
     classpath = configurations.testRuntimeClasspath.get() +
         sourceSets.test.get().output +
-        sourceSets.main.get().output +
-        files(tasks.jar.get().archiveFile)
+        sourceSets.main.get().output
     useJUnitPlatform { excludeEngines("junit-jupiter") }
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
     shouldRunAfter("test")

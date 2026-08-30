@@ -131,6 +131,39 @@ class CucumberConventionsFunctionalTest {
         assertTrue(result.task(":cucumberTest")?.outcome != null)
     }
 
+    @Test
+    fun `cucumberTest classpath does not redundantly include the project main jar`() {
+        settingsFile.writeText("rootProject.name = \"test-project\"")
+        buildFile.writeText("""
+            import org.gradle.api.tasks.testing.Test
+
+            plugins {
+                id("education.cccp.build.cucumber")
+            }
+
+            repositories {
+                mavenCentral()
+                gradlePluginPortal()
+            }
+
+            tasks.register("printCucumberClasspath") {
+                doLast {
+                    val cp = tasks.named("cucumberTest", Test::class.java).get().classpath.files
+                    val jar = tasks.named("jar", org.gradle.api.tasks.bundling.Jar::class.java).get().archiveFile.get().asFile
+                    println("CP_JAR_PRESENT=" + cp.any { it == jar })
+                }
+            }
+        """)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("printCucumberClasspath")
+            .withPluginClasspath()
+            .build()
+
+        assertTrue(result.output.contains("CP_JAR_PRESENT=false"))
+    }
+
     private val buildFile: File get() = testProjectDir.resolve("build.gradle.kts")
     private val settingsFile: File get() = testProjectDir.resolve("settings.gradle.kts")
 }
