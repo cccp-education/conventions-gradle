@@ -5,6 +5,24 @@
 
 '''
 
+== Session 017 — 2026-08-30
+Type:: publish
+Code:: CNV-PUB
+Titre:: Publication conventions-plugin 0.0.4 (Maven Local + Maven Central)
+Score:: 10/10
+
+*Contexte* : hygiène classpath Cucumber (suppression du `jar` projet redondant dans
+`CucumberConventionsPlugin` + `build.gradle.kts`) + test fonctionnel de régression
+`CP_JAR_PRESENT=false`. Bump 0.0.3 → 0.0.4 (commit `4dd158e`).
+
+*Publication* : `./gradlew publishToMavenLocal` (BUILD SUCCESSFUL) puis
+`./gradlew publishAggregationToCentralPortal --no-daemon` (portal AUTOMATIC,
+déploiement soumis, validation Central en cours). Aucun changement de comportement
+pour les consommateurs (runtimeClasspath + test.output + main.output conservés).
+
+*Note* : le `DuplicateStepDefinitionException` du borough document-gradle n'était PAS
+dû à ce plugin — root-cause corrigé côté document-gradle (S-223, commit `f67eb8e`).
+
 == Session 000 — 2026-06-19
 Type:: governance
 Code:: CNV-0

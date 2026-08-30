@@ -5,10 +5,12 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-07-31
-_session terminee_ : 016
-_session en cours_ : 017 — Maintenance réactive (borough liquidé)
-_Prochaine session_ : 018 — Maintenance réactive
+_Derniere mise a jour_ : 2026-08-30
+_session terminee_ : 017 — Maintenance réactive (borough liquidé)
+_session en cours_ : 018 — Maintenance réactive (ou EPIC futur)
+_Prochaine session_ : 019 — Maintenance réactive
+
+_Note 2026-08-30_ : conventions-plugin **0.0.4 publié** Maven Local + Maven Central (portal AUTOMATIC, bundle après validation). Cause : hygiène classpath Cucumber (suppression du `jar` projet redondant) + test fonctionnel de régression `CP_JAR_PRESENT=false`. Bump 0.0.3 → 0.0.4 (commit `4dd158e`). Note : le `DuplicateStepDefinitionException` du borough document-gradle n'était PAS dû à ce plugin (root-cause corrigé côté document-gradle S-223).
 
 '''
 
