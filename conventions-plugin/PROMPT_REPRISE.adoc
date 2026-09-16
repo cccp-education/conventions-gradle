@@ -30,11 +30,11 @@ bugs remontés par les boroughs consommateurs.
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR → VERIFY
 - 1 fichier à la fois, compile après chaque modif
-- Zéro subagent, zéro parallélisation
+- Parallélisation autorisée (décision pilote 2026-09-17)
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
 - 7 plugins 0.0.3, Java 25, Kotlin 2.4.10, Gradle 9.6.1
 - 44 Cucumber + 23 functional = 67 tests PASS
-- Zéro subagent, zéro parallélisation
+- Parallélisation autorisée (décision pilote 2026-09-17)
