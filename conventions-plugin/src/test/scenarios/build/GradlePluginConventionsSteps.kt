@@ -270,10 +270,13 @@ class GradlePluginConventionsSteps : En {
                     val java = extensions.getByName("java") as org.gradle.api.plugins.JavaPluginExtension
                     println("PROBE_JAVA_SOURCE=" + java.sourceCompatibility.majorVersion)
                     println("PROBE_JAVA_TARGET=" + java.targetCompatibility.majorVersion)
-                    val repoHosts = repositories.map { it.url.host ?: "local" }.toSet()
-                    println("PROBE_REPO_LOCAL=" + repoHosts.contains("local"))
-                    println("PROBE_REPO_CENTRAL=" + repoHosts.contains("repo.maven.apache.org"))
-                    println("PROBE_REPO_PLUGIN_PORTAL=" + repoHosts.contains("plugins.gradle.org"))
+                    val repoUrls = repositories
+                        .filterIsInstance<org.gradle.api.artifacts.repositories.MavenArtifactRepository>()
+                        .map { it.url.toString() }
+                        .toSet()
+                    println("PROBE_REPO_LOCAL=" + repoUrls.any { it.startsWith("file:") })
+                    println("PROBE_REPO_CENTRAL=" + repoUrls.any { it.contains("repo.maven.apache.org") })
+                    println("PROBE_REPO_PLUGIN_PORTAL=" + repoUrls.any { it.contains("plugins.gradle.org") })
                     println("PROBE_BUILD_CACHE_ENABLED=" + gradle.startParameter.isBuildCacheEnabled)
                     val test = tasks.withType(Test::class.java).first()
                     println("PROBE_JVMARGS=" + (test.jvmArgs ?: emptyList()).joinToString(","))
@@ -321,7 +324,7 @@ class GradlePluginConventionsSteps : En {
         probeResult?.let { return it.output }
         probeResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
-            .withArguments("probeConventions", "-q")
+            .withArguments("probeConventions")
             .withPluginClasspath()
             .build()
         return probeResult!!.output
