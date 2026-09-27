@@ -1,54 +1,61 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 019
+:session: 020
 :date: 2026-09-27
 :epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
 
-Session 018 (2026-09-27) — **Correction racine `koverThresholdCheck`** (bug latent
-producteur, déclenché par bakery mission A). Le chemin XML hardcodé
-(`reports/kover/xml/report.xml`) ne correspondait pas à la sortie kover 0.9.8
-(`reports/kover/report.xml`). Fix baby-step DDD/TDD/BDD : `KoverCoverage`
-objet pur (6 UT) + `resolveXmlReportFile` (propriété réelle
-`reports.total.xml.xmlFile` + fallback). **conventions-plugin 0.0.4 → 0.0.5**
-publié Central (bundle `08a7b16f-d90d-4d2f-b63e-0a4c0b7bfcc2`), 4 plugin markers
-repo1 200. Gates : `check` VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0).
+Session 019 (2026-09-27) — **Code review externe** (racine workspace), analyse
+du code réel sans se fier à la gouvernance. Rapport
+`.agents/sessions/019-code-review-0.0.5.adoc`. Zéro code modifié (lecture seule).
+État : `0.0.5` Central, adoption 15/23 boroughs, 789 LOC, 7 plugins.
 
-Session 017 (2026-07-31) — Maintenance réactive. Aucun bug remonté.
-Session 016 — CNV-12 ✅ TERMINÉ. 3/3 US livrées (8 pts).
-Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
+Session 018 (2026-09-27) — **Correction racine `koverThresholdCheck`** : chemin
+XML hardcodé → `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile`).
+`KoverCoverage` objet pur (6 UT). **0.0.4 → 0.0.5** publié Central (bundle
+`08a7b16f`). Gates : `check` VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0).
+
+Session 017 — Maintenance réactive. CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
 Borough LIQUIDÉ côté producteur.
 
-== Mission session 019 — Maintenance réactive
+== Mission session 020 — P1 de la review S-019
 
-Aucun EPIC actif. Le borough est en maintenance réactive uniquement :
-bugs remontés par les boroughs consommateurs.
+=== P1-A — Ajouter le CI `.github/workflows/test.yml`
 
-=== Bug candidat (découvert S-018, à cadrer)
+Le borough n'a **aucun CI**, contrairement à ses consommateurs (bakery, capsule,
+codebase). Incohérent avec la règle transverse 2026-09-27 *Local = Build,
+Tests = CI* : sans CI, le socle n'a aucune preuve de validité exécutable.
 
-* **`configureKover` no-op** : `invokeMethod(…, "currentProject")` ne matche
-  jamais le getter Java `getCurrentProject()` (Kotlin `val`) →
-  `includedSourceSets`/`onCheck` jamais posés depuis toujours. Intention
-  ambiguë : `includedSourceSets = {main, functionalTest}` exclurait `e2eTest`
-  de la couverture (impact seuil bakery). À cadrer avant correction.
+* Créer `.github/workflows/test.yml` (JDK 25 temurin, `./gradlew check`).
+* Attention : le projet racine **est** `conventions-plugin/` (`working-directory`).
 
-=== Si aucun bug remonté
+=== P1-B — `configureKover` no-op (à cadrer avant correction)
 
-- Vérifier `git status` → constater état clean
-- Vérifier `./gradlew check` → BUILD SUCCESSFUL
-- Mettre à jour PROMPT_REPRISE pour session 020 (même contenu)
-- Fermer la session
+`KoverConventionsPlugin.kt:27-62` configure Kover par réflexion ; l'appel
+`invokeMethod(…, "currentProject")` ne matche jamais le getter
+`getCurrentProject()` → `includedSourceSets`/`onCheck` jamais posés depuis
+toujours. Intention ambiguë : `includedSourceSets = {main, functionalTest}`
+exclurait `e2eTest` de la couverture (impact seuil bakery). **Cadrer d'abord**
+(remplacer la réflexion par l'API typée `KoverProjectExtension`, ou retirer),
+puis corriger baby-step.
 
-=== Si bug remonté
+=== P2 (review S-019)
 
-- Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR → VERIFY
-- 1 fichier à la fois, compile après chaque modif
-- Parallélisation autorisée (décision pilote 2026-09-17)
+* `additionalTasks` Cucumber non câblées à `check` — câbler ou documenter
+  l'opt-in (`CucumberConventionsPlugin.kt:52-54`).
+* Drift fallback `WORKSPACE_BOM_COORDINATES` `0.0.13` → BOM réel `0.0.58`
+  (`TestDependencies.kt:19`).
+
+== Workflow
+
+- Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
+- Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`).
+- **Tests = CI** (règle 2026-09-27) : pas de `test`/`check` local.
+- Parallélisation autorisée (décision pilote 2026-09-17).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
 - 7 plugins 0.0.5, Java 25, Kotlin 2.4.10, Gradle 9.8.0
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
-- Parallélisation autorisée (décision pilote 2026-09-17)

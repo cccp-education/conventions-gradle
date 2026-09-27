@@ -1,0 +1,143 @@
+= Session 019 — Code Review conventions-gradle (analyse du code, état 0.0.5)
+
+:session: 019
+:date: 2026-09-27
+:type: code review (lecture seule — zéro code modifié)
+:score: n/a
+
+== Mission
+
+Demande pilote : code review du borough `conventions-gradle`, rappeler son but
+et son état réel **en analysant le code**, sans se fier à l'historique de
+gouvernance. Review externe (racine workspace), rapport persisté dans le borough.
+
+== But (déduit du code)
+
+Socle **N0 de build-logic partagé** : 7 precompiled plugins Gradle centralisant
+des patterns de build redondants pour ~23 boroughs. Aucune logique métier.
+789 LOC prod, 12 fichiers, 6 source sets.
+
+[cols="3,2,2"]
+|===
+| Plugin id | Rôle | DSL
+| `education.cccp.build.gradle-plugin` | `java-gradle-plugin` + `kotlin-jvm` + Java 25 + sources/javadoc jars + test JUnit + deps test centralisées | `gradlePluginConventions`
+| `.publishing` | POM Maven Central (dev/scm/Apache 2.0) + signing conditionnel + relocation | `publishingConventions`
+| `.functional-test` | source set `functionalTest` + GradleTestKit + task + `check.dependsOn` | `functionalTestConventions`
+| `.cucumber` | features/scenarios + `cucumberTest` + `CucumberTaskSpec` multi-runner | `cucumberConventions`
+| `.lint` | ktlint 1.5.0 + detekt (conditionnel Java 25) | — |
+| `.kover` | Kover coverage + threshold check | `koverConventions`
+| `.logback-exclusion` | exclut `logback-classic` des classpaths test | — |
+|===
+
+== État réel (mesuré sur le code et les dépôts)
+
+* Version : **`0.0.5`** (commit `a7db92f`, poussé). Central `0.0.1→0.0.5`
+  (7 markers plugin HTTP 200) + Plugin Portal `0.0.4` confirmé, `0.0.5` en cours
+  de propagation.
+* Adoption : **15/23 boroughs** consomment ≥1 convention. Non migrés : academy,
+  agile, bureau, container-provision, dashboard, newpipe, ticket.
+* Tests : 47 scénarios Cucumber + 26 functional TestKit + 6 UT = ~79.
+* Compilation locale (règle Local = Build) : `compileKotlin compileTestKotlin
+  compileFunctionalTestKotlin` **VERTE**.
+
+== Adoption (matrice code)
+
+[cols="2,1,1,1,1,1,1"]
+|===
+| Borough | grad-plug | publish | functest | cucumber | lint | kover
+| bakery | ✅ | ✅ | — | — | ✅ | ✅
+| slider | ✅ | ✅ | ✅ | ✅ | — | —
+| capsule | ✅ | ✅ | ✅ | ✅ | — | —
+| document | ✅ | ✅ | ✅ | ✅ | — | —
+| graphify | ✅ | ✅ | ✅ | ✅ | — | —
+| flow | ✅ | ✅ | ✅ | ✅ | — | —
+| review | ✅ | ✅ | ✅ | ✅ | — | —
+| codebase/codex/planner/hyperframes/plantuml/readme | ✅ | ✅ | — | — | — | —
+| api-key-pool | — | ✅ | — | — | — | —
+|===
+
+== Findings
+
+=== 🔴 P1 — Aucun CI dans le repo
+
+`conventions-gradle` n'a **pas** de `.github/workflows/`, contrairement à ses
+consommateurs (bakery, capsule, codebase ont `test.yml`). C'est le seul borough
+sans CI alors qu'il est le socle de tous. Avec la règle « Local = Build,
+Tests = CI », ce borough n'a **aucune preuve de validité exécutable** hors local.
+
+=== 🔴 P1 — `configureKover` no-op silencieux
+
+`KoverConventionsPlugin.kt:27-62` configure Kover par réflexion
+(`invokeMethod` ×13, `catch (Exception) → null`). L'API Kover expose
+`currentProject` en getter (`getCurrentProject()`) et en fonction à 1 paramètre
+(`currentProject(Action)`). Le code cherche `name == "currentProject" &&
+parameterCount == 0` → matche le getter, puis tente `sources`/`includedSourceSets`/
+`reports`/`total`/`html`/`xml`/`onCheck`, absents sur cet objet → `null` en
+chaîne, **tous les échecs avalés**. Résultat : `includedSourceSets` et `onCheck`
+ne sont **jamais** configurés. Seul `koverThresholdCheck` fonctionne (il lit le
+XML). Bug **documenté mais non corrigé** par le commit `a7db92f`.
+
+=== 🟠 P2 — `additionalTasks` Cucumber non câblées à `check`
+
+`CucumberConventionsPlugin.kt:52-54` câble uniquement `cucumberTest` à `check`.
+Les `CucumberTaskSpec` supplémentaires (22 chez capsule, runners focalisés) ne
+sont **pas** dans `check` — ils sont lancés manuellement par la CI
+`full-tests.yml`. `./gradlew check` ne couvre donc pas la majorité des scénarios
+Cucumber d'un consommateur.
+
+=== 🟠 P2 — Drift fallback vs catalogue
+
+`TestDependencies.kt:19` : `WORKSPACE_BOM_COORDINATES = education.cccp:workspace-bom:0.0.13`
+alors que le BOM publié réel est **`0.0.58`** (45 versions d'écart). Fallback
+`assertj` `3.27.7` vs catalogue local `3.25.3`. Fallback `detekt 1.23.8`
+(abandonné sous Java 25).
+
+=== 🟡 P3 — Config cache vs `startParameter` muté
+
+`GradlePluginConventionsPlugin.kt:53` : `project.gradle.startParameter.isBuildCacheEnabled = true`
+muté dans `apply()`, hostile au configuration cache activé par ailleurs.
+`buildCache { local { isEnabled = true } }` serait correct.
+
+=== 🟡 P3 — Assertions BDD factices
+
+8 `assert(true) // verified by ... source` dans `GradlePluginConventionsSteps.kt`
+(defaults d'extension, override DSL, jvmArgs) — les scénarios passent sans rien
+vérifier sur la partie la plus critique (defaults de config).
+
+=== 🟡 P3 — `check.dependsOn(detekt)` fragile + detekt skippé Java 25
+
+`LintConventionsPlugin.kt:15-27` : detekt **silencieusement skippé** sous Java 25
+(le toolchain du workspace) → la convention `lint` ne fait **que ktlint** en
+pratique. `project.tasks.findByName("check")?.dependsOn(...)` peut être null
+selon l'ordre.
+
+=== 🔵 P4 — Traçabilité release
+
+Pas de tag git malgré 5 versions publiées ; version hardcodée
+(`build.gradle.kts:10`) ; BOM `0.0.58` contraint encore
+`conventions-plugin:0.0.4`.
+
+== Verdict
+
+Architecture **saine** : DDD, `KoverCoverage` objet pur testable, DSL propre,
+~1200 lignes de build supprimées côté consommateurs, adoption réelle 15/23.
+Mais la gouvernance (« borough LIQUIDÉ, maintenance réactive ») **contredit le
+code** : pas de CI, un bug production `configureKover` non corrigé, des runners
+non couverts par `check`, des fallbacks périmés.
+
+**Recommandation** : traiter P1 (CI + `configureKover`), puis P2 (câblage
+`additionalTasks` à `check` ou opt-in documenté). P3/P4 = dette acceptable.
+
+== Incident de session
+
+Le `HEAD` du borough a **changé pendant la review** : une session parallèle a
+committé `a7db92f` (fix Kover 0.0.5) alors que l'analyse était en cours —
+`KoverCoverage.kt` et `KoverThresholdCheckFunctionalTest.kt` sont passés de
+*untracked* à *tracked* pendant la revue. La review porte sur l'état final
+(HEAD `a7db92f`).
+
+== Zéro modification
+
+Review en **lecture seule** : aucun fichier de code modifié. Le présent rapport
+et la mise à jour gouvernance (INDEX, SESSIONS_HISTORY, PROMPT_REPRISE) sont les
+seuls écrits.

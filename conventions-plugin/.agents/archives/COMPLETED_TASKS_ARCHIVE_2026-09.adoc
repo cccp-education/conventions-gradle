@@ -1,0 +1,32 @@
+= Tâches Complétées — Septembre 2026
+
+== Session 018 (2026-09-27) — Correction racine `koverThresholdCheck`
+
+*Tâche* : corriger le chemin du rapport kover lu par `koverThresholdCheck`
+(bug latent producteur, déclenché par bakery S-245).
+*Statut* : ✅ TERMINÉ
+
+* Bug : chemin XML hardcodé `reports/kover/xml/report.xml` ≠ sortie kover 0.9.8
+  `reports/kover/report.xml` → `Kover report not found` systématique.
+* Fix baby-step DDD/TDD/BDD : `KoverCoverage` objet pur (6 UT) +
+  `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile` +
+  fallback défaut) + `KoverThresholdCheckFunctionalTest` (2 FT) +
+  `kover-threshold-check.feature` (3 scénarios).
+* Publication : `0.0.4 → 0.0.5` Central (bundle `08a7b16f`).
+* Gates : `check` VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0).
+* Constat documenté non corrigé : `configureKover` no-op (voir S-019 P1-B).
+
+== Session 019 (2026-09-27) — Code review conventions-gradle (état 0.0.5)
+
+*Tâche* : code review du borough en analysant le code réel (demande pilote).
+*Statut* : ✅ TERMINÉ (review, zéro code modifié)
+*Résultat* : rapport `.agents/sessions/019-code-review-0.0.5.adoc`.
+
+* But rappelé : socle N0 build-logic, 7 plugins, adoption 15/23 boroughs.
+* Findings : 🔴 P1 aucun CI dans le repo + `configureKover` no-op silencieux ;
+  🟠 P2 `additionalTasks` Cucumber hors `check` + drift fallback BOM `0.0.13`
+  vs `0.0.58` ; 🟡 P3 config cache/`startParameter`, assertions BDD factices,
+  detekt skippé Java 25 ; 🔵 P4 traçabilité release.
+* Incident : `HEAD` déplacé par session parallèle (`a7db92f`) pendant la review.
+* Mission S-020 : P1-A (CI `.github/workflows/test.yml`) + P1-B
+  (`configureKover`, cadrer puis corriger/retirer).

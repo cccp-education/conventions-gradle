@@ -5,215 +5,7 @@
 
 '''
 
-== Session 017 — 2026-08-30
-Type:: publish
-Code:: CNV-PUB
-Titre:: Publication conventions-plugin 0.0.4 (Maven Local + Maven Central)
-Score:: 10/10
 
-*Contexte* : hygiène classpath Cucumber (suppression du `jar` projet redondant dans
-`CucumberConventionsPlugin` + `build.gradle.kts`) + test fonctionnel de régression
-`CP_JAR_PRESENT=false`. Bump 0.0.3 → 0.0.4 (commit `4dd158e`).
-
-*Publication* : `./gradlew publishToMavenLocal` (BUILD SUCCESSFUL) puis
-`./gradlew publishAggregationToCentralPortal --no-daemon` (portal AUTOMATIC,
-déploiement soumis, validation Central en cours). Aucun changement de comportement
-pour les consommateurs (runtimeClasspath + test.output + main.output conservés).
-
-*Note* : le `DuplicateStepDefinitionException` du borough document-gradle n'était PAS
-dû à ce plugin — root-cause corrigé côté document-gradle (S-223, commit `f67eb8e`).
-
-== Session 000 — 2026-06-19
-Type:: governance
-Code:: CNV-0
-Titre:: Bootstrap gouvernance Conventions
-Score:: 10/10
-Duree:: 1 session
-
-**Créations** :
-- `conventions-gradle/` avec `.git/` initialise + remote `origin` configure
-- `conventions-plugin/.agents/` (sessions/, archives/, encyclopedies/, backup/)
-- `AGENT.adoc` — gouvernance complete (regles, architecture, 4 convention plugins)
-- `.agents/INDEX.adoc` — dashboard, roadmap, portefeuille 26 boroughs
-- `.agents/CODE_REVIEW_GLOBALE.adoc` — analyse 8 familles de redondances cross-borough
-- `BACKLOG.adoc` — 6 EPICs (CNV-0→CNV-6) + PUB, 57 pts
-- `PROMPT_REPRISE.adoc`, `opencode.json`, `LAZY_EAGER_ESSENTIALS.adoc`, `TODO.adoc`
-- Root `AGENTS.adoc` mis a jour (27 Boroughs)
-- Refactoring : ABIDJAN supprime des fichiers publics, conserve dans jardin secret
-
-**Fichiers** :
-- `conventions-gradle/.gitignore`
-- `conventions-gradle/settings.gradle.kts`
-- `conventions-gradle/LICENSE`
-
-== Session 001 — 2026-06-26
-Type:: dev
-Code:: CNV-1
-Titre:: Squelette conventions-plugin + GradlePluginConventionsPlugin
-Score:: 10/10
-Duree:: 1 session
-
-**Creations** :
-- `build.gradle.kts` (Gradle 9.5.1, Kotlin 2.3.20, java-gradle-plugin, maven-publish, plugin-publish)
-- `GradlePluginConventionsPlugin.kt` — plugin binaire (apply java-gradle-plugin + kotlin-jvm + maven-publish, Java 24, withSourcesJar, withJavadocJar, JUnit testLogging)
-- functional tests (GradleTestKit) : 3/3 PASS
-- Cucumber BDD (3 scenarios) : 3/3 PASS
-- `publishToMavenLocal` valide
-
-**Fichiers** :
-- `build.gradle.kts`
-- `gradle/wrapper/gradle-wrapper.properties`, `gradlew`, `gradlew.bat`
-- `src/main/kotlin/education/cccp/build/GradlePluginConventionsPlugin.kt`
-- `src/functionalTest/kotlin/.../GradlePluginConventionsFunctionalTest.kt`
-- `src/test/scenarios/.../CucumberTestRunner.kt`, `GradlePluginConventionsSteps.kt`
-- `src/test/resources/features/gradle-plugin-conventions.feature`, `cucumber.properties`
-
-**Decisions** :
-- Plugin binaire (pas precompiled script) pour fiabilite includeBuild()
-- Build a la racine conventions-gradle/ (pas subproject)
-
-== Session 002 — 2026-06-27
-Type:: dev
-Code:: CNV-2
-Titre:: PublishingConventionsPlugin
-Score:: 10/10
-Duree:: 1 session
-
-**Creations** :
-- `PublishingConventionsPlugin.kt` : POM Maven Central (developers cccp-education, scm, Apache-2.0), signing conditionnel (CI/SNAPSHOT), relocation, publicationType
-- Extension `publishingConventions` : publicationType, relocationGroupId, relocationArtifactId
-- Functional tests : 3/3 PASS
-- Cucumber BDD (3 scenarios) : 3/3 PASS
-
-**Fichiers** :
-- `src/main/kotlin/education/cccp/build/PublishingConventionsPlugin.kt`
-- `src/functionalTest/kotlin/.../PublishingConventionsFunctionalTest.kt`
-- `src/test/scenarios/.../PublishingConventionsSteps.kt`
-- `src/test/resources/features/publishing-conventions.feature`
-
-**Modifications** :
-- `build.gradle.kts` : registration publishing plugin dans gradlePlugin
-
-== Session 003 — 2026-06-27
-Type:: dev
-Code:: CNV-3
-Titre:: FunctionalTestConventionsPlugin
-Score:: 10/10
-Duree:: 1 session
-
-**Creations** :
-- `FunctionalTestConventionsPlugin.kt` — source set functionalTest, dependencies (gradleTestKit, JUnit 5, AssertJ), task registration, check.dependsOn
-- `FunctionalTestConventionsExtension.kt` — sourceSetName, additionalDependencies
-- `gradle/libs.versions.toml` — version catalog (Kotlin 2.3.20, JUnit 5.12.2, Cucumber 7.34.3, AssertJ 3.25.3, plugin-publish 1.3.0)
-- Plugin utilise acces programmatique au version catalog (`VersionCatalogsExtension`)
-- Build migre vers `libs.*` (TOML) + workspace-bom importe
-- Functional tests (GradleTestKit) : 4/4 PASS
-- Cucumber BDD (3 scenarios) : 3/3 PASS
-
-**Fichiers** :
-- `src/main/kotlin/build/FunctionalTestConventionsPlugin.kt`
-- `src/main/kotlin/build/FunctionalTestConventionsExtension.kt`
-- `src/functionalTest/kotlin/build/FunctionalTestConventionsFunctionalTest.kt`
-- `src/test/scenarios/build/FunctionalTestConventionsSteps.kt`
-- `src/test/resources/features/functional-test-conventions.feature`
-- `gradle/libs.versions.toml`
-
-**Modifications** :
-- `build.gradle.kts` : registration functionalTest plugin + migration TOML catalog + workspace-bom
-- `src/test/scenarios/.../CucumberTestRunner.kt` : glue `build` ajoute
-
-== Session 004 — 2026-06-27
-Type:: dev
-Code:: CNV-4
-Titre:: CucumberConventionsPlugin
-Score:: 10/10
-Duree:: 1 session
-
-**Creations** :
-- `CucumberConventionsPlugin.kt` — source set features/scenarios, cucumberTest task avec JUnit Platform exclusion jupiter, test filter *.scenarios.*, check.dependsOn, multi-task CucumberTaskSpec support
-- `CucumberConventionsExtension.kt` — featuresDir, scenariosDir, parallel, timeoutMinutes, additionalTasks (List<CucumberTaskSpec>)
-- `build/conventions-plugin/build.gradle.kts` — subproject build avec registrations des 4 plugins
-- Migration `src/` de la racine git vers `conventions-plugin/` (architecture conforme AGENT.adoc)
-- `settings.gradle.kts` : `include("conventions-plugin")`
-- `build.gradle.kts` racine simplifie : root project minimal
-- Functional tests (GradleTestKit) : 4/4 PASS
-- Cucumber BDD (4 scenarios) : 4/4 PASS
-
-**Fichiers** :
-- `conventions-plugin/src/main/kotlin/education/cccp/build/CucumberConventionsPlugin.kt`
-- `conventions-plugin/src/main/kotlin/education/cccp/build/CucumberConventionsExtension.kt`
-- `conventions-plugin/src/functionalTest/kotlin/.../CucumberConventionsFunctionalTest.kt`
-- `conventions-plugin/src/test/scenarios/.../CucumberConventionsSteps.kt`
-- `conventions-plugin/src/test/resources/features/cucumber-conventions.feature`
-- `conventions-plugin/build.gradle.kts`
-
-**Modifications** :
-- `build.gradle.kts` (root) : simplifié en root project
-- `settings.gradle.kts` : `include("conventions-plugin")` ajoute
-- `.agents/INDEX.adoc` : CNV-4 ✅, session 004, prochaine session 005 CNV-5
-- `.agents/TEST_COVERAGE_ANALYSIS.adoc` : CNV-4 coverage ajoute
-- `BACKLOG.adoc` : CNV-4 marque ✅ TERMINE
-- `PROMPT_REPRISE.adoc` : mission session 005
-
-== Session 005 — 2026-06-27
-Type:: arch
-Code:: ARCH
-Titre:: Architecture Plugin Indépendant + Racine Consommateur
-Score:: 10/10
-Duree:: 1 session
-
-**Modifications** :
-- Root `settings.gradle.kts` : suppression `include("conventions-plugin")`
-- `conventions-plugin/settings.gradle.kts` : creation (rootProject.name = "conventions-plugin")
-- `gradle/libs.versions.toml` copie dans `conventions-plugin/gradle/libs.versions.toml`
-- Root `gradle/libs.versions.toml` : simplifié (consumer minimal)
-- Root `build.gradle.kts` : consommateur dogfood (apply cucumber from mavenLocal)
-- Wrapper : gradlew, gradlew.bat, gradle/wrapper/ copies dans conventions-plugin/
-
-**Fichiers créés** :
-- `conventions-plugin/settings.gradle.kts`
-- `conventions-plugin/gradle/libs.versions.toml`
-- `conventions-plugin/gradlew`
-- `conventions-plugin/gradlew.bat`
-- `conventions-plugin/gradle/wrapper/gradle-wrapper.properties`
-- `conventions-plugin/gradle/wrapper/gradle-wrapper.jar`
-
-**Fichiers modifiés** :
-- `settings.gradle.kts` (root)
-- `build.gradle.kts` (root)
-- `gradle/libs.versions.toml` (root)
-
-**Tests** : `./gradlew check` depuis conventions-plugin/ — 12 tasks BUILD SUCCESSFUL.
-`./gradlew tasks` depuis root/ — BUILD SUCCESSFUL (plugin résolu depuis mavenLocal).
-
-== Session 006 — 2026-06-27
-Type:: dev
-Code:: CNV-5
-Titre:: Migration Dogfood 3/3 — codebase-gradle
-Score:: 10/10
-Duree:: 1 session
-
-**Modifications US-5.2 (codebase-gradle)** :
-- Plugins block : `signing`, `maven-publish`, `java-gradle-plugin`, `kotlin.jvm 2.3.20` → conventions `gradle-plugin` + `publishing`
-- Supprime `java { withJavadocJar(); withSourcesJar() }` (convention)
-- Supprime `kotlin.jvmToolchain(24)` (convention)
-- Supprime `publishing {}` (POM + relocation 44 lignes → convention)
-- Supprime `signing {}` (convention)
-- Ajoute `publishingConventions { publicationType = "PLUGIN" }`
-- Garde : 32 cucumber tasks custom, `java-library`, `kotlin.serialization`, `kover`, `com.gradle.plugin-publish`
-- Réduction : 356 → 301 lignes (-55)
-
-**US-5.1 (dashboard-gradle)** : 141 → 33 lignes, 34 tests PASS (session 005)
-**US-5.3 (capsule-gradle)** : 131 → 80 lignes, compile + functional tests OK (session 005)
-
-**Bug fixes** (sessions 005-006):
-- FunctionalTestConventionsPlugin : source set créé dans `apply()` (pas `afterEvaluate`) pour que `java-gradle-plugin` enregistre les métadonnées correctement
-- `gradleTestKit()` shorthand remplace la coordinate Maven qui cassait
-- capsule-gradle : `afterEvaluate` workaround pour `extendsFrom(testImplementation)` car la convention ne cascade pas les dépendances test
-
-**CNV-5 TERMINE** — 3 profils validés : nouveau (dashboard), mature (codebase), legacy (capsule).
-
-'''
 == Session 007 — 2026-06-27
 Type:: dev
 Code:: CNV-6
@@ -515,3 +307,34 @@ Duree:: 1 session
 
 **CNV-12 TERMINE** — 3/3 US livrées (8 pts). Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
 Borough LIQUIDÉ côté producteur. Maintenance réactive uniquement.
+
+'''
+
+== Session 019 — 2026-09-27
+Type:: review
+Code:: REVIEW-019
+Titre:: Code review conventions-gradle (analyse du code, état 0.0.5)
+Score:: 10/10
+Duree:: 1 session
+
+**Review externe (lecture seule, zéro code modifié)** — analyse du code réel
+sans se fier à la gouvernance (789 LOC prod, 12 fichiers, 7 plugins, adoption
+15/23 boroughs, `0.0.5` Central). Rapport
+`.agents/sessions/019-code-review-0.0.5.adoc`.
+
+**Findings** :
+- 🔴 P1 — **Aucun CI dans le repo** (seul borough sans `.github/workflows/`),
+  incohérent avec la règle transverse *Local = Build, Tests = CI* (2026-09-27).
+- 🔴 P1 — **`configureKover` no-op silencieux** : réflexion `invokeMethod` ×13,
+  `currentProject` jamais matché → `includedSourceSets`/`onCheck` jamais posés.
+- 🟠 P2 — `additionalTasks` Cucumber non câblées à `check` (22 runners capsule).
+- 🟠 P2 — drift fallback `WORKSPACE_BOM_COORDINATES` `0.0.13` vs BOM `0.0.58`.
+- 🟡 P3 — config cache vs `startParameter` muté ; 8 assertions BDD factices ;
+  `check.dependsOn(detekt)` fragile + detekt skippé Java 25.
+- 🔵 P4 — pas de tag git ; version hardcodée ; BOM contraint 0.0.4.
+
+**Incident** : `HEAD` déplacé par session parallèle (`a7db92f`, fix Kover 0.0.5)
+pendant la review.
+
+**Verdict** : architecture saine, mais gouvernance « LIQUIDÉ » contredit le code
+(P1 non traités). Mission S-020 : P1-A (CI) + P1-B (`configureKover`).

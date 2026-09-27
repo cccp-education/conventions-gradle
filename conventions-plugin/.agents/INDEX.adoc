@@ -6,9 +6,16 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-09-27
-_session terminee_ : 018 — Correction racine `koverThresholdCheck` (bug latent producteur, remonté par bakery S-245)
-_session en cours_ : 019 — Maintenance réactive (ou EPIC futur)
-_Prochaine session_ : 019 — Maintenance réactive
+_session terminee_ : 019 — Code review conventions-gradle (analyse du code, état 0.0.5)
+_session en cours_ : 020 — P1 review S-019 (CI + `configureKover`)
+_Prochaine session_ : 020 — P1 review S-019 (CI + `configureKover`)
+
+_Note 2026-09-27 (S-019)_ : **Code review externe** (racine workspace, lecture
+seule). Rapport `.agents/sessions/019-code-review-0.0.5.adoc`. Findings P1 :
+**aucun CI dans le repo** (seul borough sans `.github/workflows/`) +
+`configureKover` no-op silencieux (réflexion jamais matchée). P2 :
+`additionalTasks` Cucumber hors `check` + drift fallback BOM `0.0.13` vs `0.0.58`.
+Mission S-020 : P1-A (CI) + P1-B (`configureKover`).
 
 _Note 2026-09-27 (S-018)_ : conventions-plugin **0.0.5 publié** Maven Local + Maven Central (bundle `08a7b16f-d90d-4d2f-b63e-0a4c0b7bfcc2`, AUTOMATIC ; 4 plugin markers repo1 200). Cause : le chemin de rapport `koverThresholdCheck` était **hardcodé** (`reports/kover/xml/report.xml`) alors que kover 0.9.8 écrit `reports/kover/report.xml` ; fix = `KoverCoverage` objet pur (6 UT) + `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile` + fallback) + 2 FT + 3 scénarios BDD. **Découverte** : `configureKover` est **no-op** (`invokeMethod "currentProject"` ≠ getter Java `getCurrentProject()`) — bug latent distinct, documenté au BACKLOG, non corrigé (sémantique ambiguë).
 
