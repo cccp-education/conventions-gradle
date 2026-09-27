@@ -262,23 +262,23 @@ class GradlePluginConventionsSteps : En {
 
             tasks.register("probeConventions") {
                 doLast {
-                    val ext = extensions.getByName("gradlePluginConventions") as GradlePluginConventionsExtension
+                    val ext = project.extensions.getByName("gradlePluginConventions") as GradlePluginConventionsExtension
                     println("PROBE_ENABLE_DYNAMIC_AGENT=" + ext.enableDynamicAgentLoading)
                     println("PROBE_MAX_HEAP=" + ext.maxHeapSize)
                     println("PROBE_PARALLEL=" + ext.parallelExecution)
                     println("PROBE_FIX_ANNOTATIONS=" + ext.fixAnnotationsConflict)
-                    val java = extensions.getByName("java") as org.gradle.api.plugins.JavaPluginExtension
+                    val java = project.extensions.getByName("java") as org.gradle.api.plugins.JavaPluginExtension
                     println("PROBE_JAVA_SOURCE=" + java.sourceCompatibility.majorVersion)
                     println("PROBE_JAVA_TARGET=" + java.targetCompatibility.majorVersion)
-                    val repoUrls = repositories
+                    val repoUrls = project.repositories
                         .filterIsInstance<org.gradle.api.artifacts.repositories.MavenArtifactRepository>()
                         .map { it.url.toString() }
                         .toSet()
                     println("PROBE_REPO_LOCAL=" + repoUrls.any { it.startsWith("file:") })
                     println("PROBE_REPO_CENTRAL=" + repoUrls.any { it.contains("repo.maven.apache.org") })
                     println("PROBE_REPO_PLUGIN_PORTAL=" + repoUrls.any { it.contains("plugins.gradle.org") })
-                    println("PROBE_BUILD_CACHE_ENABLED=" + gradle.startParameter.isBuildCacheEnabled)
-                    val test = tasks.withType(Test::class.java).first()
+                    println("PROBE_BUILD_CACHE_ENABLED=" + project.gradle.startParameter.isBuildCacheEnabled)
+                    val test = project.tasks.withType(org.gradle.api.tasks.testing.Test::class.java).first()
                     println("PROBE_JVMARGS=" + (test.jvmArgs ?: emptyList()).joinToString(","))
                     println("PROBE_TEST_MAXHEAP=" + test.maxHeapSize)
                     println("PROBE_JUNIT_PARALLEL=" + test.systemProperties["junit.jupiter.execution.parallel.enabled"])
