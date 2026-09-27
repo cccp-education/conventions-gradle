@@ -257,3 +257,41 @@ Zéro changement de code source dans conventions-plugin.
 **Découverte** : `configureKover` est **no-op** — `invokeMethod(…, "currentProject")`
 ne matche jamais le getter Java `getCurrentProject()`. Bug latent distinct,
 documenté au backlog (sémantique ambiguë), non corrigé.
+
+== Session 020 — P1 review S-019 (CI) + bug signature révélé par le CI
+
+**Mission** : ajouter le CI (P1-A) et corriger le bug signature latent que le
+premier run CI a révélé. P1-B (`configureKover`) livré par session parallèle.
+
+**Unit tests (JUnit 5)** : +4 (total 15 PASS)
+- `SigningPolicyTest` — non-CI non-snapshot signe ; CI ne signe pas ;
+  snapshot ne signe pas ; snapshot+CI ne signe pas. (DDD : `SigningPolicy`
+  objet pur, remplace la condition inline `!isCI && !endsWith("-SNAPSHOT")`.)
+
+**Functional tests (GradleTestKit)** : +2 (total 28 PASS)
+- `KoverReportSourcesFunctionalTest` (session parallèle) — `kover measures main
+  and functionalTest only`, `kover attaches html and xml reports to check`.
+
+**Cucumber BDD** : +2 scénarios + 1 scénario rendu déterministe (total 49 PASS)
+- `kover-conventions.feature` (session parallèle) — « Kover measures the
+  production and functional test source sets only » + « Kover attaches the HTML
+  and XML reports to check ».
+- `publishing-conventions.feature` — « Publishing plugin signs publications
+  conditionally » : step rendu déterministe (`withEnvironment` retirant `CI`,
+  GH Actions l'exportant à `true`). Sans fix, ce scénario échouait en CI.
+
+**Preuve de validité (Local = Build, Tests = CI)** : aucun test en local. Runs CI :
+- `36349502503` (`28ac565`) ❌ 1 scénario signature — le CI révèle le bug.
+- `36349992044` (`7bcb079`) ✅ signature déterministe.
+- `36350037003` (`fdea1ea`) ✅ **baseline verte** : 15 UT + 28 FT + 49 scénarios.
+
+**Nouveaux fichiers** :
+- `build/SigningPolicy.kt` (objet pur, 15 lignes)
+- `test/kotlin/build/SigningPolicyTest.kt` (4 UT)
+
+**Fichiers modifiés** :
+- `build/PublishingConventionsPlugin.kt` : `shouldSign` délègue à `SigningPolicy`
+- `test/scenarios/build/PublishingConventionsSteps.kt` : `ciUnset` +
+  `withEnvironment(System.getenv() - "CI")`
+
+**Couverture cumulée** : 49/49 Cucumber + 28/28 functional + 15/15 unit = 92 tests PASS.

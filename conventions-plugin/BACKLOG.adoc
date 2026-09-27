@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-07-31 — CNV-12 ✅ TERMINÉ (session 016), borough LIQUIDÉ
+_Derniere mise a jour_ : 2026-09-27 — S-020 ✅ P1 review S-019 (CI + `configureKover` + bug signature CI)
 
 '''
 
@@ -410,7 +410,59 @@ Le défaut devrait être `"PLUGIN"` (cas majoritaire) ou auto-détecté.
 * [x] `./gradlew check` VERT (zéro régression)
 '''
 
+== ✅ TERMINE — P1 review S-019 (2026-09-27) : CI + `configureKover` + bug signature
+
+_Réponse aux 2 findings P1 de la code review S-019 (`.agents/sessions/019-code-review-0.0.5.adoc`)._
+
+[cols="1,4,2"]
+|===
+| US | Description | Statut
+
+| S20-P1A
+| CI `.github/workflows/test.yml` (JDK 25, `./gradlew check`, `working-directory: conventions-plugin`) + `settings.gradle.kts` creds nmcp `error(...)` → `?: ""` (un runner CI n'a pas `~/.gradle/gradle.properties`)
+| ✅ S-020 (commit `28ac565`)
+
+| S20-P1A-bis
+| Bug latent révélé par le 1er run CI : scénario « signs publications conditionally » supposait `CI` absent, or GH Actions exporte `CI=true` → `SigningPolicy` objet pur (4 UT) + TestKit `withEnvironment` retirant `CI`
+| ✅ S-020 (commit `7bcb079`)
+
+| S20-P1B
+| `configureKover` réécrit en DSL typé `KoverProjectExtension` + `KoverReportSources` (main + functionalTest ; e2eTest exclu) + 5 UT + 2 FT + 2 scénarios ; **0.0.5 → 0.0.6** Central (session parallèle)
+| ✅ S-020 (commit `fdea1ea`, bundle `701a5568`)
+|===
+
+Gates : CI run `36350037003` **BUILD SUCCESSFUL** — 15 UT + 28 FT + 49 scénarios, 0 échec.
+
+=== 🟡 À FAIRE — P2/P3 review S-019 (session 021)
+
+[cols="1,4,2"]
+|===
+| # | Finding | Priorite
+
+| P2-A
+| Drift fallback `WORKSPACE_BOM_COORDINATES` `0.0.13` → BOM réel `0.0.58` (`TestDependencies.kt:19`)
+| 🟠 P2
+
+| P2-B
+| `additionalTasks` Cucumber non câblées à `check` (`CucumberConventionsPlugin.kt:52-54`) — **cadrer l'intention** (opt-in documenté vs `check.dependsOn` systématique ; impact temps `check` capsule, 22 runners)
+| 🟠 P2
+
+| P3-1
+| Config cache vs `startParameter.isBuildCacheEnabled` muté (`GradlePluginConventionsPlugin.kt:53`)
+| 🟡 P3
+
+| P3-2
+| 8 assertions BDD factices `assert(true) // verified by source` (`GradlePluginConventionsSteps.kt`)
+| 🟡 P3
+
+| P3-3
+| `check.dependsOn(detekt)` fragile + detekt skippé Java 25 (`LintConventionsPlugin.kt:15-27`)
+| 🟡 P3
+|===
+
+'''
 == ✅ TERMINE — Maintenance S-018 (2026-09-27) : correction racine `koverThresholdCheck`
+
 
 _Bug latent producteur remonté par bakery (Bushwick, mission A S-245)._
 
@@ -441,14 +493,14 @@ _Bug latent producteur remonté par bakery (Bushwick, mission A S-245)._
 
 Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/0**).
 
-=== 🟡 À FAIRE — bug latent `configureKover` no-op (découvert S-018)
+=== ✅ TERMINE — bug latent `configureKover` no-op (découvert S-018, corrigé S-020)
 
-* `invokeMethod(…, "currentProject")` ne matche jamais le getter Java
+* `invokeMethod(…, "currentProject")` ne matchait jamais le getter Java
   `getCurrentProject()` (Kotlin `val`) → `includedSourceSets` / `onCheck`
-  jamais posés depuis toujours (silencieusement no-op).
-* Corriger en typé (`kover.extension as KoverProjectExtension`) — mais **cadrer
-  d'abord l'intention** : `includedSourceSets = {main, functionalTest}` exclurait
-  `e2eTest` de la couverture bakery (impact seuil). Bump 0.0.6, propager.
+  jamais posés (silencieusement no-op).
+* **Corrigé S-020** (P1-B, commit `fdea1ea`) : réécriture en DSL typé
+  `KoverProjectExtension` + objet pur `KoverReportSources`. **0.0.6** publié
+  Central (bundle `701a5568`).
 
 '''
 

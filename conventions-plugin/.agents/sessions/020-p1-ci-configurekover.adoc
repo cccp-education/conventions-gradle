@@ -1,0 +1,138 @@
+= Session 020 — P1 review S-019 : CI + `configureKover` + bug signature révélé par le CI
+
+:session: 020
+:date: 2026-09-27
+:type: dev / maintenance réactive
+:epic: P1 review S-019
+:score: 10/10
+:duration: 1 session
+
+== Mission
+
+Traiter les 2 findings **P1** de la code review S-019 :
+
+* **P1-A** — le borough n'avait **aucun CI** (seul du socle sans
+  `.github/workflows/`), incohérent avec la règle transverse *Local = Build,
+  Tests = CI*.
+* **P1-B** — `configureKover` était un **no-op silencieux** (réflexion
+  `invokeMethod(…, "currentProject")` jamais matchée → `includedSourceSets` et
+  `onCheck` jamais posés).
+
+== Contexte d'exécution — session parallèle
+
+Deux sessions opencode travaillaient S-020 en parallèle sur le même working
+tree. Arbitrage pilote : **une seule session possède le borough**. La session
+parallèle a livré P1-B (`fdea1ea`) ; la présente session a livré P1-A
+(`28ac565`) puis le correctif du bug révélé par le CI (`7bcb079`). Les trois
+commits sont poussés et **le CI est vert** sur le dernier (`36350037003`).
+
+== Livrables
+
+[cols="1,3,2,2"]
+|===
+| Commit | Contenu | Fichiers | CI
+| `28ac565` | **P1-A** — `.github/workflows/test.yml` (JDK 25, `./gradlew check`, `working-directory: conventions-plugin`) + `settings.gradle.kts` : creds nmcp `error(...)` → `""` (sans quoi la CI ne peut pas configurer, `~/.gradle/gradle.properties` absent) | 2 | rouge (révèle le bug signature)
+| `7bcb079` | **Bug latent révélé par le CI** — scénario « signs publications conditionally » rendu déterministe (`SigningPolicy` objet pur + 4 UT + TestKit `withEnvironment` retirant `CI`) | 4 | **vert** (`36349992044`)
+| `fdea1ea` | **P1-B** (session parallèle) — `configureKover` réécrit en DSL typé `KoverProjectExtension` + `KoverReportSources` objet pur (main + functionalTest ; e2eTest exclu) + 5 UT + 2 FT + 2 scénarios BDD ; bump **0.0.5 → 0.0.6** publié Central (bundle `701a5568`, 7 markers repo1 200) | 7 | **vert** (`36350037003`)
+|===
+
+== Baby-step DDD/TDD/BDD
+
+=== P1-A — CI (infrastructure)
+
+Pas de test : c'est la **preuve de validité** elle-même. Le workflow suit le
+patron des boroughs voisins (bakery, codebase) : `actions/setup-java@v4`
+JDK 25 temurin, `gradle/actions/setup-gradle@v4`, `./gradlew check` depuis
+`conventions-plugin/`.
+
+**Blocage découvert** : `settings.gradle.kts` faisait
+`error("ossrhUsername not found")` quand `~/.gradle/gradle.properties` est
+absent — ce qui est toujours le cas sur un runner CI. Le build échouait **en
+configuration**, avant toute tâche de test. Fix aligné sur `workspace-bom` :
+fallback `?: ""` (la publication échoue toujours bruyamment si les creds
+manquent).
+
+=== Bug signature — DDD/TDD/BDD (révélé par le CI)
+
+Le **premier run CI** (`36349502503`) est rouge : `:test` 53/1 et
+`:cucumberTest` 49/1, un seul scénario fautif — « Publishing plugin signs
+publications conditionally » (`PublishingConventionsSteps.kt:120`,
+`AssertionError: Expected signing tasks in output`).
+
+**Cause racine** : le scénario teste la branche *non-CI*
+(`shouldSign = !isCI && !snapshot`), mais **GitHub Actions exporte `CI=true`**.
+Le test ne pouvait passer qu'en local — précisément le trou que l'ajout du CI
+devait révéler (règle *Local = Build, Tests = CI*).
+
+* **DDD** — `build.SigningPolicy` objet pur (`shouldSign(isCi, version)`,
+  `CI_ENV_VAR`), sans type Gradle. `PublishingConventionsPlugin.shouldSign`
+  délègue.
+* **TDD** — `SigningPolicyTest` 4 UT (non-CI non-snapshot, CI, snapshot,
+  snapshot+CI).
+* **BDD** — le step `CI is not set …` positionne `ciUnset` ; le Then fork
+  TestKit avec `withEnvironment(System.getenv() - "CI")` (environnement complet
+  préservé, seule la variable `CI` retirée) → déterministe en CI comme en local.
+
+=== P1-B — `configureKover` (session parallèle)
+
+`KoverReportSources` (objet pur : `MAIN`, `FUNCTIONAL_TEST`, `included`,
+`isIncluded`) + `configureKover` en DSL typé :
+`kover.currentProject { sources { includedSourceSets.addAll(...) } }` et
+`kover.reports.total { html/xml { onCheck.set(true) } }`. `e2eTest` exclu (hors
+`check`, Playwright). RED prouvé par revert ciblé → GREEN.
+
+== Preuve de validité — CI GitHub Actions
+
+Règle **Local = Build, Tests = CI** appliquée à la lettre : aucun `test`,
+`check`, `cucumberTest` ni `functionalTest` lancé en local. Seul gate local :
+
+[source,bash]
+----
+./gradlew --no-daemon clean compileKotlin compileTestKotlin compileFunctionalTestKotlin
+# BUILD SUCCESSFUL
+----
+
+Preuve exécutable = les runs CI :
+
+[cols="1,2,2,2"]
+|===
+| Run | Commit | Verdict | Détail
+| `36349502503` | `28ac565` | ❌ échec | 1 scénario signature (CI=true) — le CI fait son travail
+| `36349992044` | `7bcb079` | ✅ succès 2m45s | signature déterministe
+| `36350037003` | `fdea1ea` | ✅ succès 3m02s | P1-B + signature, **baseline verte**
+|===
+
+Compteurs baseline verte (`36350037003` — `./gradlew check`) :
+
+* **unit** : 15 UT (KoverCoverage 6 + KoverReportSources 5 + SigningPolicy 4)
+* **functional** : 28 FT TestKit (8 classes)
+* **cucumber** : 49 scénarios (8 features)
+* `check` **BUILD SUCCESSFUL** — 0 échec
+
+== Décisions
+
+[cols="1,3,2"]
+|===
+| # | Décision | Motif
+| D1 | CI suit le patron des boroughs voisins (JDK 25, `./gradlew check`) | cohérence socle N0
+| D2 | creds nmcp `?: ""` (pas `error`) | un runner CI n'a pas `~/.gradle/gradle.properties` ; la publication échoue toujours bruyamment en aval
+| D3 | `SigningPolicy` objet pur | décision testable sans build Gradle ; rend la branche CI explicite
+| D4 | TestKit `withEnvironment` (env complet − `CI`) | détermine la branche non-CI sans casser `PATH`/`HOME`
+| D5 | Une seule session possède le borough | évite les écritures croisées (arbitrage pilote)
+|===
+
+== Reste (P2/P3 — review S-019)
+
+* 🟠 P2 — `additionalTasks` Cucumber non câblées à `check`
+  (`CucumberConventionsPlugin.kt:52-54`).
+* 🟠 P2 — drift fallback `WORKSPACE_BOM_COORDINATES` `0.0.13` → BOM réel
+  `0.0.58` (`TestDependencies.kt:19`).
+* 🟡 P3 — config cache vs `startParameter` muté ; assertions BDD factices ;
+  detekt skippé Java 25.
+
+== Incidents
+
+* Collision de session sur le même working tree (2 sessions S-020). Résolue par
+  arbitrage : périmètres disjoints, P1-A + fix signature pour cette session,
+  P1-B pour la parallèle. Aucune perte de travail (les 3 commits cohabitent).
+* `configureKover` no-op documenté S-018 est **corrigé** S-020 (P1-B).

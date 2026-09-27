@@ -6,9 +6,23 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-09-27
-_session terminee_ : 019 — Code review conventions-gradle (analyse du code, état 0.0.5)
-_session en cours_ : 020 — P1 review S-019 (CI + `configureKover`)
-_Prochaine session_ : 020 — P1 review S-019 (CI + `configureKover`)
+_session terminee_ : 020 — P1 review S-019 (CI + `configureKover` + bug signature CI)
+_session en cours_ : 021 — P2/P3 review S-019
+_Prochaine session_ : 021 — P2/P3 review S-019
+
+_Note 2026-09-27 (S-020)_ : **CI installé + vert** (le borough n'en avait aucun,
+seul du socle). 3 commits poussés, run CI `36350037003` **BUILD SUCCESSFUL** :
+`.github/workflows/test.yml` (JDK 25, `./gradlew check`, `working-directory:
+conventions-plugin`) + `settings.gradle.kts` creds nmcp `error(...)` → `?: ""`
+(sans quoi la CI échoue **en configuration**). **Le premier run CI a révélé un
+bug latent préexistant** : le scénario « signs publications conditionally »
+supposait `CI` absent, or GitHub Actions exporte `CI=true` → `SigningPolicy`
+(objet pur, 4 UT) + step TestKit déterministe (`withEnvironment` retirant `CI`).
+P1-B livré par session parallèle : `configureKover` réécrit en DSL typé
+`KoverProjectExtension` + `KoverReportSources` (main + functionalTest ; e2eTest
+exclu) + 5 UT + 2 FT + 2 scénarios ; **0.0.5 → 0.0.6** Central (bundle
+`701a5568`, 7 markers repo1 200). Baseline CI : 15 UT + 28 FT + 49 scénarios
+Cucumber, 0 échec. Leçon : une CI morte masque la dette aval.
 
 _Note 2026-09-27 (S-019)_ : **Code review externe** (racine workspace, lecture
 seule). Rapport `.agents/sessions/019-code-review-0.0.5.adoc`. Findings P1 :
@@ -69,6 +83,9 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 014 | 2026-07-31 | dev | CNV-10 Test Coverage Gaps — 7/7 gaps couverts (14 pts). 32/32 Cucumber + 23/23 functional = 55 tests PASS. | 10/10
   | 015 | 2026-07-31 | dev | CNV-11 GradlePluginConventionsExtension + Kover — Extension 3 props + configureTestTasks enrichi + KoverConventionsPlugin. 40/40 Cucumber + 23/23 functional = 63 tests PASS. Dogfood bakery-gradle. | 10/10
   | 016 | 2026-07-31 | dev | CNV-12 Version alignment — Bump fallbacks (kotlin-test-junit5 2.4.10, BOM 0.0.13) + fixAnnotationsConflict + publicationType default PLUGIN. 44/44 Cucumber + 23/23 functional = 67 tests PASS. Dogfood graphify + api-key-pool. | 10/10
+  | 018 | 2026-09-27 | dev | Correction racine `koverThresholdCheck` — `KoverCoverage` objet pur (6 UT) + `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile` + fallback) + 2 FT + `kover-threshold-check.feature` (3 scénarios). 0.0.4 → 0.0.5 Central (bundle 08a7b16f). check VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0). Découverte : `configureKover` no-op. | 9/10
+  | 019 | 2026-09-27 | review | Code review conventions-gradle (analyse du code, état 0.0.5) — lecture seule. Findings P1 (aucun CI + `configureKover` no-op), P2 (additionalTasks Cucumber, drift BOM 0.0.13 vs 0.0.58), P3, P4. | 10/10
+  | 020 | 2026-09-27 | dev | P1 review S-019 — CI `.github/workflows/test.yml` + creds nmcp `?: ""` (P1-A) ; bug signature latent révélé par le CI (`SigningPolicy` + TestKit `withEnvironment`) ; P1-B session parallèle (`configureKover` typé + `KoverReportSources`, 0.0.6 Central). 3 commits, CI run `36350037003` VERT (15 UT + 28 FT + 49 scénarios). | 10/10
   |===
 
 '''

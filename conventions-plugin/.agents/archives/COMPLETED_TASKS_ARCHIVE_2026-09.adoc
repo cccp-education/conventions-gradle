@@ -30,3 +30,26 @@
 * Incident : `HEAD` déplacé par session parallèle (`a7db92f`) pendant la review.
 * Mission S-020 : P1-A (CI `.github/workflows/test.yml`) + P1-B
   (`configureKover`, cadrer puis corriger/retirer).
+
+== Session 020 (2026-09-27) — P1 review S-019 : CI + configureKover + bug signature CI
+
+*Tâche* : traiter les findings P1 de la code review S-019.
+*Statut* : ✅ TERMINÉ (3 commits poussés, CI vert)
+
+* **P1-A** — `.github/workflows/test.yml` (JDK 25, `./gradlew check`,
+  `working-directory: conventions-plugin`) : le borough n'avait **aucun CI**.
+  + `settings.gradle.kts` creds nmcp `error(...)` → `?: ""` (bloquant : un
+  runner CI n'a pas `~/.gradle/gradle.properties`, le build échouait en
+  configuration).
+* **Bug latent révélé par le premier run CI** — scénario « signs publications
+  conditionally » supposait `CI` absent, or GH Actions exporte `CI=true`.
+  `SigningPolicy` objet pur (4 UT) + TestKit `withEnvironment` retirant `CI`.
+* **P1-B** (session parallèle) — `configureKover` réécrit en DSL typé
+  `KoverProjectExtension` + `KoverReportSources` (main + functionalTest ;
+  e2eTest exclu) + 5 UT + 2 FT + 2 scénarios ; bump **0.0.5 → 0.0.6** Central
+  (bundle `701a5568`, 7 markers repo1 200).
+
+* Commits : `28ac565` (P1-A), `7bcb079` (signature), `fdea1ea` (P1-B).
+* Preuve CI : run `36350037003` **BUILD SUCCESSFUL** — 15 UT + 28 FT +
+  49 scénarios, 0 échec.
+* Leçon : une CI morte en configuration masque toute la dette aval.

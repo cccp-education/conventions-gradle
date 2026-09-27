@@ -3,12 +3,15 @@
 == Completed
 
 - CNV-0→CNV-12 + PUB : tous TERMINÉS (sessions 000→016)
-- 7 plugins 0.0.3 sur Maven Central + Gradle Plugin Portal
-- BOM 0.0.13 sur Maven Central
-- 9 AGENT.adoc boroughs documentés
-- 44 Cucumber + 23 functional = 67 tests PASS
+- 7 plugins 0.0.6 sur Maven Central + Gradle Plugin Portal
+- CI `.github/workflows/test.yml` installé et **vert** (S-020)
+- `configureKover` no-op corrigé (DSL typé, S-020)
+- 49 Cucumber + 28 functional + 15 unit = 92 tests PASS (CI)
 - Borough LIQUIDÉ côté producteur
 
 == Restant
 
-- Rien. Maintenance réactive uniquement (bugs remontés par les boroughs consommateurs).
+- P2 review S-019 : drift fallback BOM `0.0.13` → `0.0.58` ; câblage
+  `additionalTasks` Cucumber à `check` (cadrer l'intention).
+- P3 review S-019 : config cache vs `startParameter` ; assertions BDD factices ;
+  detekt skippé Java 25.

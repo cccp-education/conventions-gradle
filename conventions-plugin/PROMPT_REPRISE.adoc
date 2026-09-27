@@ -1,61 +1,59 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 020
+:session: 021
 :date: 2026-09-27
 :epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
 
-Session 019 (2026-09-27) — **Code review externe** (racine workspace), analyse
-du code réel sans se fier à la gouvernance. Rapport
-`.agents/sessions/019-code-review-0.0.5.adoc`. Zéro code modifié (lecture seule).
-État : `0.0.5` Central, adoption 15/23 boroughs, 789 LOC, 7 plugins.
+Session 020 (2026-09-27) — **P1 de la review S-019 traité, CI vert**.
+3 commits poussés, `./gradlew check` **BUILD SUCCESSFUL** en CI (run
+`36350037003`) : P1-A (`.github/workflows/test.yml` + creds nmcp
+`?: ""`), bug signature révélé par le CI (`SigningPolicy` + TestKit
+`withEnvironment`), P1-B (session parallèle : `configureKover` typé +
+`KoverReportSources`, **0.0.6** Central). Rapport
+`.agents/sessions/020-p1-ci-configurekover.adoc`.
 
-Session 018 (2026-09-27) — **Correction racine `koverThresholdCheck`** : chemin
-XML hardcodé → `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile`).
-`KoverCoverage` objet pur (6 UT). **0.0.4 → 0.0.5** publié Central (bundle
-`08a7b16f`). Gates : `check` VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0).
+Session 019 (2026-09-27) — Code review externe (lecture seule).
+Rapport `.agents/sessions/019-code-review-0.0.5.adoc`.
 
-Session 017 — Maintenance réactive. CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
-Borough LIQUIDÉ côté producteur.
+== Mission session 021 — P2/P3 de la review S-019
 
-== Mission session 020 — P1 de la review S-019
+=== P2-A — Drift fallback BOM `WORKSPACE_BOM_COORDINATES`
 
-=== P1-A — Ajouter le CI `.github/workflows/test.yml`
+`TestDependencies.kt:19` : `education.cccp:workspace-bom:0.0.13` alors que le
+BOM réel publié est `0.0.58`. Un consommateur **sans catalogue `libs`** prend
+un BOM périmé (45 versions de retard). Corriger + propager (bump).
 
-Le borough n'a **aucun CI**, contrairement à ses consommateurs (bakery, capsule,
-codebase). Incohérent avec la règle transverse 2026-09-27 *Local = Build,
-Tests = CI* : sans CI, le socle n'a aucune preuve de validité exécutable.
+=== P2-B — `additionalTasks` Cucumber non câblées à `check`
 
-* Créer `.github/workflows/test.yml` (JDK 25 temurin, `./gradlew check`).
-* Attention : le projet racine **est** `conventions-plugin/` (`working-directory`).
+`CucumberConventionsPlugin.kt:52-54` câble uniquement `cucumberTest` à
+`check` ; les `CucumberTaskSpec` supplémentaires (22 chez capsule) ne sont pas
+dans `check` — lancés uniquement par la CI `full-tests.yml`. **Cadrer l'intention**
+avant de câbler (opt-in documenté vs `check.dependsOn` systématique : impact
+temps `check` des consommateurs).
 
-=== P1-B — `configureKover` no-op (à cadrer avant correction)
+=== P3 (review S-019, dette acceptable)
 
-`KoverConventionsPlugin.kt:27-62` configure Kover par réflexion ; l'appel
-`invokeMethod(…, "currentProject")` ne matche jamais le getter
-`getCurrentProject()` → `includedSourceSets`/`onCheck` jamais posés depuis
-toujours. Intention ambiguë : `includedSourceSets = {main, functionalTest}`
-exclurait `e2eTest` de la couverture (impact seuil bakery). **Cadrer d'abord**
-(remplacer la réflexion par l'API typée `KoverProjectExtension`, ou retirer),
-puis corriger baby-step.
-
-=== P2 (review S-019)
-
-* `additionalTasks` Cucumber non câblées à `check` — câbler ou documenter
-  l'opt-in (`CucumberConventionsPlugin.kt:52-54`).
-* Drift fallback `WORKSPACE_BOM_COORDINATES` `0.0.13` → BOM réel `0.0.58`
-  (`TestDependencies.kt:19`).
+* Drift fallback `assertj 3.27.7` vs catalogue `3.25.3` ; fallback detekt.
+* Config cache vs `startParameter.isBuildCacheEnabled` muté
+  (`GradlePluginConventionsPlugin.kt:53`).
+* 8 assertions BDD factices (`assert(true) // verified by source`).
+* `check.dependsOn(detekt)` fragile + detekt skippé Java 25
+  (`LintConventionsPlugin.kt:15-27`).
 
 == Workflow
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
-- Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`).
-- **Tests = CI** (règle 2026-09-27) : pas de `test`/`check` local.
-- Parallélisation autorisée (décision pilote 2026-09-17).
+- Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/`compileFunctionalTestKotlin`).
+- **Tests = CI** (règle 2026-09-27) : **aucun** `test`/`check`/`cucumberTest`/
+  `functionalTest` en local. La preuve de validité = le run CI vert après push.
+- Parallélisation autorisée (décision pilote 2026-09-17) — **mais un seul
+  sessionneur par borough** (leçon S-020 : 2 sessions S-020 en collision).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 7 plugins 0.0.5, Java 25, Kotlin 2.4.10, Gradle 9.8.0
+- 7 plugins **0.0.6** Central, Java 25, Kotlin 2.4.10, Gradle 9.8.0
+- CI : `.github/workflows/test.yml` (JDK 25, `./gradlew check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
