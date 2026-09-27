@@ -117,7 +117,8 @@ la tâche `check` (base/java appliqués après le plugin), là où l'ancien
 
 == Preuve de validité — Local = Build, Tests = CI
 
-Aucun `test`/`check`/`cucumberTest`/`functionalTest` lancé en local. Gate local :
+Aucun `test`/`check`/`cucumberTest`/`functionalTest` lancé en local, et **aucune
+sonde dans un projet jetable**. Gate local :
 
 [source,bash]
 ----
@@ -125,9 +126,24 @@ Aucun `test`/`check`/`cucumberTest`/`functionalTest` lancé en local. Gate local
 # BUILD SUCCESSFUL
 ----
 
-La preuve exécutable est le **run CI GitHub Actions** du commit poussé
-(`./gradlew check` : UT + functional + cucumber). Vérification de session
-uniquement par compilation, conformément à la règle transverse.
+Preuve exécutable = le **run CI GitHub Actions** du commit poussé :
+
+[cols="1,2,2,2"]
+|===
+| Run | Commit | Verdict | Détail
+| `36353377703` | `19f70b8` | ❌ échec | sonde `it.url` non compilable → tous les scénarios `gradle-plugin-conventions`
+| `36353717575` | `6b4c217` | ❌ échec | sonde exécutée mais `extensions` résolu sur la *task* (`ext`) au lieu du *project*
+| `36354012604` | `b44db4e` | ✅ succès 2m10s | **baseline verte** — 156 PASSED, 0 FAILED, `validatePlugins` VERT
+|===
+
+`./gradlew check` **BUILD SUCCESSFUL** en 2m10s sur le run vert. Les nouveaux
+tests sont prouvés en CI : `WorkspaceBomTest` (7 UT), `WorkspaceBomFunctionalTest`
+(2 FT), `CucumberConventionsFunctionalTest` `additional cucumber tasks are (not)
+wired into check` (2 FT), et les scénarios `additionalTasks` opt-in.
+
+*Leçon consolidée* : la sonde BDD TestKit doit être elle-même compilable et
+exécutable — les deux erreurs ci-dessus ont été révélées par la CI, pas en local
+(pas de test local).
 
 == Décisions
 

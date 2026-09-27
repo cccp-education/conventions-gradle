@@ -72,6 +72,7 @@
 * **P3-3** — `check.dependsOn(detekt)` robuste via `matching.configureEach`.
 
 * Preuve (Local = Build, Tests = CI) : compilation locale uniquement, aucune
-  sonde jetable. Preuve exécutable = run CI du commit poussé.
+  sonde jetable. Preuve exécutable = run CI `36354012604` **BUILD SUCCESSFUL**
+  (2m10s, 156 PASSED / 0 FAILED, `validatePlugins` VERT).
 * Bump `0.0.6 → 0.0.7` local. Reste : P4 (tag release, bump BOM 0.0.59) +
   publication 0.0.7 Central (accord pilote).

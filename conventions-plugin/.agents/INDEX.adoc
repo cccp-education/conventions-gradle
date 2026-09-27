@@ -30,6 +30,13 @@ comportement inchangé. Leçon : **aucune sonde dans un projet jetable en local*
 les vérifications P2-A/P2-B/P3-1 ont été reportées en UT/FT/BDD exécutés par la
 CI. Rapport `.agents/sessions/021-p2-p3-review-0.0.5.adoc`.
 
+_Note 2026-09-27 (S-021, CI)_ : run CI `36354012604` **BUILD SUCCESSFUL**
+(2m10s) — **156 PASSED, 0 FAILED**, `validatePlugins` VERT. Deux runs rouges
+intermédiaires (`36353377703`, `36353717575`) ont révélé des bugs de la **sonde
+BDD** elle-même (script Kotlin non compilable `it.url` ; `extensions` résolu sur
+la *task* au lieu du *project*) — corrigés en 2 commits ; la CI seule pouvait les
+révéler (pas de test local). Baseline S-021 : 22 UT + 32 FT + 51 scénarios.
+
 _Note 2026-09-27 (S-020)_ : **CI installé + vert** (le borough n'en avait aucun,
 seul du socle). 3 commits poussés, run CI `36350037003` **BUILD SUCCESSFUL** :
 `.github/workflows/test.yml` (JDK 25, `./gradlew check`, `working-directory:

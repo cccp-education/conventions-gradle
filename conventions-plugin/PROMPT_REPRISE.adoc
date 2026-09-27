@@ -6,12 +6,13 @@
 
 == Contexte hérité
 
-Session 021 (2026-09-27) — **P2/P3 de la review S-019 traités**. 4 findings
-soldés : P2-A (anti-drift BOM par construction — source unique catalogue →
-ressource générée + garde), P2-B (`additionalTasksInCheck` opt-in défaut
-`false`), P3-2 (8 assertions BDD factices → sonde réelle `probeConventions`),
-P3-3 (`check.dependsOn(detekt)` robuste). P3-1 **vérifié non reproduit**
-(config cache compatible). Bump **0.0.6 → 0.0.7** local (non publié).
+Session 021 (2026-09-27) — **P2/P3 de la review S-019 traités**, CI **verte**
+(run `36354012604`, 2m10s, 156 PASSED / 0 FAILED). 4 findings soldés : P2-A
+(anti-drift BOM par construction — source unique catalogue → ressource générée
++ garde), P2-B (`additionalTasksInCheck` opt-in défaut `false`), P3-2 (8
+assertions BDD factices → sonde réelle `probeConventions`), P3-3
+(`check.dependsOn(detekt)` robuste). P3-1 **vérifié non reproduit** (config
+cache compatible). Bump **0.0.6 → 0.0.7** local (non publié).
 Rapport `.agents/sessions/021-p2-p3-review-0.0.5.adoc`.
 
 Session 020 (2026-09-27) — P1 review S-019 (CI vert + `configureKover` + bug

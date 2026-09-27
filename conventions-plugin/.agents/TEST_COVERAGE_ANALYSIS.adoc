@@ -346,5 +346,8 @@ parallel, events de logging, repositories, build cache, Java source/target). Les
 - 3 steps + 2 features + 1 FT modifiés ; scénarios BDD alignés.
 
 **Preuve** : compilation locale seulement (règle Local = Build, Tests = CI) —
-aucun test ni sonde jetable en local. Baseline attendue (CI) : 22 UT + 32 FT +
-51 scénarios Cucumber.
+aucun test ni sonde jetable en local. Baseline **CI verte** (run `36354012604`) :
+**156 PASSED, 0 FAILED**, `validatePlugins` VERT. Nouveaux tests prouvés en CI :
+`WorkspaceBomTest` 7 UT, `WorkspaceBomFunctionalTest` 2 FT,
+`CucumberConventionsFunctionalTest` 2 FT (opt-in `check`), scénarios BDD
+`additionalTasks`.
