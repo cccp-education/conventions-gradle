@@ -6,9 +6,24 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-09-27
-_session terminee_ : 021 — P2/P3 review S-019 (anti-drift BOM + opt-in Cucumber + assertions BDD réelles)
-_session en cours_ : 022 — P4 review S-019 + publication 0.0.7
-_Prochaine session_ : 022 — P4 review S-019 + publication 0.0.7
+_session terminee_ : 022 — Publication 0.0.7 Central + rollout 15 consommateurs
+_session en cours_ : 023 — Fin rollout (codebase-gradle) + veille Plugin Portal
+_Prochaine session_ : 023 — Fin rollout (codebase-gradle) + veille Plugin Portal
+
+_Note 2026-09-27 (S-022)_ : **`conventions-plugin` 0.0.7 publié** Maven Local +
+**Maven Central** (bundle `2a15ef0f-7634-443f-b49e-05053e50e9de`, AUTOMATIC, 7
+markers repo1 200) + **Plugin Portal** (soumis). Tag git **`v0.0.7`** posé et
+poussé (P4-A). **BOM/catalog 0.0.59** publiés Central (bundle `ad9d763e`,
+AUTOMATIC), pinning `conventions-plugin = "0.0.7"` ; garde
+`PlatformCatalogAlignmentTest` réalignée (0.0.59 + 0.0.7). **15 consommateurs**
+migrés `0.0.4`/`0.0.6` → **`0.0.7`** (45 références, sed sur motif vérifié
+zéro faux positif) + `compileKotlin`/`help` VERT sur chacun + 15 commits + 15
+push : bakery, readme, api-key-pool, planner, slider, container-provision,
+capsule, codex, hyperframes, bureau, document, graphify, review, flow, plantuml.
+**`codebase-gradle` EXCLU** (session parallèle Queens active — règle un
+sessionneur par borough) ; un `Write` accidentel sur son `settings.gradle.kts` a
+été restauré, aucune perte vérifiée. Ordre DAG respecté (plugin → Central →
+BOM → consommateurs). Rapport `.agents/sessions/022-publication-0.0.7-rollout.adoc`.
 
 _Note 2026-09-27 (S-021)_ : **P2/P3 de la review S-019 traités** (bump
 **0.0.6 → 0.0.7** local, non publié). **P2-A** — le fallback
@@ -114,6 +129,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 019 | 2026-09-27 | review | Code review conventions-gradle (analyse du code, état 0.0.5) — lecture seule. Findings P1 (aucun CI + `configureKover` no-op), P2 (additionalTasks Cucumber, drift BOM 0.0.13 vs 0.0.58), P3, P4. | 10/10
   | 020 | 2026-09-27 | dev | P1 review S-019 — CI `.github/workflows/test.yml` + creds nmcp `?: ""` (P1-A) ; bug signature latent révélé par le CI (`SigningPolicy` + TestKit `withEnvironment`) ; P1-B session parallèle (`configureKover` typé + `KoverReportSources`, 0.0.6 Central). 3 commits, CI run `36350037003` VERT (15 UT + 28 FT + 49 scénarios). | 10/10
   | 021 | 2026-09-27 | dev | P2/P3 review S-019 — P2-A anti-drift BOM (`WorkspaceBom` objet pur + ressource générée depuis le catalogue + garde, 7 UT + 2 FT + BDD dé-hardcodé) ; P2-B `additionalTasksInCheck` opt-in (2 BDD + 2 FT) ; P3-2 8 `assert(true)` → sonde `probeConventions` ; P3-3 `check.dependsOn(detekt)` robuste ; P3-1 vérifié non reproduit. Bump 0.0.6 → 0.0.7 local. | 10/10
+  | 022 | 2026-09-27 | release | Publication 0.0.7 Central (bundle 2a15ef0f) + Plugin Portal + tag `v0.0.7` ; BOM/catalog 0.0.59 Central (bundle ad9d763e, pin conventions 0.0.7) ; rollout 15 consommateurs 0.0.4/0.0.6 → 0.0.7 (45 refs) + compile + push. codebase-gradle exclu (session parallèle Queens). | 10/10
   |===
 
 '''

@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-09-27 — S-021 ✅ P2/P3 review S-019 (anti-drift BOM + opt-in Cucumber + assertions BDD réelles)
+_Derniere mise a jour_ : 2026-09-27 — S-022 ✅ Publication 0.0.7 Central + rollout 15 consommateurs
 
 '''
 
@@ -464,7 +464,7 @@ _Réponse aux findings P2/P3 de la code review S-019, après la clôture des P1 
 
 Bump `0.0.6 → 0.0.7` local (publication Central = décision pilote séparée). Preuve = CI du commit poussé (compilation locale uniquement, aucune sonde jetable — leçon S-021).
 
-=== 🟡 À FAIRE — P4 review S-019 (session 022)
+=== ✅ TERMINE — P4 review S-019 (session 022)
 
 [cols="1,4,2"]
 |===
@@ -472,15 +472,30 @@ Bump `0.0.6 → 0.0.7` local (publication Central = décision pilote séparée).
 
 | P4-A
 | Traçabilité release : poser un tag git `v0.0.7` à la publication (absent malgré 7 versions) ; documenter la version hardcodée (`build.gradle.kts:10`)
-| 🔵 P4
+| ✅ S-022 (`v0.0.7` posé/poussé)
 
 | P4-B
 | Bump BOM `workspace-bom` `0.0.59` : contraint encore `conventions-plugin = "0.0.4"` → aligner sur `0.0.7`
-| 🔵 P4
+| ✅ S-022 (BOM/catalog 0.0.59 Central, bundle `ad9d763e`)
 
 | PUB-0.0.7
 | Publication `0.0.7` Maven Central (nmcp AUTOMATIC) + Plugin Portal — contenu P2-A/B + P3-2/P3-3
-| 🔵 P4 (accord pilote)
+| ✅ S-022 (bundle `2a15ef0f` ; Portal soumis)
+|===
+
+=== 🟡 À FAIRE — Rollout résiduel (session 023)
+
+[cols="1,4,2"]
+|===
+| # | Item | Priorite
+
+| codebase-gradle
+| Migrer `codebase-plugin` vers conventions `0.0.7` (seul consommateur non migré — session parallèle Queens) ; réaligner `settings.gradle.kts` nu sur le patron des 15 autres (`pluginManagement` mavenLocal/Central/Portal)
+| 🟠 P2
+
+| Portal 0.0.7
+| Vérifier la propagation Plugin Portal des 7 plugins `0.0.7` (soumis)
+| 🟡 P3
 |===
 
 '''

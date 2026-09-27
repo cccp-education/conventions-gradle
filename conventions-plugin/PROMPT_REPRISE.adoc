@@ -1,58 +1,56 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 022
+:session: 023
 :date: 2026-09-27
 :epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
 
-Session 021 (2026-09-27) — **P2/P3 de la review S-019 traités**, CI **verte**
-(run `36354012604`, 2m10s, 156 PASSED / 0 FAILED). 4 findings soldés : P2-A
-(anti-drift BOM par construction — source unique catalogue → ressource générée
-+ garde), P2-B (`additionalTasksInCheck` opt-in défaut `false`), P3-2 (8
-assertions BDD factices → sonde réelle `probeConventions`), P3-3
-(`check.dependsOn(detekt)` robuste). P3-1 **vérifié non reproduit** (config
-cache compatible). Bump **0.0.6 → 0.0.7** local (non publié).
-Rapport `.agents/sessions/021-p2-p3-review-0.0.5.adoc`.
+Session 022 (2026-09-27) — **publication 0.0.7 + rollout**. `conventions-plugin`
+**0.0.7** publié Maven Local + **Central** (bundle `2a15ef0f`, AUTOMATIC) +
+Plugin Portal ; tag git **`v0.0.7`** posé. **BOM/catalog 0.0.59** publiés Central
+(bundle `ad9d763e`) pinning `conventions-plugin = "0.0.7"`. **15 consommateurs**
+migrés `0.0.4`/`0.0.6` → **`0.0.7`** (45 références) + compilés + poussés.
+`codebase-gradle` **exclu** (session parallèle Queens active).
+Rapport `.agents/sessions/022-publication-0.0.7-rollout.adoc`.
 
-Session 020 (2026-09-27) — P1 review S-019 (CI vert + `configureKover` + bug
-signature). Session 019 — code review externe (lecture seule).
+Session 021 (2026-09-27) — P2/P3 review S-019 (anti-drift BOM + opt-in cucumber
++ sondes BDD réelles), CI verte `36354012604`. Session 020 — P1 (CI +
+`configureKover`). Session 019 — code review externe.
 
-== Mission session 022 — P4 review S-019 + publication 0.0.7
+== Mission session 023 — finir le rollout + veille
 
-=== P4-A — Traçabilité release
+=== codebase-gradle (seul consommateur non migré)
 
-* **Tag git** absent malgré 7 versions publiées → poser un tag `v0.0.7` à la
-  publication (décision pilote requise avant push de tag).
-* Version toujours hardcodée dans `build.gradle.kts:10` (acceptable, mais
-  documenter la convention).
+Attendre la fin de la session parallèle Queens sur
+`foundry/public/codebase-gradle/codebase-plugin`, puis :
+* réaligner `codebase-plugin/settings.gradle.kts` (nu : 1 ligne) sur le patron des
+  15 autres consommateurs (`pluginManagement { mavenLocal/Central/Portal }` +
+  `dependencyResolutionManagement`), sinon résolution Plugin Portal uniquement ;
+* `id("education.cccp.build.gradle-plugin") version "0.0.4"` → `0.0.7` (+
+  `publishing`) ; `compileKotlin` VERT.
 
-=== P4-B — Bump BOM workspace-bom → conventions-plugin
+=== Publication 0.0.7 Plugin Portal (en attente)
 
-`workspace-bom/gradle/libs.versions.toml:62` contraint encore
-`conventions-plugin = "0.0.4"` alors que le plugin est à **0.0.7**. Publier
-`0.0.7` Central puis bumper le BOM (`0.0.59`) pour aligner le catalogue.
-
-=== Publication 0.0.7 (sur accord pilote)
-
-`./gradlew publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC) +
-`publishPlugins` (Plugin Portal). Contenu 0.0.7 : P2-A/B + P3-2/P3-3 de S-021.
+Le Portal a reçu les 7 plugins 0.0.7 (`publishPlugins` BUILD SUCCESSFUL, config
+cache problems = bug connu du plugin-publish). Vérifier la propagation :
+`https://plugins.gradle.org/m2/education/cccp/build/<plugin>/.../0.0.7/...`.
 
 == Workflow
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
 - Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/
-  `compileFunctionalTestKotlin`).
-- **Tests = CI** (règle 2026-09-27) : **aucun** `test`/`check`/`cucumberTest`/
-  `functionalTest` en local, **et aucune sonde dans un projet jetable** (leçon
-  S-021). La preuve de validité = le run CI vert après push.
-- Parallélisation autorisée (décision pilote 2026-09-17) — **mais un seul
-  sessionneur par borough** (leçon S-020 : 2 sessions S-020 en collision).
+  `compileFunctionalTestKotlin`) ; publication (`publishToMavenLocal`,
+  `publishAggregationToCentralPortal`, `publishPlugins`) autorisée.
+- **Tests = CI** (règle 2026-09-27) : aucun `test`/`check`/`cucumberTest`/
+  `functionalTest` en local, **et aucune sonde dans un projet jetable**.
+- Un **seul sessionneur par borough** (leçon S-020/S-022 : collision Queens sur
+  codebase).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 7 plugins **0.0.7** local (Central **0.0.6**), Java 25, Kotlin 2.4.10,
+- 7 plugins **0.0.7** Central + Plugin Portal (soumis), Java 25, Kotlin 2.4.10,
   Gradle 9.8.0
 - CI : `.github/workflows/test.yml` (JDK 25, `./gradlew check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)

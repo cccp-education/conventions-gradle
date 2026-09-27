@@ -76,3 +76,23 @@
   (2m10s, 156 PASSED / 0 FAILED, `validatePlugins` VERT).
 * Bump `0.0.6 → 0.0.7` local. Reste : P4 (tag release, bump BOM 0.0.59) +
   publication 0.0.7 Central (accord pilote).
+
+== Session 022 (2026-09-27) — Publication 0.0.7 Central + rollout 15 consommateurs
+
+*Tâche* : publier `0.0.7` (contenu S-021) et le propager aux consommateurs.
+*Statut* : ✅ TERMINÉ
+
+* **Publication** — `conventions-plugin` 0.0.7 Maven Local + Central (bundle
+  `2a15ef0f`, AUTOMATIC, 7 markers repo1 200) + Plugin Portal (soumis).
+* **Tag git `v0.0.7`** annoté + poussé (P4-A).
+* **BOM/catalog 0.0.59** Central (bundle `ad9d763e`), pin
+  `conventions-plugin = "0.0.7"` ; garde `PlatformCatalogAlignmentTest`
+  réalignée ; `RELEASE_PROTOCOL.adoc` mis à jour (P4-B).
+* **Rollout 15 consommateurs** `0.0.4`/`0.0.6` → `0.0.7` (45 références) +
+  `compileKotlin`/`help` VERT + 15 commits/push : bakery, readme, api-key-pool,
+  planner, slider, container-provision, capsule, codex, hyperframes, bureau,
+  document, graphify, review, flow, plantuml.
+* **codebase-gradle exclu** (session parallèle Queens active — règle un
+  sessionneur par borough) ; un `Write` accidentel sur son settings restauré,
+  aucune perte vérifiée.
+* Ordre DAG : plugin → Central → BOM → consommateurs (Catch-22 D8).

@@ -3,17 +3,16 @@
 == Completed
 
 - CNV-0→CNV-12 + PUB : tous TERMINÉS (sessions 000→016)
-- 7 plugins locaux **0.0.7** (Central **0.0.6**)
+- 7 plugins **0.0.7** sur Maven Central + Gradle Plugin Portal (soumis)
+- Tag git **`v0.0.7`** (P4-A)
 - CI `.github/workflows/test.yml` installé et **vert** (S-020)
 - `configureKover` no-op corrigé (DSL typé, S-020)
-- P2/P3 review S-019 traités (S-021) : anti-drift BOM (`WorkspaceBom` +
-  ressource générée + garde), `additionalTasksInCheck` opt-in, 8 assertions BDD
-  factices → sonde `probeConventions`, `check.dependsOn(detekt)` robuste
-- P3-1 (config cache vs `startParameter`) vérifié non reproduit
-- Baseline attendue (CI) : 22 UT + 32 FT + 51 scénarios Cucumber
+- P2/P3 review S-019 traités (S-021)
+- BOM/catalog **0.0.59** Central, pin `conventions-plugin = "0.0.7"` (S-022)
+- Rollout **15 consommateurs** `0.0.4`/`0.0.6` → `0.0.7` (S-022)
 
 == Restant
 
-- P4 review S-019 : tag git release `v0.0.7` ; bump BOM `workspace-bom`
-  `0.0.59` (contraint encore `conventions-plugin:0.0.4`).
-- Publication `0.0.7` Maven Central + Plugin Portal (accord pilote).
+- **codebase-gradle** : migrer vers 0.0.7 quand sa session parallèle Queens aura
+  terminé (seul consommateur non migré ; `settings.gradle.kts` nu à réaligner).
+- Vérifier la propagation Plugin Portal `0.0.7` (soumis).
