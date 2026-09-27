@@ -54,7 +54,7 @@ open class CucumberConventionsPlugin : Plugin<Project> {
         }
 
         extension.additionalTasks.forEach { spec ->
-            project.tasks.register(spec.name, Test::class.java) { task ->
+            val additionalTask = project.tasks.register(spec.name, Test::class.java) { task ->
                 task.testClassesDirs = testSourceSet.output.classesDirs
                 task.classpath = project.configurations.getByName(testSourceSet.runtimeClasspathConfigurationName) +
                 testSourceSet.output +
@@ -73,6 +73,14 @@ open class CucumberConventionsPlugin : Plugin<Project> {
                 val isParallel = spec.parallel || extension.parallel
                 val timeout = spec.timeoutMinutes ?: extension.timeoutMinutes
                 configureJUnitPlatform(task, isParallel, timeout)
+            }
+
+            // Opt-in only: a consumer with many focused runners keeps `check`
+            // fast by default (S-019 P2-B).
+            if (extension.additionalTasksInCheck) {
+                project.tasks.named("check") { checkTask ->
+                    checkTask.dependsOn(additionalTask)
+                }
             }
         }
     }

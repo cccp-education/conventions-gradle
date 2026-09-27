@@ -18,4 +18,13 @@ open class CucumberConventionsExtension @Inject constructor() {
     var parallel: Boolean = false
     var timeoutMinutes: Int? = null
     var additionalTasks: List<CucumberTaskSpec> = emptyList()
+
+    /**
+     * Whether the `CucumberTaskSpec` tasks declared in [additionalTasks] are
+     * wired into `check`. Default `false` (backward compatible): a consumer with
+     * many focused runners (e.g. capsule with 22) would otherwise see `check`
+     * balloon, and those runners are already executed by the `full-tests` CI
+     * workflow. Opt in explicitly when `check` must cover every runner.
+     */
+    var additionalTasksInCheck: Boolean = false
 }

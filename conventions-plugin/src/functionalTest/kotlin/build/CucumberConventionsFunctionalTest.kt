@@ -164,6 +164,58 @@ class CucumberConventionsFunctionalTest {
         assertTrue(result.output.contains("CP_JAR_PRESENT=false"))
     }
 
+    @Test
+    fun `additional cucumber tasks are not wired into check by default`() {
+        writeAdditionalTaskProject(additionalTasksInCheck = false)
+
+        val output = checkDryRunOutput()
+
+        assertTrue(
+            !output.contains(":cucumberTestEpic1"),
+            "cucumberTestEpic1 must not be wired into check by default\n$output"
+        )
+    }
+
+    @Test
+    fun `additional cucumber tasks are wired into check when opted in`() {
+        writeAdditionalTaskProject(additionalTasksInCheck = true)
+
+        val output = checkDryRunOutput()
+
+        assertTrue(
+            output.contains(":cucumberTestEpic1"),
+            "cucumberTestEpic1 must be wired into check when additionalTasksInCheck is true\n$output"
+        )
+    }
+
+    private fun writeAdditionalTaskProject(additionalTasksInCheck: Boolean) {
+        settingsFile.writeText("rootProject.name = \"test-project\"")
+        buildFile.writeText("""
+            import build.CucumberTaskSpec
+
+            plugins {
+                id("education.cccp.build.cucumber")
+            }
+            cucumberConventions {
+                additionalTasks = listOf(
+                    CucumberTaskSpec(
+                        name = "cucumberTestEpic1",
+                        runnerClass = "com.example.Epic1CucumberRunner"
+                    )
+                )
+                additionalTasksInCheck = $additionalTasksInCheck
+            }
+        """)
+    }
+
+    private fun checkDryRunOutput(): String =
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("check", "--dry-run")
+            .withPluginClasspath()
+            .build()
+            .output
+
     private val buildFile: File get() = testProjectDir.resolve("build.gradle.kts")
     private val settingsFile: File get() = testProjectDir.resolve("settings.gradle.kts")
 }

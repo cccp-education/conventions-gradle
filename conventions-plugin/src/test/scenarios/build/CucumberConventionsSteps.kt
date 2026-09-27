@@ -255,6 +255,61 @@ class CucumberConventionsSteps : En {
                 "Expected cucumberTestSmoke task with tags configured\n${taskListResult.output}"
             }
         }
+
+        // ── S-019 P2-B — additionalTasks opt-in wiring into check ────────────
+        Given("a project applies the cucumber plugin with an additional task runner") {
+            writeAdditionalTaskProject(additionalTasksInCheck = false)
+        }
+
+        Given("a project applies the cucumber plugin with an additional task runner and additionalTasksInCheck") {
+            writeAdditionalTaskProject(additionalTasksInCheck = true)
+        }
+
+        Then("the additional task is not wired into check") {
+            assert(!checkDryRunOutput().contains(":cucumberTestEpic1")) {
+                "Expected cucumberTestEpic1 NOT to be wired into check by default but got:\n${checkDryRunOutput()}"
+            }
+        }
+
+        Then("the additional task is wired into check") {
+            assert(checkDryRunOutput().contains(":cucumberTestEpic1")) {
+                "Expected cucumberTestEpic1 to be wired into check when opted in but got:\n${checkDryRunOutput()}"
+            }
+        }
+    }
+
+    private fun writeAdditionalTaskProject(additionalTasksInCheck: Boolean) {
+        testProjectDir = createTempDir("cucumber-check-")
+        testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+        testProjectDir.resolve("build.gradle.kts").writeText("""
+            import build.CucumberTaskSpec
+
+            plugins {
+                id("education.cccp.build.cucumber")
+            }
+            cucumberConventions {
+                additionalTasks = listOf(
+                    CucumberTaskSpec(
+                        name = "cucumberTestEpic1",
+                        runnerClass = "com.example.Epic1CucumberRunner"
+                    )
+                )
+                additionalTasksInCheck = $additionalTasksInCheck
+            }
+        """)
+    }
+
+    /**
+     * Runs `check --dry-run` and returns its output, revealing the planned task
+     * graph — hence whether the additional Cucumber tasks are wired into `check`.
+     */
+    private fun checkDryRunOutput(): String {
+        return GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("check", "--dry-run")
+            .withPluginClasspath()
+            .build()
+            .output
     }
 
     private fun runTasks(vararg args: String): BuildResult {

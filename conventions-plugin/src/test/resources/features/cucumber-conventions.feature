@@ -55,3 +55,12 @@ Feature: Cucumber BDD Conventions
     Given a project applies the cucumber plugin with additional tasks having features and tags
     Then the additional task has features configured
     And the additional task has tags configured
+
+  # S-019 P2-B — additionalTasks opt-in wiring into check
+  Scenario: Additional tasks are not wired into check by default
+    Given a project applies the cucumber plugin with an additional task runner
+    Then the additional task is not wired into check
+
+  Scenario: Additional tasks are wired into check when opt-in is enabled
+    Given a project applies the cucumber plugin with an additional task runner and additionalTasksInCheck
+    Then the additional task is wired into check
