@@ -11,3 +11,13 @@ Feature: Kover Conventions
     Given a project applies the kover conventions plugin with enabled true
     Then the kover plugin is applied
 
+  Scenario: Kover measures the production and functional test source sets only
+    Given a project applies the kover conventions plugin with enabled true
+    When the project runs the kover sources probe
+    Then the measured source sets are exactly "functionalTest" and "main"
+
+  Scenario: Kover attaches the HTML and XML reports to check
+    Given a project applies the kover conventions plugin with enabled true
+    When the project runs the kover sources probe
+    Then the HTML and XML reports are attached to check
+

@@ -24,40 +24,26 @@ open class KoverConventionsPlugin : Plugin<Project> {
         }
     }
 
+    /**
+     * Configures the Kover extension through its typed DSL: only [KoverReportSources]
+     * are measured, and the HTML/XML reports are attached to `check`.
+     *
+     * A former reflective implementation silently did nothing: it looked up a
+     * zero-argument `currentProject` method on the extension, but the real member
+     * is the `currentProject(Action)` function (the getter is `getCurrentProject`),
+     * and `reports` lives on the extension itself, not on the variant config.
+     * Replaced by direct typed access so the configuration can no longer be skipped.
+     */
     private fun configureKover(project: Project) {
-        val kover = project.extensions.getByName("kover")
-        val koverClass = kover.javaClass
+        val kover = project.extensions.getByType(KoverProjectExtension::class.java)
 
-        val currentProject = invokeMethod(kover, koverClass, "currentProject")
-        if (currentProject != null) {
-            val sources = invokeMethod(currentProject, currentProject.javaClass, "sources")
-            if (sources != null) {
-                val includedSourceSets = invokeMethod(sources, sources.javaClass, "includedSourceSets")
-                if (includedSourceSets != null) {
-                    invokeMethod(includedSourceSets, includedSourceSets.javaClass, "addAll", "main", "functionalTest")
-                }
-            }
+        kover.currentProject { variant ->
+            variant.sources { sources -> sources.includedSourceSets.addAll(KoverReportSources.included) }
+        }
 
-            val reports = invokeMethod(currentProject, currentProject.javaClass, "reports")
-            if (reports != null) {
-                val total = invokeMethod(reports, reports.javaClass, "total")
-                if (total != null) {
-                    val html = invokeMethod(total, total.javaClass, "html")
-                    if (html != null) {
-                        val onCheck = invokeMethod(html, html.javaClass, "onCheck")
-                        if (onCheck != null) {
-                            invokeMethod(onCheck, onCheck.javaClass, "set", true)
-                        }
-                    }
-                    val xml = invokeMethod(total, total.javaClass, "xml")
-                    if (xml != null) {
-                        val onCheck = invokeMethod(xml, xml.javaClass, "onCheck")
-                        if (onCheck != null) {
-                            invokeMethod(onCheck, onCheck.javaClass, "set", true)
-                        }
-                    }
-                }
-            }
+        kover.reports.total { report ->
+            report.html { html -> html.onCheck.set(true) }
+            report.xml { xml -> xml.onCheck.set(true) }
         }
     }
 
@@ -108,17 +94,6 @@ open class KoverConventionsPlugin : Plugin<Project> {
             project.tasks.named("check") { checkTask ->
                 checkTask.dependsOn(thresholdTask)
             }
-        }
-    }
-
-    private fun invokeMethod(target: Any, clazz: Class<*>, methodName: String, vararg args: Any?): Any? {
-        return try {
-            val method = clazz.methods.find { m ->
-                m.name == methodName && m.parameterCount == args.size
-            }
-            method?.invoke(target, *args)
-        } catch (_: Exception) {
-            null
         }
     }
 }
