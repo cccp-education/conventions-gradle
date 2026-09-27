@@ -16,7 +16,15 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
  */
 object TestDependencies {
 
-    const val WORKSPACE_BOM_COORDINATES = "education.cccp:workspace-bom:0.0.13"
+    /**
+     * The workspace-bom platform injected on test classpaths. Resolved from the
+     * plugin's generated `build/workspace-bom.properties` (source of truth =
+     * `gradle/libs.versions.toml`), so it can never drift from the BOM this
+     * plugin is built against. Kept as a `val` (not `const`) since it is read
+     * at runtime.
+     */
+    val WORKSPACE_BOM_COORDINATES: String
+        get() = WorkspaceBom.coordinates(WorkspaceBom::class.java.classLoader)
 
     val CUCUMBER_FALLBACKS: Map<String, String> = mapOf(
         "cucumber-java" to "io.cucumber:cucumber-java:7.34.3",
@@ -31,7 +39,7 @@ object TestDependencies {
         "junit-jupiter" to "org.junit.jupiter:junit-jupiter:5.12.2",
         "junit-platform-launcher" to "org.junit.platform:junit-platform-launcher:1.14.3",
         "junit-platform-params" to "org.junit.jupiter:junit-jupiter-params:5.12.2",
-        "assertj-core" to "org.assertj:assertj-core:3.27.7"
+        "assertj-core" to "org.assertj:assertj-core:3.25.3"
     )
 
     fun libs(project: Project): VersionCatalog? = try {

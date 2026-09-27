@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.6"
+version = "0.0.7"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -37,6 +37,27 @@ sourceSets.test {
     java.srcDir("src/test/scenarios")
 }
 
+// ── Single source of truth for the workspace-bom fallback version ───────────
+// The version lives in gradle/libs.versions.toml ([versions].workspace-bom) and
+// is materialised as a resource so TestDependencies can read it at consumer
+// runtime, even without a local `libs` catalog. This replaces the hardcoded
+// constant that had drifted 45 versions behind (0.0.13 vs 0.0.58, S-019 P2-A).
+val generateWorkspaceBomInfo by tasks.registering {
+    val bomVersion = libs.versions.workspace.bom.get()
+    val outputDir = layout.buildDirectory.dir("generated/build-info")
+    inputs.property("workspaceBomVersion", bomVersion)
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.get().file("build/workspace-bom.properties").asFile
+        file.parentFile.mkdirs()
+        file.writeText("version=$bomVersion\n")
+    }
+}
+
+sourceSets.main {
+    resources.srcDir(generateWorkspaceBomInfo)
+}
+
 dependencies {
     compileOnly(gradleApi())
     implementation("org.jlleitschuh.gradle:ktlint-gradle:12.2.0")
@@ -44,7 +65,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.9.8")
     implementation(libs.kotlin.gradle.plugin)
 
-    testImplementation(platform("education.cccp:workspace-bom:0.0.4"))
+    testImplementation(platform("education.cccp:workspace-bom:${libs.versions.workspace.bom.get()}"))
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(libs.cucumber.java)
     testImplementation(libs.cucumber.junit.platform.engine)
@@ -53,7 +74,7 @@ dependencies {
 
     add(functionalTest.implementationConfigurationName, gradleTestKit())
     add(functionalTest.implementationConfigurationName, libs.kotlin.test.junit5)
-    add(functionalTest.runtimeOnlyConfigurationName, platform("education.cccp:workspace-bom:0.0.4"))
+    add(functionalTest.runtimeOnlyConfigurationName, platform("education.cccp:workspace-bom:${libs.versions.workspace.bom.get()}"))
     add(functionalTest.runtimeOnlyConfigurationName, libs.junit.platform.launcher)
 }
 
@@ -61,6 +82,10 @@ val functionalTestTask = tasks.register<Test>("functionalTest") {
     testClassesDirs = functionalTest.output.classesDirs
     classpath = configurations[functionalTest.runtimeClasspathConfigurationName] + functionalTest.output
     useJUnitPlatform()
+    // The published workspace-bom version is injected by Gradle (source of
+    // truth = the version catalog) so the functional tests assert against the
+    // resolved version instead of a hardcoded literal that can drift.
+    systemProperty("conventions.workspaceBom.version", libs.versions.workspace.bom.get())
 }
 
 gradlePlugin.testSourceSets.add(functionalTest)

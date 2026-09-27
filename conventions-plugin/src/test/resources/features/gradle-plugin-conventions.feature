@@ -79,10 +79,10 @@ Feature: Gradle Plugin Conventions
     Given a project applies the conventions plugin with parallelExecution true
     Then the build succeeds with parallelExecution true
 
-  # CNV-12.1 — Bump fallbacks (kotlin-test-junit5 2.4.10, BOM 0.0.13)
+  # CNV-12.1 / S-021 P2-A — Bump fallbacks (kotlin-test-junit5 2.4.10, BOM from catalog)
   Scenario: Fallback versions are up-to-date
     Given a project applies the conventions plugin without version catalog
-    Then the testImplementation configuration contains workspace-bom version "0.0.13"
+    Then the testImplementation configuration contains the current workspace-bom version
     And the testImplementation configuration contains kotlin-test-junit5 version "2.4.10"
 
   # CNV-12.2 — fixAnnotationsConflict

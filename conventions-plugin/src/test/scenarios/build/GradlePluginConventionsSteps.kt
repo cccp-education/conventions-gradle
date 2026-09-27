@@ -10,16 +10,11 @@ class GradlePluginConventionsSteps : En {
     private lateinit var testProjectDir: File
     private lateinit var taskListResult: BuildResult
     private var depsResult: BuildResult? = null
+    private var probeResult: BuildResult? = null
 
     init {
         Given("a project applies the conventions plugin") {
-            testProjectDir = createTempDir("conventions-test-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-            """)
+            writeProject()
             taskListResult = runTasks("tasks", "--all")
         }
 
@@ -42,11 +37,11 @@ class GradlePluginConventionsSteps : En {
         }
 
         Then("the project uses Java {int} source compatibility") { version: Int ->
-            assert(version == 25) { "Expected source compatibility 25" }
+            assertProbe("PROBE_JAVA_SOURCE=$version")
         }
 
         Then("the project uses Java {int} target compatibility") { version: Int ->
-            assert(version == 25) { "Expected target compatibility 25" }
+            assertProbe("PROBE_JAVA_TARGET=$version")
         }
 
         Then("the project has sources jar task") {
@@ -68,283 +63,167 @@ class GradlePluginConventionsSteps : En {
         }
 
         Then("test logging shows passed, skipped, and failed events") {
-            assert(true) // verified by convention plugin source
+            assertProbe("PROBE_TEST_EVENTS=FAILED,PASSED,SKIPPED")
         }
 
         // ── CNV-7.2 — junit test dependencies ────────────────────────────────
         Given("a project applies the conventions plugin with dependency inspection") {
-            testProjectDir = createTempDir("conventions-test-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("""
-                rootProjectName = "test-project"
-            """.replace("rootProjectName", "rootProject.name"))
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-            """)
-            depsResult = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("dependencies", "--configuration", "testImplementation")
-                .withPluginClasspath()
-                .build()
+            writeProject()
+            depsResult = runDependencies("testImplementation")
             taskListResult = depsResult!!
         }
 
         Then("the testImplementation configuration contains kotlin-test-junit5") {
-            assert(depsResult?.output?.contains("org.jetbrains.kotlin:kotlin-test-junit5") == true) {
-                "Expected kotlin-test-junit5 in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("org.jetbrains.kotlin:kotlin-test-junit5")
         }
 
         Then("the testImplementation configuration contains junit-jupiter") {
-            assert(depsResult?.output?.contains("org.junit.jupiter:junit-jupiter") == true) {
-                "Expected junit-jupiter in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("org.junit.jupiter:junit-jupiter")
         }
 
         Then("the testImplementation configuration contains junit-platform-params") {
-            assert(depsResult?.output?.contains("junit-jupiter-params") == true) {
-                "Expected junit-jupiter-params in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("junit-jupiter-params")
         }
 
         Then("the testImplementation configuration contains assertj-core") {
-            assert(depsResult?.output?.contains("org.assertj:assertj-core") == true) {
-                "Expected assertj-core in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("org.assertj:assertj-core")
         }
 
         Then("the testRuntimeOnly configuration contains junit-platform-launcher") {
-            val runtimeResult = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("dependencies", "--configuration", "testRuntimeOnly")
-                .withPluginClasspath()
-                .build()
-            assert(runtimeResult.output.contains("org.junit.platform:junit-platform-launcher") == true) {
+            val runtimeResult = runDependencies("testRuntimeOnly")
+            assert(runtimeResult.output.contains("org.junit.platform:junit-platform-launcher")) {
                 "Expected junit-platform-launcher in testRuntimeOnly\n${runtimeResult.output}"
             }
         }
 
         Then("the gradle testImplementation configuration has the workspace-bom platform") {
-            assert(depsResult?.output?.contains("education.cccp:workspace-bom") == true) {
-                "Expected workspace-bom platform in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("education.cccp:workspace-bom")
         }
 
         // ── CNV-10.1 — configureRepositories ─────────────────────────────────
         Then("the project has mavenLocal repository configured") {
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("dependencies")
-                .withPluginClasspath()
-                .build()
-            assert(result.output.isNotEmpty()) { "Expected build to succeed with mavenLocal configured" }
+            assertProbe("PROBE_REPO_LOCAL=true")
         }
 
         Then("the project has mavenCentral repository configured") {
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("dependencies")
-                .withPluginClasspath()
-                .build()
-            assert(result.output.isNotEmpty()) { "Expected build to succeed with mavenCentral configured" }
+            assertProbe("PROBE_REPO_CENTRAL=true")
         }
 
         Then("the project has gradlePluginPortal repository configured") {
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("dependencies")
-                .withPluginClasspath()
-                .build()
-            assert(result.output.isNotEmpty()) { "Expected build to succeed with gradlePluginPortal configured" }
+            assertProbe("PROBE_REPO_PLUGIN_PORTAL=true")
         }
 
         // ── CNV-10.1 — configureBuildCache ────────────────────────────────────
         Then("the build cache is enabled") {
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("tasks", "--build-cache")
-                .withPluginClasspath()
-                .build()
-            assert(result.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build cache to be enabled\n${result.output}"
-            }
+            assertProbe("PROBE_BUILD_CACHE_ENABLED=true")
         }
 
         // ── CNV-10.7 — TestDependencies fallback hardcoded (no catalog) ──────
         Given("a project applies the conventions plugin without version catalog") {
-            testProjectDir = createTempDir("conventions-test-nocat-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-            """)
-            depsResult = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("dependencies", "--configuration", "testImplementation")
-                .withPluginClasspath()
-                .build()
+            writeProject()
+            depsResult = runDependencies("testImplementation")
             taskListResult = depsResult!!
         }
 
         Then("the testImplementation configuration contains junit-jupiter from fallback") {
-            assert(depsResult?.output?.contains("org.junit.jupiter:junit-jupiter") == true) {
-                "Expected junit-jupiter from fallback in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("org.junit.jupiter:junit-jupiter")
         }
 
         // ── CNV-11.1 — GradlePluginConventionsExtension defaults ──────────────
         Then("the gradlePluginConventions extension has enableDynamicAgentLoading default true") {
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("help")
-                .withPluginClasspath()
-                .build()
-            assert(result.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build to succeed with default extension\n${result.output}"
-            }
+            assertProbe("PROBE_ENABLE_DYNAMIC_AGENT=true")
         }
 
         Then("the gradlePluginConventions extension has maxHeapSize default null") {
-            assert(true) // default null verified by extension source
+            assertProbe("PROBE_MAX_HEAP=null")
         }
 
         Then("the gradlePluginConventions extension has parallelExecution default false") {
-            assert(true) // default false verified by extension source
+            assertProbe("PROBE_PARALLEL=false")
         }
 
         // ── CNV-11.1 — Extension override via DSL ─────────────────────────────
         Given("a project applies the conventions plugin with custom extension values") {
-            testProjectDir = createTempDir("conventions-test-ext-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-                gradlePluginConventions {
-                    enableDynamicAgentLoading = false
-                    maxHeapSize = "2g"
-                    parallelExecution = true
-                }
+            writeProject("""
+                enableDynamicAgentLoading = false
+                maxHeapSize = "2g"
+                parallelExecution = true
             """)
             taskListResult = runTasks("tasks", "--all")
         }
 
         Then("the gradlePluginConventions extension has enableDynamicAgentLoading set to false") {
-            assert(taskListResult.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build to succeed with overridden extension\n${taskListResult.output}"
-            }
+            assertProbe("PROBE_ENABLE_DYNAMIC_AGENT=false")
         }
 
         Then("the gradlePluginConventions extension has maxHeapSize set to {string}") { expected: String ->
-            assert(expected == "2g") { "Expected maxHeapSize 2g" }
+            assertProbe("PROBE_MAX_HEAP=$expected")
         }
 
         Then("the gradlePluginConventions extension has parallelExecution set to true") {
-            assert(true) // override verified by build success
+            assertProbe("PROBE_PARALLEL=true")
         }
 
         // ── CNV-11.2 — configureTestTasks enriched ────────────────────────────
         Given("a project applies the conventions plugin with enableDynamicAgentLoading false") {
-            testProjectDir = createTempDir("conventions-test-noagent-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-                gradlePluginConventions {
-                    enableDynamicAgentLoading = false
-                }
+            writeProject("""
+                enableDynamicAgentLoading = false
             """)
             taskListResult = runTasks("tasks", "--all")
         }
 
         Given("a project applies the conventions plugin with maxHeapSize {string}") { heap: String ->
-            testProjectDir = createTempDir("conventions-test-heap-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-                gradlePluginConventions {
-                    maxHeapSize = "$heap"
-                }
+            writeProject("""
+                maxHeapSize = "$heap"
             """)
             taskListResult = runTasks("tasks", "--all")
         }
 
         Given("a project applies the conventions plugin with parallelExecution true") {
-            testProjectDir = createTempDir("conventions-test-parallel-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-                gradlePluginConventions {
-                    parallelExecution = true
-                }
+            writeProject("""
+                parallelExecution = true
             """)
             taskListResult = runTasks("tasks", "--all")
         }
 
         Then("the build succeeds with default extension") {
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("test")
-                .withPluginClasspath()
-                .build()
-            assert(result.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build to succeed with default extension\n${result.output}"
-            }
+            assertProbe("PROBE_JVMARGS=-XX:+EnableDynamicAgentLoading")
         }
 
         Then("the build succeeds with enableDynamicAgentLoading false") {
-            assert(taskListResult.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build to succeed with enableDynamicAgentLoading false\n${taskListResult.output}"
+            assert(!probeOutput().contains("PROBE_JVMARGS=-XX:+EnableDynamicAgentLoading")) {
+                "Expected no dynamic agent loading jvmArg when disabled\n${probeOutput()}"
             }
         }
 
         Then("the build succeeds with maxHeapSize {string}") { expected: String ->
-            assert(taskListResult.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build to succeed with maxHeapSize $expected\n${taskListResult.output}"
-            }
+            assertProbe("PROBE_TEST_MAXHEAP=$expected")
         }
 
         Then("the build succeeds with parallelExecution true") {
-            assert(taskListResult.output.contains("BUILD SUCCESSFUL")) {
-                "Expected build to succeed with parallelExecution true\n${taskListResult.output}"
-            }
+            assertProbe("PROBE_JUNIT_PARALLEL=true")
         }
 
-        // ── CNV-12.1 — Bump fallbacks ─────────────────────────────────────────
-        Then("the testImplementation configuration contains workspace-bom version {string}") { expectedVersion: String ->
-            assert(depsResult?.output?.contains("education.cccp:workspace-bom:$expectedVersion") == true) {
-                "Expected workspace-bom version $expectedVersion in testImplementation\n${depsResult?.output}"
+        // ── CNV-12.1 / S-021 P2-A — Bump fallbacks ───────────────────────────
+        Then("the testImplementation configuration contains the current workspace-bom version") {
+            val expected = WorkspaceBom.coordinates(WorkspaceBom::class.java.classLoader)
+            assert(depsResult?.output?.contains(expected) == true) {
+                "Expected the current workspace-bom version '$expected' in testImplementation\n${depsResult?.output}"
             }
         }
 
         Then("the testImplementation configuration contains kotlin-test-junit5 version {string}") { expectedVersion: String ->
-            assert(depsResult?.output?.contains("org.jetbrains.kotlin:kotlin-test-junit5:$expectedVersion") == true) {
-                "Expected kotlin-test-junit5 version $expectedVersion in testImplementation\n${depsResult?.output}"
-            }
+            assertDepsContains("org.jetbrains.kotlin:kotlin-test-junit5:$expectedVersion")
         }
 
         // ── CNV-12.2 — fixAnnotationsConflict ─────────────────────────────────
         Then("the gradlePluginConventions extension has fixAnnotationsConflict default false") {
-            assert(true) // default false verified by extension source
+            assertProbe("PROBE_FIX_ANNOTATIONS=false")
         }
 
         Given("a project applies the conventions plugin with fixAnnotationsConflict true") {
-            testProjectDir = createTempDir("conventions-test-annot-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-                gradlePluginConventions {
-                    fixAnnotationsConflict = true
-                }
+            writeProject("""
+                fixAnnotationsConflict = true
             """)
             taskListResult = runTasks("tasks", "--all")
         }
@@ -356,6 +235,56 @@ class GradlePluginConventionsSteps : En {
         }
     }
 
+    /**
+     * Writes a fresh consumer project that applies the conventions plugin and
+     * registers a `probeConventions` task exposing the extension defaults and
+     * the materialised Test task configuration. [extensionBody] is injected
+     * verbatim inside the `gradlePluginConventions { … }` block.
+     *
+     * Centralising the probe removes the eight `assert(true)` placeholders the
+     * code review flagged (S-019 P3-2): every default and override is now read
+     * from a real Gradle build.
+     */
+    private fun writeProject(extensionBody: String = "") {
+        testProjectDir = createTempDir("conventions-test-")
+        testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
+        testProjectDir.resolve("build.gradle.kts").writeText("""
+            import build.GradlePluginConventionsExtension
+            import org.gradle.api.tasks.testing.Test
+
+            plugins {
+                id("education.cccp.build.gradle-plugin")
+            }
+
+            gradlePluginConventions {
+                $extensionBody
+            }
+
+            tasks.register("probeConventions") {
+                doLast {
+                    val ext = extensions.getByName("gradlePluginConventions") as GradlePluginConventionsExtension
+                    println("PROBE_ENABLE_DYNAMIC_AGENT=" + ext.enableDynamicAgentLoading)
+                    println("PROBE_MAX_HEAP=" + ext.maxHeapSize)
+                    println("PROBE_PARALLEL=" + ext.parallelExecution)
+                    println("PROBE_FIX_ANNOTATIONS=" + ext.fixAnnotationsConflict)
+                    val java = extensions.getByName("java") as org.gradle.api.plugins.JavaPluginExtension
+                    println("PROBE_JAVA_SOURCE=" + java.sourceCompatibility.majorVersion)
+                    println("PROBE_JAVA_TARGET=" + java.targetCompatibility.majorVersion)
+                    val repoHosts = repositories.map { it.url.host ?: "local" }.toSet()
+                    println("PROBE_REPO_LOCAL=" + repoHosts.contains("local"))
+                    println("PROBE_REPO_CENTRAL=" + repoHosts.contains("repo.maven.apache.org"))
+                    println("PROBE_REPO_PLUGIN_PORTAL=" + repoHosts.contains("plugins.gradle.org"))
+                    println("PROBE_BUILD_CACHE_ENABLED=" + gradle.startParameter.isBuildCacheEnabled)
+                    val test = tasks.withType(Test::class.java).first()
+                    println("PROBE_JVMARGS=" + (test.jvmArgs ?: emptyList()).joinToString(","))
+                    println("PROBE_TEST_MAXHEAP=" + test.maxHeapSize)
+                    println("PROBE_JUNIT_PARALLEL=" + test.systemProperties["junit.jupiter.execution.parallel.enabled"])
+                    println("PROBE_TEST_EVENTS=" + (test.testLogging.events ?: emptySet()).map { it.name }.sorted().joinToString(","))
+                }
+            }
+        """)
+    }
+
     private fun runTasks(vararg args: String): BuildResult {
         return GradleRunner.create()
             .withProjectDir(ensureProjectDir())
@@ -364,15 +293,43 @@ class GradlePluginConventionsSteps : En {
             .build()
     }
 
+    private fun runDependencies(configuration: String): BuildResult =
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("dependencies", "--configuration", configuration)
+            .withPluginClasspath()
+            .build()
+
+    private fun assertDepsContains(expected: String) {
+        assert(depsResult?.output?.contains(expected) == true) {
+            "Expected '$expected' in dependency report\n${depsResult?.output}"
+        }
+    }
+
+    private fun assertProbe(expected: String) {
+        assert(probeOutput().contains(expected)) {
+            "Expected '$expected'\n${probeOutput()}"
+        }
+    }
+
+    /**
+     * Runs the `probeConventions` task of the current Given project and returns
+     * its output, caching the result so a scenario triggers at most one probe
+     * build.
+     */
+    private fun probeOutput(): String {
+        probeResult?.let { return it.output }
+        probeResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("probeConventions", "-q")
+            .withPluginClasspath()
+            .build()
+        return probeResult!!.output
+    }
+
     private fun ensureProjectDir(): File {
         if (!::testProjectDir.isInitialized) {
-            testProjectDir = createTempDir("conventions-test-")
-            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project\"")
-            testProjectDir.resolve("build.gradle.kts").writeText("""
-                plugins {
-                    id("education.cccp.build.gradle-plugin")
-                }
-            """)
+            writeProject()
         }
         return testProjectDir
     }
