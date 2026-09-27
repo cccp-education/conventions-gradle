@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-09-27 — S-020 ✅ P1 review S-019 (CI + `configureKover` + bug signature CI)
+_Derniere mise a jour_ : 2026-09-27 — S-021 ✅ P2/P3 review S-019 (anti-drift BOM + opt-in Cucumber + assertions BDD réelles)
 
 '''
 
@@ -433,31 +433,54 @@ _Réponse aux 2 findings P1 de la code review S-019 (`.agents/sessions/019-code-
 
 Gates : CI run `36350037003` **BUILD SUCCESSFUL** — 15 UT + 28 FT + 49 scénarios, 0 échec.
 
-=== 🟡 À FAIRE — P2/P3 review S-019 (session 021)
+=== ✅ TERMINE — P2/P3 review S-019 (session 021, 2026-09-27)
+
+_Réponse aux findings P2/P3 de la code review S-019, après la clôture des P1 en S-020._
+
+[cols="1,4,2"]
+|===
+| US | Description | Statut
+
+| S21-P2A
+| **Anti-drift fallback BOM** — `WorkspaceBom` objet pur (7 UT) lisant une ressource générée depuis `gradle/libs.versions.toml` (`generateWorkspaceBomInfo`) ; `WORKSPACE_BOM_COORDINATES` dérivé (plus de constante `0.0.13` hardcodée) ; garde anti-drift (ressource == fallback, `!= 0.0.13`) ; `WorkspaceBomFunctionalTest` 2 FT ; BDD dé-hardcodé ; fallback `assertj` aligné `3.25.3`
+| ✅ S-021
+
+| S21-P2B
+| **`additionalTasksInCheck` opt-in** — extension Cucumber (défaut `false`, backward compat) câblant les runners additionnels à `check` seulement sur opt-in (capsule à 22 runners garde `check` rapide) ; 2 BDD + 2 FT (`check --dry-run`)
+| ✅ S-021
+
+| S21-P3-1
+| **Config cache vs `startParameter`** — vérifié **non reproduit** (configuration cache stocké puis réutilisé) ; KDoc explicatif, comportement inchangé
+| ✅ S-021 (documenté)
+
+| S21-P3-2
+| **Assertions BDD factices** — 8 `assert(true) // verified by source` remplacés par la sonde réelle `probeConventions` (defaults, overrides DSL, jvmArgs, maxHeapSize, JUnit parallel, events, repositories, build cache, Java source/target)
+| ✅ S-021
+
+| S21-P3-3
+| **`check.dependsOn(detekt)` robuste** — `tasks.matching { name == "check" }.configureEach { … }` au lieu de `findByName(...)?.dependsOn(...)` en `afterEvaluate`
+| ✅ S-021
+|===
+
+Bump `0.0.6 → 0.0.7` local (publication Central = décision pilote séparée). Preuve = CI du commit poussé (compilation locale uniquement, aucune sonde jetable — leçon S-021).
+
+=== 🟡 À FAIRE — P4 review S-019 (session 022)
 
 [cols="1,4,2"]
 |===
 | # | Finding | Priorite
 
-| P2-A
-| Drift fallback `WORKSPACE_BOM_COORDINATES` `0.0.13` → BOM réel `0.0.58` (`TestDependencies.kt:19`)
-| 🟠 P2
+| P4-A
+| Traçabilité release : poser un tag git `v0.0.7` à la publication (absent malgré 7 versions) ; documenter la version hardcodée (`build.gradle.kts:10`)
+| 🔵 P4
 
-| P2-B
-| `additionalTasks` Cucumber non câblées à `check` (`CucumberConventionsPlugin.kt:52-54`) — **cadrer l'intention** (opt-in documenté vs `check.dependsOn` systématique ; impact temps `check` capsule, 22 runners)
-| 🟠 P2
+| P4-B
+| Bump BOM `workspace-bom` `0.0.59` : contraint encore `conventions-plugin = "0.0.4"` → aligner sur `0.0.7`
+| 🔵 P4
 
-| P3-1
-| Config cache vs `startParameter.isBuildCacheEnabled` muté (`GradlePluginConventionsPlugin.kt:53`)
-| 🟡 P3
-
-| P3-2
-| 8 assertions BDD factices `assert(true) // verified by source` (`GradlePluginConventionsSteps.kt`)
-| 🟡 P3
-
-| P3-3
-| `check.dependsOn(detekt)` fragile + detekt skippé Java 25 (`LintConventionsPlugin.kt:15-27`)
-| 🟡 P3
+| PUB-0.0.7
+| Publication `0.0.7` Maven Central (nmcp AUTOMATIC) + Plugin Portal — contenu P2-A/B + P3-2/P3-3
+| 🔵 P4 (accord pilote)
 |===
 
 '''

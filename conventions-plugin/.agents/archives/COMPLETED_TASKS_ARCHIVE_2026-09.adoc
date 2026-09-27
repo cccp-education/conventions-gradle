@@ -53,3 +53,25 @@
 * Preuve CI : run `36350037003` **BUILD SUCCESSFUL** — 15 UT + 28 FT +
   49 scénarios, 0 échec.
 * Leçon : une CI morte en configuration masque toute la dette aval.
+
+== Session 021 (2026-09-27) — P2/P3 review S-019
+
+*Tâche* : traiter les findings P2/P3 de la code review S-019.
+*Statut* : ✅ TERMINÉ (bump 0.0.7 local, publication Central sur accord pilote)
+
+* **P2-A** — anti-drift `WORKSPACE_BOM_COORDINATES` (constant `0.0.13` vs BOM
+  réel `0.0.58`) : `WorkspaceBom` objet pur + version en source unique
+  (`gradle/libs.versions.toml` → ressource générée par `generateWorkspaceBomInfo`)
+  + garde anti-drift (7 UT + 2 FT + BDD dé-hardcodé).
+* **P2-B** — `additionalTasksInCheck` (défaut `false`, backward compat) : câblage
+  `check` des runners additionnels sur opt-in seulement (2 BDD + 2 FT).
+* **P3-1** — config cache vs `startParameter` : **vérifié non reproduit**
+  (configuration cache stocké puis réutilisé) ; documenté, comportement inchangé.
+* **P3-2** — 8 assertions BDD factices `assert(true)` → sonde réelle
+  `probeConventions`.
+* **P3-3** — `check.dependsOn(detekt)` robuste via `matching.configureEach`.
+
+* Preuve (Local = Build, Tests = CI) : compilation locale uniquement, aucune
+  sonde jetable. Preuve exécutable = run CI du commit poussé.
+* Bump `0.0.6 → 0.0.7` local. Reste : P4 (tag release, bump BOM 0.0.59) +
+  publication 0.0.7 Central (accord pilote).

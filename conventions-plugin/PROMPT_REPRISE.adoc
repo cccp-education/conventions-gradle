@@ -1,59 +1,59 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 021
+:session: 022
 :date: 2026-09-27
 :epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
 
-Session 020 (2026-09-27) — **P1 de la review S-019 traité, CI vert**.
-3 commits poussés, `./gradlew check` **BUILD SUCCESSFUL** en CI (run
-`36350037003`) : P1-A (`.github/workflows/test.yml` + creds nmcp
-`?: ""`), bug signature révélé par le CI (`SigningPolicy` + TestKit
-`withEnvironment`), P1-B (session parallèle : `configureKover` typé +
-`KoverReportSources`, **0.0.6** Central). Rapport
-`.agents/sessions/020-p1-ci-configurekover.adoc`.
+Session 021 (2026-09-27) — **P2/P3 de la review S-019 traités**. 4 findings
+soldés : P2-A (anti-drift BOM par construction — source unique catalogue →
+ressource générée + garde), P2-B (`additionalTasksInCheck` opt-in défaut
+`false`), P3-2 (8 assertions BDD factices → sonde réelle `probeConventions`),
+P3-3 (`check.dependsOn(detekt)` robuste). P3-1 **vérifié non reproduit**
+(config cache compatible). Bump **0.0.6 → 0.0.7** local (non publié).
+Rapport `.agents/sessions/021-p2-p3-review-0.0.5.adoc`.
 
-Session 019 (2026-09-27) — Code review externe (lecture seule).
-Rapport `.agents/sessions/019-code-review-0.0.5.adoc`.
+Session 020 (2026-09-27) — P1 review S-019 (CI vert + `configureKover` + bug
+signature). Session 019 — code review externe (lecture seule).
 
-== Mission session 021 — P2/P3 de la review S-019
+== Mission session 022 — P4 review S-019 + publication 0.0.7
 
-=== P2-A — Drift fallback BOM `WORKSPACE_BOM_COORDINATES`
+=== P4-A — Traçabilité release
 
-`TestDependencies.kt:19` : `education.cccp:workspace-bom:0.0.13` alors que le
-BOM réel publié est `0.0.58`. Un consommateur **sans catalogue `libs`** prend
-un BOM périmé (45 versions de retard). Corriger + propager (bump).
+* **Tag git** absent malgré 7 versions publiées → poser un tag `v0.0.7` à la
+  publication (décision pilote requise avant push de tag).
+* Version toujours hardcodée dans `build.gradle.kts:10` (acceptable, mais
+  documenter la convention).
 
-=== P2-B — `additionalTasks` Cucumber non câblées à `check`
+=== P4-B — Bump BOM workspace-bom → conventions-plugin
 
-`CucumberConventionsPlugin.kt:52-54` câble uniquement `cucumberTest` à
-`check` ; les `CucumberTaskSpec` supplémentaires (22 chez capsule) ne sont pas
-dans `check` — lancés uniquement par la CI `full-tests.yml`. **Cadrer l'intention**
-avant de câbler (opt-in documenté vs `check.dependsOn` systématique : impact
-temps `check` des consommateurs).
+`workspace-bom/gradle/libs.versions.toml:62` contraint encore
+`conventions-plugin = "0.0.4"` alors que le plugin est à **0.0.7**. Publier
+`0.0.7` Central puis bumper le BOM (`0.0.59`) pour aligner le catalogue.
 
-=== P3 (review S-019, dette acceptable)
+=== Publication 0.0.7 (sur accord pilote)
 
-* Drift fallback `assertj 3.27.7` vs catalogue `3.25.3` ; fallback detekt.
-* Config cache vs `startParameter.isBuildCacheEnabled` muté
-  (`GradlePluginConventionsPlugin.kt:53`).
-* 8 assertions BDD factices (`assert(true) // verified by source`).
-* `check.dependsOn(detekt)` fragile + detekt skippé Java 25
-  (`LintConventionsPlugin.kt:15-27`).
+`./gradlew publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC) +
+`publishPlugins` (Plugin Portal). Contenu 0.0.7 : P2-A/B + P3-2/P3-3 de S-021.
 
 == Workflow
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
-- Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/`compileFunctionalTestKotlin`).
+- Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/
+  `compileFunctionalTestKotlin`).
 - **Tests = CI** (règle 2026-09-27) : **aucun** `test`/`check`/`cucumberTest`/
-  `functionalTest` en local. La preuve de validité = le run CI vert après push.
+  `functionalTest` en local, **et aucune sonde dans un projet jetable** (leçon
+  S-021). La preuve de validité = le run CI vert après push.
 - Parallélisation autorisée (décision pilote 2026-09-17) — **mais un seul
   sessionneur par borough** (leçon S-020 : 2 sessions S-020 en collision).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 7 plugins **0.0.6** Central, Java 25, Kotlin 2.4.10, Gradle 9.8.0
+- 7 plugins **0.0.7** local (Central **0.0.6**), Java 25, Kotlin 2.4.10,
+  Gradle 9.8.0
 - CI : `.github/workflows/test.yml` (JDK 25, `./gradlew check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
+- Anti-drift BOM : version dans `gradle/libs.versions.toml` → ressource générée
+  (`generateWorkspaceBomInfo`) ; garde `WorkspaceBomTest`

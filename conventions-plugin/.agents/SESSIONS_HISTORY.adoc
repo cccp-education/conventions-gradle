@@ -375,3 +375,56 @@ BUILD SUCCESSFUL. Baseline CI verte : 15 UT + 28 FT + 49 scénarios Cucumber,
 
 **Leçon** : une CI morte en configuration **masque** toute la dette aval — le
 premier run a immédiatement révélé un test qui ne pouvait passer qu'en local.
+
+'''
+
+== Session 021 — 2026-09-27
+Type:: dev
+Code:: P2/P3-review
+Titre:: P2/P3 review S-019 — anti-drift BOM, assertions BDD réelles, opt-in Cucumber
+Score:: 10/10
+Duree:: 1 session
+
+**Mission** : traiter les findings P2/P3 de la code review S-019 restants après
+la clôture des P1 en S-020.
+
+**Livrables** :
+- **P2-A** — drift fallback `WORKSPACE_BOM_COORDINATES` (`0.0.13` vs BOM réel
+  `0.0.58`, 45 versions). Objet pur `WorkspaceBom` : la version vit dans
+  `gradle/libs.versions.toml` (`[versions].workspace-bom`) et est matérialisée en
+  ressource par `generateWorkspaceBomInfo` ; `TestDependencies` la lit à
+  l'exécution. `WorkspaceBomTest` 7 UT dont une **garde anti-drift**
+  (ressource == fallback, `!= "0.0.13"`) + `WorkspaceBomFunctionalTest` 2 FT
+  (version injectée par Gradle, patron graphify D5-RACE) + scénario BDD
+  dé-hardcodé.
+- **P2-B** — `additionalTasksInCheck` (défaut `false`, backward compat) :
+  `CucumberConventionsPlugin` câble les runners additionnels à `check`
+  **uniquement sur opt-in** (capsule à 22 runners garde `check` rapide ; la CI
+  `full-tests` les exécute déjà). 2 scénarios BDD + 2 FT `check --dry-run`.
+- **P3-1** — config cache vs `startParameter.isBuildCacheEnabled` muté :
+  **vérifié non reproduit** (configuration cache stocké puis réutilisé) ; KDoc
+  explicatif, aucun changement de comportement (pas d'API publique
+  `settings.buildCache` depuis un plugin `Project`).
+- **P3-2** — les 8 `assert(true) // verified by source` remplacés par une sonde
+  réelle `probeConventions` (defaults, overrides DSL, jvmArgs, maxHeapSize,
+  JUnit parallel, events de logging, repositories, build cache, Java
+  source/target).
+- **P3-3** — `check.dependsOn("detekt")` via `tasks.matching { name == "check" }
+  .configureEach { … }`, robuste à l'ordre d'application des plugins.
+
+**Bump** : `0.0.6 → 0.0.7` local (non publié ; publication Central = décision
+pilote séparée).
+
+**Preuve (Local = Build, Tests = CI)** : aucun `test`/`check`/`cucumberTest`/
+`functionalTest` en local, **et aucune sonde dans un projet jetable** (leçon
+consolidée par le pilote). Gate local
+`./gradlew --no-daemon -q compileKotlin compileTestKotlin compileFunctionalTestKotlin`
+BUILD SUCCESSFUL. La preuve exécutable est le run CI du commit poussé.
+
+**Décisions** : version BOM en source unique (tuer la classe de bug) ; garde
+anti-drift ; BDD dé-hardcodé ; opt-in `additionalTasksInCheck` ; P3-1 documenté
+non modifié ; P3-3 via `matching.configureEach`.
+
+**Reste** : P4 (tag git release, bump BOM `0.0.59` contraignant
+`conventions-plugin` de `0.0.4` → `0.0.7`) ; publication `0.0.7` Central +
+Plugin Portal (accord pilote).

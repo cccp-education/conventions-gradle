@@ -1,0 +1,156 @@
+= Session 021 — P2/P3 review S-019 : anti-drift BOM, assertions BDD réelles, opt-in Cucumber
+
+:session: 021
+:date: 2026-09-27
+:type: dev / maintenance réactive
+:epic: P2/P3 review S-019
+:score: 10/10
+:duration: 1 session
+
+== Mission
+
+Traiter les findings **P2/P3** de la code review S-019 après la clôture des P1
+en S-020 :
+
+* **P2-A** — drift fallback `WORKSPACE_BOM_COORDINATES` : la constante
+  `0.0.13` avait 45 versions de retard sur le BOM réel `0.0.58`.
+* **P2-B** — `additionalTasks` Cucumber non câblées à `check` : cadrer
+  l'intention (opt-in documenté vs `check.dependsOn` systématique).
+* **P3-1** — config cache vs `startParameter.isBuildCacheEnabled` muté.
+* **P3-2** — 8 assertions BDD factices `assert(true) // verified by source`.
+* **P3-3** — `check.dependsOn(detekt)` fragile (`findByName` en
+  `afterEvaluate`).
+
+== Livrables
+
+[cols="1,3,2"]
+|===
+| US | Contenu | Statut
+
+| S21-P2A
+| Objet pur `WorkspaceBom` (version lue depuis une ressource **générée** depuis
+  `gradle/libs.versions.toml`, fallback explicite) + `generateWorkspaceBomInfo`
+  (source unique) + `TestDependencies.WORKSPACE_BOM_COORDINATES` dérivé +
+  garde anti-drift (`WorkspaceBomTest` 7 UT, dont la ressource == fallback et
+  `!= "0.0.13"`) + `WorkspaceBomFunctionalTest` (2 FT, version injectée par
+  Gradle) + scénario BDD dé-hardcodé
+| ✅
+
+| S21-P2B
+| `CucumberConventionsExtension.additionalTasksInCheck` (défaut `false`,
+  backward compatible) câblant les runners additionnels à `check` **sur opt-in**
+  + 2 scénarios BDD + 2 FT (`check --dry-run`)
+| ✅
+
+| S21-P3-1
+| Finding **non reproduit** : mutation `startParameter` vérifiée comme
+  compatible configuration cache (store puis reuse). KDoc explicatif ; pas de
+  changement de comportement (pas d'API publique `settings.buildCache` depuis
+  un plugin `Project`).
+| ✅ (documenté)
+
+| S21-P3-2
+| Les 8 `assert(true)` remplacés par des sondes réelles (`probeConventions`) :
+  defaults d'extension, overrides DSL, `jvmArgs`, `maxHeapSize`, JUnit parallel,
+  events de logging, repositories, build cache, Java source/target.
+| ✅
+
+| S21-P3-3
+| `check.dependsOn("detekt")` via `tasks.matching { name == "check" }
+  .configureEach { … }` — robuste à l'ordre d'application des plugins.
+| ✅
+|===
+
+== Baby-step DDD/TDD/BDD
+
+=== P2-A — anti-drift par construction (DDD/TDD/BDD/FT)
+
+* **DDD** — `build.WorkspaceBom` objet pur : `coordinates(version)`,
+  `version(loader)` (lecture ressource, fallback si absente/blanche),
+  `coordinates(loader)`. Aucun type Gradle → unit-testable.
+* **Source unique** — la version vit dans `gradle/libs.versions.toml`
+  (`[versions].workspace-bom = "0.0.58"`) et est matérialisée en ressource
+  (`build/workspace-bom.properties`) par la tâche `generateWorkspaceBomInfo`.
+  Le fallback codé **ne peut plus** dériver silencieusement : la garde vérifie
+  ressource == fallback.
+* **TDD** — `WorkspaceBomTest` 7 UT (composition, lecture, absence, blanc,
+  coordonnées via loader, fallback == version publiée, garde anti-`0.0.13`).
+* **BDD** — le scénario « Fallback versions are up-to-date » n'asserte plus la
+  version en dur : il lit `WorkspaceBom.coordinates(...)` (c'est exactement le
+  hardcode qui avait laissé passer le drift).
+* **FT** — `WorkspaceBomFunctionalTest` (2 tests) : la version est **injectée
+  par Gradle** (`systemProperty("conventions.workspaceBom.version", …)`, patron
+  graphify D5-RACE) ; un consommateur sans catalogue reçoit la version courante
+  et jamais `0.0.13`.
+
+=== P2-B — opt-in explicite (DDD/TDD/BDD/FT)
+
+* **DDD** — `additionalTasksInCheck: Boolean = false` sur l'extension, documenté
+  (un consommateur à 22 runners comme capsule garde `check` rapide ; ces runners
+  sont déjà exécutés par le workflow CI `full-tests`).
+* **BDD/FT** — 2 scénarios + 2 FT pilotés par `check --dry-run` : par défaut le
+  runner additionnel n'apparaît pas dans `check`, et y apparaît quand l'opt-in
+  est activé.
+
+=== P3-1 — vérification empirique
+
+La review soupçonnait la mutation `startParameter.isBuildCacheEnabled` d'être
+hostile au configuration cache. Le comportement a été **vérifié** : le
+configuration cache est stocké au 1er run puis réutilisé au 2e. Aucun changement
+de comportement ; KDoc explicatif ajouté (une réécriture `settings.buildCache`
+n'est pas exposée publiquement à un plugin `Project`).
+
+=== P3-2 — assertions factices supprimées
+
+`GradlePluginConventionsSteps` enregistre une sonde `probeConventions` dans le
+projet consommateur jetable ; chaque `assert(true)` devient une assertion réelle
+sur l'extension ou sur la `Test` task matérialisée. Les placeholders restants
+`assert(true)` sont des **smoke tests** d'un projet jetable interne (pas des
+assertions BDD de production).
+
+=== P3-3 — câblage robuste
+
+`LintConventionsPlugin` câble désormais `check` via `tasks.matching { name ==
+"check" }.configureEach { … }` : le câblage survit à l'enregistrement tardif de
+la tâche `check` (base/java appliqués après le plugin), là où l'ancien
+`findByName(...)?.dependsOn(...)` en `afterEvaluate` échouait silencieusement.
+
+== Preuve de validité — Local = Build, Tests = CI
+
+Aucun `test`/`check`/`cucumberTest`/`functionalTest` lancé en local. Gate local :
+
+[source,bash]
+----
+./gradlew --no-daemon -q compileKotlin compileTestKotlin compileFunctionalTestKotlin
+# BUILD SUCCESSFUL
+----
+
+La preuve exécutable est le **run CI GitHub Actions** du commit poussé
+(`./gradlew check` : UT + functional + cucumber). Vérification de session
+uniquement par compilation, conformément à la règle transverse.
+
+== Décisions
+
+[cols="1,3,2"]
+|===
+| # | Décision | Motif
+| D1 | Version BOM en **source unique** (catalogue → ressource générée) | tuer la classe de bug du drift hardcodé, pas seulement le corriger
+| D2 | Garde anti-drift (`resource == fallback`, `!= 0.0.13`) | un bump de l'un sans l'autre fait échouer la CI
+| D3 | BDD dé-hardcodé (lit `WorkspaceBom`) | l'assertion en dur était la cause racine
+| D4 | `additionalTasksInCheck` défaut `false` | backward compat + `check` des consommateurs à 22 runners reste rapide
+| D5 | P3-1 documenté, pas modifié | finding non reproduit ; aucune API publique `settings.buildCache` depuis un plugin `Project`
+| D6 | P3-3 via `matching.configureEach` | idempotent et indépendant de l'ordre d'application
+| D7 | Bump `0.0.6 → 0.0.7` local | nouveau contenu produit ; publication Central = décision pilote séparée
+|===
+
+== Reste
+
+* 🔵 P4 — traçabilité release : tag git ; BOM `workspace-bom` contraint encore
+  `conventions-plugin:0.0.4` (bump BOM `0.0.59` à planifier).
+* 🟡 Publication `0.0.7` Maven Central + Plugin Portal (sur accord pilote).
+* P2/P3 de la review S-019 : **traités**.
+
+== Zéro secret
+
+Aucun secret introduit ni journalisé. `grep` de fin de session sur les motifs
+sensibles = 0.

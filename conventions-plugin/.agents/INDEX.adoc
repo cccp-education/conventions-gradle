@@ -6,9 +6,29 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-09-27
-_session terminee_ : 020 — P1 review S-019 (CI + `configureKover` + bug signature CI)
-_session en cours_ : 021 — P2/P3 review S-019
-_Prochaine session_ : 021 — P2/P3 review S-019
+_session terminee_ : 021 — P2/P3 review S-019 (anti-drift BOM + opt-in Cucumber + assertions BDD réelles)
+_session en cours_ : 022 — P4 review S-019 + publication 0.0.7
+_Prochaine session_ : 022 — P4 review S-019 + publication 0.0.7
+
+_Note 2026-09-27 (S-021)_ : **P2/P3 de la review S-019 traités** (bump
+**0.0.6 → 0.0.7** local, non publié). **P2-A** — le fallback
+`WORKSPACE_BOM_COORDINATES` n'est plus une constante hardcodée (elle avait 45
+versions de retard, `0.0.13` vs `0.0.58`) : la version vit dans
+`gradle/libs.versions.toml` (`[versions].workspace-bom`) et est matérialisée en
+ressource par `generateWorkspaceBomInfo` ; `WorkspaceBom` (objet pur, 7 UT) la
+lit, et une garde vérifie ressource == fallback (`!= 0.0.13`) → la classe de bug
+est tuée par construction. **P2-B** — `additionalTasksInCheck` (défaut `false`,
+backward compat) : les runners additionnels ne sont câblés à `check` que sur
+opt-in (capsule à 22 runners garde `check` rapide ; la CI `full-tests` les
+exécute). **P3-2** — les 8 `assert(true) // verified by source` remplacés par une
+sonde réelle (`probeConventions` : defaults, overrides DSL, jvmArgs, maxHeapSize,
+JUnit parallel, events, repositories, build cache, Java source/target).
+**P3-3** — `check.dependsOn("detekt")` via `tasks.matching{name=="check"}
+.configureEach` (robuste à l'ordre d'application). **P3-1** — vérifié **non
+reproduit** (le configuration cache est stocké puis réutilisé) : KDoc explicatif,
+comportement inchangé. Leçon : **aucune sonde dans un projet jetable en local** —
+les vérifications P2-A/P2-B/P3-1 ont été reportées en UT/FT/BDD exécutés par la
+CI. Rapport `.agents/sessions/021-p2-p3-review-0.0.5.adoc`.
 
 _Note 2026-09-27 (S-020)_ : **CI installé + vert** (le borough n'en avait aucun,
 seul du socle). 3 commits poussés, run CI `36350037003` **BUILD SUCCESSFUL** :
@@ -86,6 +106,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 018 | 2026-09-27 | dev | Correction racine `koverThresholdCheck` — `KoverCoverage` objet pur (6 UT) + `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile` + fallback) + 2 FT + `kover-threshold-check.feature` (3 scénarios). 0.0.4 → 0.0.5 Central (bundle 08a7b16f). check VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0). Découverte : `configureKover` no-op. | 9/10
   | 019 | 2026-09-27 | review | Code review conventions-gradle (analyse du code, état 0.0.5) — lecture seule. Findings P1 (aucun CI + `configureKover` no-op), P2 (additionalTasks Cucumber, drift BOM 0.0.13 vs 0.0.58), P3, P4. | 10/10
   | 020 | 2026-09-27 | dev | P1 review S-019 — CI `.github/workflows/test.yml` + creds nmcp `?: ""` (P1-A) ; bug signature latent révélé par le CI (`SigningPolicy` + TestKit `withEnvironment`) ; P1-B session parallèle (`configureKover` typé + `KoverReportSources`, 0.0.6 Central). 3 commits, CI run `36350037003` VERT (15 UT + 28 FT + 49 scénarios). | 10/10
+  | 021 | 2026-09-27 | dev | P2/P3 review S-019 — P2-A anti-drift BOM (`WorkspaceBom` objet pur + ressource générée depuis le catalogue + garde, 7 UT + 2 FT + BDD dé-hardcodé) ; P2-B `additionalTasksInCheck` opt-in (2 BDD + 2 FT) ; P3-2 8 `assert(true)` → sonde `probeConventions` ; P3-3 `check.dependsOn(detekt)` robuste ; P3-1 vérifié non reproduit. Bump 0.0.6 → 0.0.7 local. | 10/10
   |===
 
 '''

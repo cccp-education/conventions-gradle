@@ -295,3 +295,56 @@ premier run CI a révélé. P1-B (`configureKover`) livré par session parallèl
   `withEnvironment(System.getenv() - "CI")`
 
 **Couverture cumulée** : 49/49 Cucumber + 28/28 functional + 15/15 unit = 92 tests PASS.
+
+== Session 021 — P2/P3 review S-019 (anti-drift BOM, opt-in Cucumber, assertions BDD réelles)
+
+**Mission** : traiter les findings P2/P3 de la review S-019.
+
+**Unit tests (JUnit 5)** : +7 (total 22 PASS)
+- `WorkspaceBomTest` — composition `group:artifact:version` ; lecture de la
+  ressource générée ; fallback si ressource absente ; fallback si version
+  blanche ; coordonnées via `ClassLoader` ; fallback == version publiée ;
+  **garde anti-drift** (ressource == fallback, `!= "0.0.13"`).
+
+**Functional tests (GradleTestKit)** : +4 (total 32 PASS)
+- `WorkspaceBomFunctionalTest` (2) — un consommateur **sans catalogue `libs`**
+  reçoit la version workspace-bom courante (injectée par Gradle via
+  `systemProperty("conventions.workspaceBom.version", …)`) et **jamais**
+  `0.0.13`.
+- `CucumberConventionsFunctionalTest` (2) — les runners additionnels ne sont pas
+  câblés à `check` par défaut ; ils le sont quand `additionalTasksInCheck = true`
+  (piloté par `check --dry-run`).
+
+**Cucumber BDD** : +2 scénarios, 1 scénario dé-hardcodé (total 51 PASS)
+- `cucumber-conventions.feature` — « Additional tasks are not wired into check
+  by default » + « Additional tasks are wired into check when opt-in is
+  enabled ».
+- `gradle-plugin-conventions.feature` — « Fallback versions are up-to-date »
+  n'asserte plus la version en dur : elle lit `WorkspaceBom.coordinates(...)`.
+
+**Assertions BDD factices supprimées** : les 8 `assert(true) // verified by
+source` de `GradlePluginConventionsSteps` sont remplacés par une sonde réelle
+(`probeConventions` : defaults, overrides DSL, `jvmArgs`, `maxHeapSize`, JUnit
+parallel, events de logging, repositories, build cache, Java source/target). Les
+2 `assert(true)` restants sont des **smoke tests** d'un projet jetable interne.
+
+**Nouveaux fichiers** :
+- `build/WorkspaceBom.kt` (objet pur)
+- `test/kotlin/build/WorkspaceBomTest.kt` (7 UT)
+- `functionalTest/kotlin/build/WorkspaceBomFunctionalTest.kt` (2 FT)
+
+**Fichiers modifiés** :
+- `TestDependencies.kt` : `WORKSPACE_BOM_COORDINATES` dérivé de `WorkspaceBom`
+  (plus de constante hardcodée) ; fallback `assertj` aligné `3.27.7` → `3.25.3`.
+- `CucumberConventionsExtension.kt` : +`additionalTasksInCheck` (défaut false).
+- `CucumberConventionsPlugin.kt` : câblage `check` conditionnel des runners.
+- `GradlePluginConventionsPlugin.kt` : KDoc `configureBuildCache` (P3-1).
+- `LintConventionsPlugin.kt` : câblage `check.dependsOn(detekt)` robuste.
+- `build.gradle.kts` : `generateWorkspaceBomInfo` + source set resource + BOM
+  version dérivée du catalogue + FT system property + version `0.0.7`.
+- `gradle/libs.versions.toml` : `[versions].workspace-bom = "0.0.58"` + library.
+- 3 steps + 2 features + 1 FT modifiés ; scénarios BDD alignés.
+
+**Preuve** : compilation locale seulement (règle Local = Build, Tests = CI) —
+aucun test ni sonde jetable en local. Baseline attendue (CI) : 22 UT + 32 FT +
+51 scénarios Cucumber.
