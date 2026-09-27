@@ -131,7 +131,19 @@ class PublishingConventionsSteps : En {
         }
 
         Then("publications are signed") {
-            assert(true) // signing is applied if conditions are met
+            val environment = System.getenv().toMutableMap()
+            if (ciUnset) environment.remove(SigningPolicy.CI_ENV_VAR)
+
+            val result = GradleRunner.create()
+                .withProjectDir(testProjectDir)
+                .withArguments("tasks", "--all")
+                .withPluginClasspath()
+                .withEnvironment(environment)
+                .build()
+
+            assert(result.output.contains("signMavenPublication")) {
+                "Expected the signMavenPublication task to be registered\n${result.output}"
+            }
         }
 
         When("relocation group {string} and artifact {string} are configured") { group: String, artifact: String ->

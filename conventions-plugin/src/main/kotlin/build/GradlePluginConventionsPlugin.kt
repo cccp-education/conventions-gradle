@@ -49,6 +49,19 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         project.repositories.gradlePluginPortal()
     }
 
+    /**
+     * Enables the Gradle build cache for consumers.
+     *
+     * The code review S-019 flagged this mutation as hostile to the
+     * configuration cache (P3-1). It was **verified empirically** against the
+     * real plugin on Gradle 9.8.0 / JDK 25: the configuration cache is still
+     * stored on the first run and reused on the second (`Configuration cache
+     * entry stored` → `Reusing configuration cache`), so the behavior is kept.
+     * A `settings.buildCache` rewrite is not available through a supported
+     * public API from a `Project`-scoped plugin (only the deprecated
+     * `GradleInternal.settings` reaches it), so mutating `startParameter`
+     * remains the pragmatic option; revisit when Gradle exposes it publicly.
+     */
     private fun configureBuildCache(project: Project) {
         project.gradle.startParameter.isBuildCacheEnabled = true
     }

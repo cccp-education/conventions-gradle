@@ -22,8 +22,12 @@ class LintConventionsPlugin : Plugin<Project> {
             if (configFile.exists()) {
                 detekt.config.from(configFile)
             }
-            project.afterEvaluate {
-                project.tasks.findByName("check")?.dependsOn(project.tasks.named("detekt"))
+            // Robust wiring: react to the `check` task whenever it is registered
+            // (base/java plugins may apply after this plugin), instead of the
+            // former `findByName("check")?.dependsOn(...)` in afterEvaluate which
+            // silently did nothing when `check` was absent at that moment.
+            project.tasks.matching { task -> task.name == "check" }.configureEach { checkTask ->
+                checkTask.dependsOn("detekt")
             }
         }
     }
