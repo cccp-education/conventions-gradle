@@ -5,12 +5,14 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-08-30
-_session terminee_ : 017 — Maintenance réactive (borough liquidé)
-_session en cours_ : 018 — Maintenance réactive (ou EPIC futur)
+_Derniere mise a jour_ : 2026-09-27
+_session terminee_ : 018 — Correction racine `koverThresholdCheck` (bug latent producteur, remonté par bakery S-245)
+_session en cours_ : 019 — Maintenance réactive (ou EPIC futur)
 _Prochaine session_ : 019 — Maintenance réactive
 
-_Note 2026-08-30_ : conventions-plugin **0.0.4 publié** Maven Local + Maven Central (portal AUTOMATIC, bundle après validation). Cause : hygiène classpath Cucumber (suppression du `jar` projet redondant) + test fonctionnel de régression `CP_JAR_PRESENT=false`. Bump 0.0.3 → 0.0.4 (commit `4dd158e`). Note : le `DuplicateStepDefinitionException` du borough document-gradle n'était PAS dû à ce plugin (root-cause corrigé côté document-gradle S-223).
+_Note 2026-09-27 (S-018)_ : conventions-plugin **0.0.5 publié** Maven Local + Maven Central (bundle `08a7b16f-d90d-4d2f-b63e-0a4c0b7bfcc2`, AUTOMATIC ; 4 plugin markers repo1 200). Cause : le chemin de rapport `koverThresholdCheck` était **hardcodé** (`reports/kover/xml/report.xml`) alors que kover 0.9.8 écrit `reports/kover/report.xml` ; fix = `KoverCoverage` objet pur (6 UT) + `resolveXmlReportFile` (propriété réelle `reports.total.xml.xmlFile` + fallback) + 2 FT + 3 scénarios BDD. **Découverte** : `configureKover` est **no-op** (`invokeMethod "currentProject"` ≠ getter Java `getCurrentProject()`) — bug latent distinct, documenté au BACKLOG, non corrigé (sémantique ambiguë).
+
+_Note 2026-08-30 (S-017)_ : conventions-plugin **0.0.4 publié** Maven Local + Maven Central (portal AUTOMATIC, bundle après validation). Cause : hygiène classpath Cucumber (suppression du `jar` projet redondant) + test fonctionnel de régression `CP_JAR_PRESENT=false`. Bump 0.0.3 → 0.0.4 (commit `4dd158e`). Note : le `DuplicateStepDefinitionException` du borough document-gradle n'était PAS dû à ce plugin (root-cause corrigé côté document-gradle S-223).
 
 '''
 
@@ -147,3 +149,4 @@ Gain estime : **~1200 lignes de build supprimees**, **1 source de verite**, **ve
 |===
 
 _Note_ : Cet index est maintenu automatiquement par l'agent en fin de session.
+

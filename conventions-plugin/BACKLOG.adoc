@@ -408,8 +408,50 @@ Le défaut devrait être `"PLUGIN"` (cas majoritaire) ou auto-détecté.
 * [x] 3 scénarios Cucumber minimum
 * [x] `publishToMavenLocal` SUCCESS
 * [x] `./gradlew check` VERT (zéro régression)
+'''
+
+== ✅ TERMINE — Maintenance S-018 (2026-09-27) : correction racine `koverThresholdCheck`
+
+_Bug latent producteur remonté par bakery (Bushwick, mission A S-245)._
+
+[cols="1,4,2"]
+|===
+| US | Description | Statut
+
+| S18-1
+| `KoverCoverage` objet pur (6 UT — agrégation des compteurs `INSTRUCTION`, ratio, vide, seuil inclusif)
+| ✅ S-018
+
+| S18-2
+| `resolveXmlReportFile` lit la propriété réelle `kover.reports.total.xml.xmlFile` (+ fallback défaut kover 0.9.8)
+| ✅ S-018
+
+| S18-3
+| `KoverThresholdCheckFunctionalTest` 2 FT TestKit (RED `Kover report not found` → GREEN)
+| ✅ S-018
+
+| S18-4
+| `kover-threshold-check.feature` 3 scénarios BDD + steps (RED 2/3 par revert → GREEN 3/3)
+| ✅ S-018
+
+| S18-5
+| Bump **0.0.4 → 0.0.5** + `publishToMavenLocal` + Central (bundle `08a7b16f-d90d-4d2f-b63e-0a4c0b7bfcc2`, 4 plugin markers repo1 200)
+| ✅ S-018
+|===
+
+Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/0**).
+
+=== 🟡 À FAIRE — bug latent `configureKover` no-op (découvert S-018)
+
+* `invokeMethod(…, "currentProject")` ne matche jamais le getter Java
+  `getCurrentProject()` (Kotlin `val`) → `includedSourceSets` / `onCheck`
+  jamais posés depuis toujours (silencieusement no-op).
+* Corriger en typé (`kover.extension as KoverProjectExtension`) — mais **cadrer
+  d'abord l'intention** : `includedSourceSets = {main, functionalTest}` exclurait
+  `e2eTest` de la couverture bakery (impact seuil). Bump 0.0.6, propager.
 
 '''
+
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]

@@ -1,8 +1,10 @@
 package build
 
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 
 open class KoverConventionsPlugin : Plugin<Project> {
 
@@ -59,6 +61,26 @@ open class KoverConventionsPlugin : Plugin<Project> {
         }
     }
 
+    /**
+     * Resolves the XML report file kover will write, asking the `kover`
+     * extension for the configured `reports.total.xml.xmlFile`. This is the
+     * canonical source of truth: it respects a consumer override of `xmlFile`,
+     * and it is immune to the `reports/kover/xml/report.xml` vs
+     * `reports/kover/report.xml` drift fixed in 0.0.5. Falls back to the
+     * kover 0.9.8 default when the property cannot be read.
+     */
+    private fun resolveXmlReportFile(project: Project): File {
+        val kover = runCatching { project.extensions.getByName("kover") }.getOrNull()
+        if (kover is KoverProjectExtension) {
+            val configured = runCatching { kover.reports.total.xml.xmlFile.orNull }.getOrNull()
+            if (configured != null) return configured.asFile
+        }
+        return project.layout.buildDirectory
+            .file("reports/kover/report.xml")
+            .get()
+            .asFile
+    }
+
     private fun configureThresholdCheck(project: Project, extension: KoverConventionsExtension) {
         extension.threshold?.let { thresholdValue ->
             val thresholdTask = project.tasks.register("koverThresholdCheck", DefaultTask::class.java) { task ->
@@ -66,32 +88,19 @@ open class KoverConventionsPlugin : Plugin<Project> {
                 task.dependsOn("koverXmlReport")
 
                 task.doLast {
-                    val reportFile = project.layout.buildDirectory
-                        .file("reports/kover/xml/report.xml")
-                        .get()
-                        .asFile
+                    val reportFile = resolveXmlReportFile(project)
                     if (!reportFile.exists()) {
                         throw RuntimeException("Kover report not found. Run 'koverXmlReport' first.")
                     }
-                    val xml = reportFile.readText()
-                    val coverageRegex = Regex("""<counter type="INSTRUCTION" missed="(\d+)" covered="(\d+)"/>""")
-                    val matches = coverageRegex.findAll(xml)
-                    var totalMissed = 0L
-                    var totalCovered = 0L
-                    for (match in matches) {
-                        totalMissed += match.groupValues[1].toLong()
-                        totalCovered += match.groupValues[2].toLong()
-                    }
-                    val total = totalMissed + totalCovered
-                    val coverage = if (total > 0) (totalCovered.toDouble() / total) * 100 else 0.0
+                    val summary = KoverCoverage.summarize(reportFile.readText())
                     println(
                         "Instruction coverage: ${
-                            String.format("%.2f", coverage)
-                        }% (missed=$totalMissed, covered=$totalCovered)"
+                            String.format("%.2f", summary.percent)
+                        }% (missed=${summary.missed}, covered=${summary.covered})"
                     )
-                    if (coverage < thresholdValue) {
+                    if (summary.percent < thresholdValue) {
                         throw RuntimeException(
-                            "Coverage ${String.format("%.2f", coverage)}% is below threshold ${thresholdValue}%"
+                            "Coverage ${String.format("%.2f", summary.percent)}% is below threshold ${thresholdValue}%"
                         )
                     }
                 }

@@ -221,3 +221,39 @@ Zéro changement de code source dans conventions-plugin.
 - api-key-pool-gradle : publishingConventions { publicationType = "LIBRARY" } ajouté
 
 **Couverture cumulée** : 44/44 Cucumber + 23/23 functional = 67 tests PASS.
+
+== Session 018 — Correction racine `koverThresholdCheck` (chemin rapport)
+
+**Mission** : le plugin `0.0.4` lisait un chemin XML **hardcodé**
+(`reports/kover/xml/report.xml`) alors que kover 0.9.8 écrit
+`reports/kover/report.xml`. Fix producteur (bump 0.0.4 → 0.0.5).
+
+**Unit tests (JUnit 5)** : +6 (total 53 PASS)
+- `KoverCoverageTest` — agrégation des compteurs INSTRUCTION, ratio (invariant
+  sous la hiérarchie), rapport vide sans division, seuil inclusif à la borne,
+  sous-seuil, ignore les compteurs non-INSTRUCTION.
+
+**Functional tests (GradleTestKit)** : +2 (total 26 PASS)
+- `KoverThresholdCheckFunctionalTest` — succès sur le défaut kover, chemin
+  custom `xmlFile` respecté. RED prouvé (`Kover report not found`) → GREEN.
+
+**Cucumber BDD** : +3 scénarios (total 47 PASS)
+- `kover-threshold-check.feature` — défaut, chemin custom, échec sous seuil.
+  RED prouvé par revert ciblé (2/3 scénarios) → GREEN 3/3.
+
+**Nouveaux fichiers** :
+- `build/KoverCoverage.kt` (objet pur, 46 lignes)
+- `build/KoverCoverageTest.kt` (6 UT)
+- `build/KoverThresholdCheckFunctionalTest.kt` (2 FT)
+- `features/kover-threshold-check.feature` + `KoverThresholdCheckSteps.kt`
+
+**Fichiers modifiés** :
+- `build/KoverConventionsPlugin.kt` : `resolveXmlReportFile` (résolution de la
+  propriété réelle `reports.total.xml.xmlFile` + fallback) + `doLast` consomme
+  `KoverCoverage` (fin de la regex inline + du chemin hardcodé)
+
+**Couverture cumulée** : 47/47 Cucumber + 26/26 functional + 53/53 unit = 126 tests PASS.
+
+**Découverte** : `configureKover` est **no-op** — `invokeMethod(…, "currentProject")`
+ne matche jamais le getter Java `getCurrentProject()`. Bug latent distinct,
+documenté au backlog (sémantique ambiguë), non corrigé.

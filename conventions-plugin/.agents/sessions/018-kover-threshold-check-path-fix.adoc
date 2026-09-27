@@ -1,0 +1,81 @@
+= Session 018 — Correction racine `koverThresholdCheck` (chemin rapport kover)
+
+_Date_ : 2026-09-27
+_Type_ : DDD/TDD/BDD strict — bug latent producteur (correction en amont)
+_Score_ : 9/10
+
+== Contexte
+
+Mission déclenchée par `bakery-gradle` (Bushwick) : le PROMPT_REPRISE S-245
+(bakery) a retenu la « correction racine conventions » (le chemin de rapport
+kover). Le bug était connu côté bakery (S-243 V7) mais classé « hors périmètre »
+deux fois ; bakery était **le seul consommateur** de la convention kover, le
+workaround local masquait le bug.
+
+== Le bug
+
+`KoverConventionsPlugin.kt:69-72` (0.0.4) lit un chemin **hardcodé**
+`build/reports/kover/xml/report.xml`. Or le plugin kover `0.9.8` écrit
+`reports/kover/report${variant}.xml` (sources
+`kotlinx/kover/.../commons/Paths.kt:30` `xmlReportPath`), soit
+`reports/kover/report.xml` pour le variant total. Le `koverThresholdCheck`
+échouait donc systématiquement (`Kover report not found`).
+
+== Le fix (baby-step DDD/TDD/BDD)
+
+. **DDD** — `build.KoverCoverage` (objet pur, zéro Gradle) : `summarize(xml)`
+  → `Summary(missed, covered, percent)` + `meetsThreshold(xml, threshold)`.
+  Sémantique : les compteurs `INSTRUCTION` sont répétés à chaque niveau
+  (parent = somme des enfants), le ratio est invariant sous la hiérarchie.
+  `KoverCoverageTest` : **6 UT**.
+. **TDD** — `resolveXmlReportFile(project)` lit la propriété **réelle**
+  `kover.reports.total.xml.xmlFile` (source de vérité, robuste à une surcharge
+  `xmlFile`), fallback défaut kover. `KoverThresholdCheckFunctionalTest` :
+  **2 FT** (RED `Kover report not found` → GREEN).
+. **BDD** — `kover-threshold-check.feature` **3 scénarios** + steps TestKit.
+  RED prouvé par revert ciblé (2/3 échouent avec le chemin hardcodé) → GREEN.
+
+== Publication
+
+* `version = "0.0.4"` → **`0.0.5"`** (+ root build self-pin cucumber 0.0.5).
+* `publishToMavenLocal` VERT.
+* `publishAggregationToCentralPortal --no-daemon` → bundle
+  `08a7b16f-d90d-4d2f-b63e-0a4c0b7bfcc2` (AUTOMATIC).
+* Propagation repo1 : pom/jar 0.0.5 HTTP 200 + 4 plugin markers
+  (kover, gradle-plugin, publishing, lint) HTTP 200.
+
+== Gates
+
+[cols="2,3"]
+|===
+| Gate | Résultat
+
+| `./gradlew check` | **BUILD SUCCESSFUL 2m39s**
+| `test` | **53/0** (baseline 47 → +6)
+| `functionalTest` | **26/0** (baseline 24 → +2)
+| `cucumberTest` | **47/0** (baseline 44 → +3)
+| secrets | 0
+|===
+
+== Découverte annexe — bug latent `configureKover` no-op
+
+Le helper `invokeMethod(target, clazz, "currentProject")` cherche la méthode
+`currentProject` (sans préfixe `get`), or Kotlin compile `val currentProject`
+en **getter Java `getCurrentProject()`** → la méthode n'est **jamais trouvée**,
+`invokeMethod` retourne `null`, et tout `configureKover`
+(`includedSourceSets = {main, functionalTest}`, `html.onCheck`, `xml.onCheck`)
+est **silencieusement no-op**. C'est pourquoi bakery devait tout configurer
+lui-même via son workaround.
+
+**Non corrigé** en S-018 : l'intention exacte de ce code mort est ambiguë
+(`includedSourceSets = {main, functionalTest}` exclurait `e2eTest` de la
+couverture bakery → changement de sémantique du seuil). À cadrer en session
+dédiée (EPIC séparé, documenté au BACKLOG).
+
+== Périmètre git
+
+Les fichiers `.agents/INDEX.adoc` et `.agents/SESSIONS_HISTORY.adoc` étaient
+déjà **modifiés** à l'ouverture (session parallèle ; `SESSIONS_HISTORY` a 208
+lignes supprimées — **non déplacées** vers `backup/`, donc potentiellement
+destructif). Ils sont **laissés hors du commit** de cette session. `INDEX.adoc`
+(fin de fichier) est mis à jour avec la note S-018.

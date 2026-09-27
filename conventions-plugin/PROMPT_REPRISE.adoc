@@ -1,29 +1,43 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 018
-:date: 2026-07-31
+:session: 019
+:date: 2026-09-27
 :epic: Maintenance réactive — Borough LIQUIDÉ
 :max-lines: 70
 
 == Contexte hérité
+
+Session 018 (2026-09-27) — **Correction racine `koverThresholdCheck`** (bug latent
+producteur, déclenché par bakery mission A). Le chemin XML hardcodé
+(`reports/kover/xml/report.xml`) ne correspondait pas à la sortie kover 0.9.8
+(`reports/kover/report.xml`). Fix baby-step DDD/TDD/BDD : `KoverCoverage`
+objet pur (6 UT) + `resolveXmlReportFile` (propriété réelle
+`reports.total.xml.xmlFile` + fallback). **conventions-plugin 0.0.4 → 0.0.5**
+publié Central (bundle `08a7b16f-d90d-4d2f-b63e-0a4c0b7bfcc2`), 4 plugin markers
+repo1 200. Gates : `check` VERT (test 53/0, functionalTest 26/0, cucumberTest 47/0).
 
 Session 017 (2026-07-31) — Maintenance réactive. Aucun bug remonté.
 Session 016 — CNV-12 ✅ TERMINÉ. 3/3 US livrées (8 pts).
 Tous les EPICs CNV-0→CNV-12 + PUB TERMINÉS (113 pts).
 Borough LIQUIDÉ côté producteur.
 
-CNV-8 (LintConventionsPlugin + config-cache) était déjà TERMINE (Session 011, 2026-07-31).
-Le PROMPT_REPRISE global session 099 le listait à tort comme "à faire".
-
-== Mission session 018 — Maintenance réactive
+== Mission session 019 — Maintenance réactive
 
 Aucun EPIC actif. Le borough est en maintenance réactive uniquement :
 bugs remontés par les boroughs consommateurs.
+
+=== Bug candidat (découvert S-018, à cadrer)
+
+* **`configureKover` no-op** : `invokeMethod(…, "currentProject")` ne matche
+  jamais le getter Java `getCurrentProject()` (Kotlin `val`) →
+  `includedSourceSets`/`onCheck` jamais posés depuis toujours. Intention
+  ambiguë : `includedSourceSets = {main, functionalTest}` exclurait `e2eTest`
+  de la couverture (impact seuil bakery). À cadrer avant correction.
 
 === Si aucun bug remonté
 
 - Vérifier `git status` → constater état clean
 - Vérifier `./gradlew check` → BUILD SUCCESSFUL
-- Mettre à jour PROMPT_REPRISE pour session 019 (même contenu)
+- Mettre à jour PROMPT_REPRISE pour session 020 (même contenu)
 - Fermer la session
 
 === Si bug remonté
@@ -35,6 +49,6 @@ bugs remontés par les boroughs consommateurs.
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 7 plugins 0.0.3, Java 25, Kotlin 2.4.10, Gradle 9.6.1
-- 44 Cucumber + 23 functional = 67 tests PASS
+- 7 plugins 0.0.5, Java 25, Kotlin 2.4.10, Gradle 9.8.0
+- Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
 - Parallélisation autorisée (décision pilote 2026-09-17)
