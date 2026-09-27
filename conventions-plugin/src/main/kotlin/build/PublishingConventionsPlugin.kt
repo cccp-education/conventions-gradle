@@ -119,11 +119,11 @@ class PublishingConventionsPlugin : Plugin<Project> {
         }
     }
 
-    private fun shouldSign(project: Project): Boolean {
-        val isCI = System.getenv("CI") == "true"
-        val isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
-        return !isCI && !isSnapshot
-    }
+    private fun shouldSign(project: Project): Boolean =
+        SigningPolicy.shouldSign(
+            isCi = System.getenv(SigningPolicy.CI_ENV_VAR) == "true",
+            version = project.version.toString()
+        )
 
     private fun resolveWebsite(project: Project, extension: PublishingConventionsExtension): String {
         if (extension.publicationType == "PLUGIN") {

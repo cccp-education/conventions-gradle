@@ -9,6 +9,7 @@ class PublishingConventionsSteps : En {
     private lateinit var testProjectDir: File
     private lateinit var buildResult: BuildResult
     private var pomContent: String = ""
+    private var ciUnset: Boolean = false
 
     private val publicationBlock: String
         get() = """
@@ -107,14 +108,21 @@ class PublishingConventionsSteps : En {
         }
 
         When("CI is not set and version is not SNAPSHOT") {
-            // default conditions satisfy this: CI env not set, version = 1.0.0
+            // Deterministic off-CI branch: GitHub Actions exports CI=true, which
+            // would otherwise skip signing and make this scenario untestable in
+            // CI. The full environment is preserved and only `CI` is removed.
+            ciUnset = true
         }
 
         Then("the signing plugin is applied") {
+            val environment = System.getenv().toMutableMap()
+            if (ciUnset) environment.remove(SigningPolicy.CI_ENV_VAR)
+
             val result = GradleRunner.create()
                 .withProjectDir(testProjectDir)
                 .withArguments("tasks", "--all")
                 .withPluginClasspath()
+                .withEnvironment(environment)
                 .build()
 
             assert(result.output.contains("sign")) {
