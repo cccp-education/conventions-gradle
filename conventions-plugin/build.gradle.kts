@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.7"
+version = "0.0.8"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -205,7 +205,11 @@ publishing {
 }
 
 signing {
-    if (System.getenv("CI") != "true" && !version.toString().endsWith("-SNAPSHOT")) {
+    // Mirrors build.SigningPolicy (not on the buildscript classpath): a test CI
+    // job has no GPG key, a release job exports CCCP_PUBLISH=true and does.
+    val isCi = System.getenv("CI") == "true"
+    val isPublishing = System.getenv("CCCP_PUBLISH") == "true"
+    if ((isPublishing || !isCi) && !version.toString().endsWith("-SNAPSHOT")) {
         sign(publishing.publications)
     }
     useGpgCmd()

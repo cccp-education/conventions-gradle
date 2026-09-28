@@ -1,0 +1,64 @@
+= Session 023 — conventions-plugin 0.0.8 (signature CI release)
+
+:date: 2026-09-28
+:borough: ABIDJAN (conventions-gradle)
+:epic: cross-borough (document-gradle DOC-CI-ISOLATION-4)
+:session_precedente: 022 — publication 0.0.7 + rollout 15 consommateurs
+
+== Mission
+
+Demande pilote cross-borough (session document-gradle S-274, option 1) : rendre
+possible la **publication depuis la CI** d'un borough. Prérequis identifié :
+sous `CI=true`, la convention `education.cccp.build.publishing`
+**désactivait la signature** (`SigningPolicy.shouldSign = !isCi`,
+`PublishingConventionsPlugin.configureSigning`), alors que Maven Central
+**rejette** les artefacts non signés. Un job `publishAggregationToCentralPortal`
+en CI aurait donc échoué sans correctif — impossible à corriger côté document
+seul (le plugin est distribué à 26 consommateurs).
+
+== Livré — 0.0.8
+
+* `SigningPolicy.shouldSign(isCi, isPublishing, version)` — 3ᵉ dimension :
+  * un job de **release** exporte `PUBLISH_ENV_VAR` (`CCCP_PUBLISH=true`) et
+    **doit signer** même sur CI (il a importé une clé GPG) ;
+  * un job de **test** CI (`isCi && !isPublishing`) **ne signe pas** (pas de
+    clé — sinon `publishToMavenLocal` échouerait) ;
+  * un build **local** signe ;
+  * un `-SNAPSHOT` n'est **jamais** signé.
+* `PublishingConventionsPlugin.shouldSign` lit `isPublishing`, et
+  `build.gradle.kts` du plugin (inline, `SigningPolicy` pas sur le classpath
+  buildscript) applique la même règle.
+* BDD `publishing-conventions.feature` : scénario « signs on CI when the job is
+  publishing » + `When CI is set and CCCP_PUBLISH is true` ; helper
+  `signingProbe()` dédupliqué des deux steps de signature.
+* Hygiène : `WorkspaceBom.FALLBACK_VERSION` 0.0.58 → **0.0.59** (aligné sur le
+  catalogue publié MEMPHIS `6aa2387`) ; `libs.versions.toml` idem.
+
+Baby-step TDD strict : `SigningPolicyTest` réécrit d'abord (5 UT, nouvelle
+signature) → RED (compile) → implémentation → GREEN (compile) → REFACTOR.
+
+== Publication
+
+* `publishToMavenLocal` VERT (`.asc` générés, clé `CBE2926CD46D8E8B`).
+* **Central 0.0.8** : deployment `a0d3f630-688a-48ae-a32e-9f99bd03c6a6`
+  `PUBLISHING` → repo1 POM + marker publishing **HTTP 200**,
+  `<release>0.0.8</release>`, `<latest>0.0.8</latest>`.
+
+== Preuves (Local = Build)
+
+[cols="3,4", options="header"]
+|===
+| Vérification | Résultat
+| `compileKotlin`/`compileTestKotlin`/`compileFunctionalTestKotlin` | **VERT**
+| `publishToMavenLocal` (`.asc` générés) | **VERT**
+| Central POM + marker publishing 0.0.8 | **HTTP 200**
+|===
+
+== Portée / non-goals
+
+* Changement **additif** et **backward compatible** : sans `CCCP_PUBLISH`, le
+  comportement est identique (local signe, CI test ne signe pas).
+* Zéro bump catalogue ws (le BOM est distribué par MEMPHIS) ; un futur bump du
+  catalogue MEMPHIS pourra pinner `conventions-plugin = "0.0.8"`.
+* Les 26 consommateurs restent sur 0.0.7/0.0.8 selon leur propre rythme ; le
+  rollout 0.0.8 est une session dédiée si souhaité.

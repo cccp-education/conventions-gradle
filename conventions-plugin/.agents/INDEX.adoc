@@ -5,10 +5,26 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-09-27
-_session terminee_ : 022 — Publication 0.0.7 Central + rollout 15 consommateurs
-_session en cours_ : 023 — Fin rollout (codebase-gradle) + veille Plugin Portal
-_Prochaine session_ : 023 — Fin rollout (codebase-gradle) + veille Plugin Portal
+_Derniere mise a jour_ : 2026-09-28
+_session terminee_ : 023 — conventions-plugin **0.0.8** : signature activée sur CI release (`CCCP_PUBLISH`)
+_session en cours_ : 023 — publiée Central (repo1 200)
+_Prochaine session_ : 024 — rollout 0.0.8 consommateurs (optionnel) / veille Plugin Portal
+
+_Note 2026-09-28 (S-023)_ : **`conventions-plugin` 0.0.8 publié** Maven Local +
+**Maven Central** (deployment `a0d3f630`, repo1 POM + marker publishing HTTP 200,
+`<latest>0.0.8</latest>`). **Motif** : permettre la **publication depuis la CI**
+(demande cross-borough document-gradle DOC-CI-ISOLATION-4) — sous `CI=true` la
+convention `publishing` **désactivait la signature** (`SigningPolicy = !isCi`)
+alors que Maven Central **rejette** les artefacts non signés. **Correctif** :
+`SigningPolicy.shouldSign(isCi, isPublishing, version)` 3ᵉ dimension — un job de
+release exporte `CCCP_PUBLISH=true` (`PUBLISH_ENV_VAR`) et **doit signer** sur CI
+(clé GPG importée) ; un job de test CI sans clé **ne signe pas** ; `-SNAPSHOT`
+jamais signé. 5 UT `SigningPolicyTest` (RED écrit avant le changement de
+signature) + BDD `publishing-conventions.feature` scénario release + helper
+`signingProbe()`. Hygiène : `WorkspaceBom.FALLBACK_VERSION` 0.0.58 → **0.0.59**
+(aligné catalogue MEMPHIS). **Backward compatible** (sans `CCCP_PUBLISH`, local
+signe / CI test ne signe pas, comme avant). Rapport
+`.agents/sessions/023-signing-ci-release.adoc`.
 
 _Note 2026-09-27 (S-022)_ : **`conventions-plugin` 0.0.7 publié** Maven Local +
 **Maven Central** (bundle `2a15ef0f-7634-443f-b49e-05053e50e9de`, AUTOMATIC, 7

@@ -47,7 +47,7 @@ class WorkspaceBomTest {
     fun `fallback version matches the published catalog version`() {
         // The fallback is a safety net, not the source of truth; it must still
         // be the current published BOM so a missing resource degrades cleanly.
-        assertEquals("0.0.58", WorkspaceBom.FALLBACK_VERSION)
+        assertEquals("0.0.59", WorkspaceBom.FALLBACK_VERSION)
     }
 
     @Test

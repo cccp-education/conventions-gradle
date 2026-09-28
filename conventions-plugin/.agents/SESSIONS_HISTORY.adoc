@@ -470,3 +470,35 @@ peut référencer un artefact non publié).
 
 **Reste** : migrer `codebase-gradle` quand sa session parallèle aura fini ;
 vérifier la propagation Plugin Portal `0.0.7`.
+
+'''
+
+== Session 023 — 2026-09-28
+Type:: build/CI + TDD cross-borough
+Code:: PUB-0.0.8
+Titre:: conventions-plugin 0.0.8 — signature activée sur CI release (CCCP_PUBLISH)
+Score:: 10/10
+Duree:: 1 session
+
+**Mission** : permettre la **publication depuis la CI** d'un borough (demande
+cross-borough document-gradle DOC-CI-ISOLATION-4).
+
+**Constat** : sous `CI=true` la convention `education.cccp.build.publishing`
+**désactivait la signature** (`SigningPolicy.shouldSign = !isCi`) ; Maven Central
+**rejette** les artefacts non signés → le job `publishAggregationToCentralPortal`
+en CI aurait échoué. Impossible à corriger côté document seul (plugin distribué).
+
+**Livrables** :
+- `SigningPolicy.shouldSign(isCi, isPublishing, version)` — 3ᵉ dimension
+  `isPublishing` (`CCCP_PUBLISH`) : release CI signe (clé GPG importée), test CI
+  ne signe pas (pas de clé), local signe, `-SNAPSHOT` jamais.
+- `PublishingConventionsPlugin` + `build.gradle.kts` du plugin alignés.
+- BDD `publishing-conventions.feature` scénario release + helper `signingProbe()`.
+- Hygiène : `WorkspaceBom.FALLBACK_VERSION` 0.0.58 → **0.0.59**.
+- `conventions-plugin` **0.0.8** publié Maven Local + **Maven Central**
+  (deployment `a0d3f630`, repo1 POM + marker publishing HTTP 200).
+
+**Backward compat** : sans `CCCP_PUBLISH`, comportement inchangé.
+
+**Reste** : rollout 0.0.8 consommateurs (optionnel) ; bump catalogue MEMPHIS pour
+pinner 0.0.8.

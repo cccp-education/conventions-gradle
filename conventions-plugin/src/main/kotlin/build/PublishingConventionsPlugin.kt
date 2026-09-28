@@ -122,6 +122,7 @@ class PublishingConventionsPlugin : Plugin<Project> {
     private fun shouldSign(project: Project): Boolean =
         SigningPolicy.shouldSign(
             isCi = System.getenv(SigningPolicy.CI_ENV_VAR) == "true",
+            isPublishing = System.getenv(SigningPolicy.PUBLISH_ENV_VAR) == "true",
             version = project.version.toString()
         )
 

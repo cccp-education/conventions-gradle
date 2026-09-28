@@ -10,6 +10,7 @@ class PublishingConventionsSteps : En {
     private lateinit var buildResult: BuildResult
     private var pomContent: String = ""
     private var ciUnset: Boolean = false
+    private var ciPublishing: Boolean = false
 
     private val publicationBlock: String
         get() = """
@@ -114,16 +115,14 @@ class PublishingConventionsSteps : En {
             ciUnset = true
         }
 
-        Then("the signing plugin is applied") {
-            val environment = System.getenv().toMutableMap()
-            if (ciUnset) environment.remove(SigningPolicy.CI_ENV_VAR)
+        // DOC-CI-ISOLATION-4 — the release job signals itself with CCCP_PUBLISH
+        // so signing stays enabled on CI (Central rejects unsigned artefacts).
+        When("CI is set and CCCP_PUBLISH is true") {
+            ciPublishing = true
+        }
 
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("tasks", "--all")
-                .withPluginClasspath()
-                .withEnvironment(environment)
-                .build()
+        Then("the signing plugin is applied") {
+            val result = signingProbe()
 
             assert(result.output.contains("sign")) {
                 "Expected signing tasks in output\n${result.output}"
@@ -131,15 +130,7 @@ class PublishingConventionsSteps : En {
         }
 
         Then("publications are signed") {
-            val environment = System.getenv().toMutableMap()
-            if (ciUnset) environment.remove(SigningPolicy.CI_ENV_VAR)
-
-            val result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("tasks", "--all")
-                .withPluginClasspath()
-                .withEnvironment(environment)
-                .build()
+            val result = signingProbe()
 
             assert(result.output.contains("signMavenPublication")) {
                 "Expected the signMavenPublication task to be registered\n${result.output}"
@@ -236,6 +227,22 @@ class PublishingConventionsSteps : En {
                 $publicationBlock
             """)
         }
+    }
+
+    private fun signingProbe(): BuildResult {
+        val environment = System.getenv().toMutableMap()
+        if (ciUnset) environment.remove(SigningPolicy.CI_ENV_VAR)
+        if (ciPublishing) {
+            environment[SigningPolicy.CI_ENV_VAR] = "true"
+            environment[SigningPolicy.PUBLISH_ENV_VAR] = "true"
+        }
+
+        return GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("tasks", "--all")
+            .withPluginClasspath()
+            .withEnvironment(environment)
+            .build()
     }
 
     private fun generatePom() {

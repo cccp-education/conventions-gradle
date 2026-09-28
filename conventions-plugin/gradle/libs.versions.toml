@@ -8,7 +8,7 @@ plugin-publish = "1.3.0"
 # Single source of truth for the workspace-bom fallback published inside the
 # plugin (TestDependencies). The build generates `build/workspace-bom.properties`
 # from this version and a drift guard fails the build when they diverge.
-workspace-bom = "0.0.58"
+workspace-bom = "0.0.59"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

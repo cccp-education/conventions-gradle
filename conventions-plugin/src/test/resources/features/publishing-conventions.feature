@@ -16,6 +16,14 @@ Feature: Publishing Conventions
     Then the signing plugin is applied
     And publications are signed
 
+  # BKY/DOC CI release — a publish job imports a GPG key and must sign on CI
+  # (Maven Central rejects unsigned artefacts); CCCP_PUBLISH signals that job.
+  Scenario: Publishing plugin signs on CI when the job is publishing
+    Given a project applies the publishing plugin
+    When CI is set and CCCP_PUBLISH is true
+    Then the signing plugin is applied
+    And publications are signed
+
   Scenario: Publishing plugin supports relocation
     Given a project applies the publishing plugin
     When relocation group "com.old" and artifact "old-artifact" are configured
