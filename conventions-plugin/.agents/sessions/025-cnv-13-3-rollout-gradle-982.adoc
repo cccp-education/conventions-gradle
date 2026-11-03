@@ -58,7 +58,11 @@ workflows GitHub Actions ».
   réutilisable (`uses: cccp-education/conventions-gradle/.github/actions/verify-gradle-wrapper@main`),
   input `expected-version` (défaut `9.8.2`), `wrapper-path` ;
   implémentation **sans pipe** (leçon SIGPIPE S-318) ;
-* utilisée par le workflow de ce dépôt (`wrapper-path: conventions-plugin/...`).
+* utilisée par le workflow de ce dépôt (`wrapper-path: conventions-plugin/...`) ;
+* **câblée dans les 35 workflows qui invoquent `./gradlew`** (26 dépôts,
+  insertion après le checkout, YAML validé) → même les CI qui ne lancent pas
+  `check` (shards `test`/`ktlintCheck`/`cucumberTest`) vérifient le wrapper ;
+  preuve : step observé dans la CI `planner` (`expected-version: 9.8.2`).
 
 **Bump effectif** : **101/101** `gradle-wrapper.properties` du workspace en
 `9.8.2` (95 mis à jour depuis `9.8.1`/`9.8.0`, 6 déjà à jour).
