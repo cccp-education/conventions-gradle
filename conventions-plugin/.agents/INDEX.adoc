@@ -6,9 +6,24 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-03
-_session terminee_ : 024 — **EPIC CNV-13 ouvert** : `publishing` paramétrable (**0.0.9**) + adoption `payment-scaffold` (16 modules)
-_session en cours_ : 024 — 0.0.9 **Maven Central** (bundle `806b6244`) + Plugin Portal soumis ; CI `41718428078` verte
-_Prochaine session_ : 025 — **CNV-13.3** rollout public 0.0.9 (catalogue MEMPHIS + racine dogfood + consommateurs)
+_session terminee_ : 025 — **CNV-13.3 + CNV-13.6** : rollout 0.0.9 (19 dépôts, 67 refs) + **Gradle 9.8.2 centralisé** (**0.0.10**) et gardé en CI
+_session en cours_ : 025 — 0.0.10 **Maven Central** (bundle `6a3b7052`) + Plugin Portal soumis ; CI `41729277381` verte (182 PASSED)
+_Prochaine session_ : 026 — **CNV-13.4** privés MVP0 (training → workspace → waiter → quizz) ; résiduels bakery/document
+
+_Note 2026-11-03 (S-025)_ : **deux livraisons**. (1) **Rollout 0.0.9** : 67
+références migrées dans **19 dépôts** (compile/assemble VERT, CI verte sur
+l'ensemble) ; `bakery`/`document` exclus (sessions parallèles actives) ;
+`workspace-bom` avait une **garde rouge préexistante** (S-342 : littéraux
+`0.0.124`/`0.0.32` vs catalogue `0.0.125`/`0.0.33`) → réalignée + pin
+catalogue `0.0.10`. (2) **CNV-13.6 — Gradle 9.8.2** : source unique
+`[versions].gradle` → ressource → domaine pur `GradleWrapperVersion` →
+tâche `verifyGradleWrapper` câblée à `check` (**gradle-plugin + lint**) →
+tout CI échoue sur dérive ; **action composite** `.github/actions/verify-gradle-wrapper`
+(réutilisable cross-repo, sans pipe/SIGPIPE) ; **101/101 wrappers** du
+workspace en 9.8.2 ; release **0.0.10** (Central bundle `6a3b7052`, Portal
+soumis). Preuves : 8 UT + 3 FT + 2 BDD ; dogfood réel `academy-plugin`
+(vert aligné / rouge sur dérive 9.8.1). Rapport
+`.agents/sessions/025-cnv-13-3-rollout-gradle-982.adoc`.
 
 _Note 2026-11-03 (S-024)_ : **réouverture d'un EPIC d'adoption** (décision pilote).
 Audit mesuré : **0/27 builds privés** n'utilisent les conventions, `kover` 1
@@ -162,6 +177,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 022 | 2026-09-27 | release | Publication 0.0.7 Central (bundle 2a15ef0f) + Plugin Portal + tag `v0.0.7` ; BOM/catalog 0.0.59 Central (bundle ad9d763e, pin conventions 0.0.7) ; rollout 15 consommateurs 0.0.4/0.0.6 → 0.0.7 (45 refs) + compile + push. codebase-gradle exclu (session parallèle Queens). | 10/10
   | 023 | 2026-09-28 | build/CI | 0.0.8 — `SigningPolicy.shouldSign(isCi, isPublishing, version)` : la CI release (`CCCP_PUBLISH=true`) signe, la CI test ne signe pas. Central (deployment a0d3f630). | 10/10
   | 024 | 2026-11-03 | adoption | EPIC CNV-13 ouvert — `publishing` paramétrable (identité POM) **0.0.9** + pin BOM test 0.0.124 + adoption `payment-scaffold` 16 modules + CI JDK 25. `compileKotlin` 16/16, `validatePlugins` 16/16. | 10/10
+  | 025 | 2026-11-03 | release/CI | Rollout 0.0.9 (19 dépôts, 67 refs) + **Gradle 9.8.2 centralisé** : source unique, `verifyGradleWrapper` câblée à `check` (gradle-plugin + lint), action composite, 101/101 wrappers ; **0.0.10** Central (bundle 6a3b7052). | 10/10
   |===
 
 '''
@@ -187,9 +203,10 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-13.0 | Cadrage EPIC adoption + resynchronisation gouvernance | ✅ TERMINE (S-024) | P0
 | CNV-13.1 | `publishing` paramétrable (identité propriétaire) + bump 0.0.9 + pin BOM test | ✅ TERMINE (S-024) | P0
 | CNV-13.2 | Adoption `payment-scaffold` (16 modules) + CI JDK 25 | ✅ TERMINE (S-024) | P0
-| CNV-13.3 | Rollout public 0.0.9 (catalogue MEMPHIS, racine dogfood, consommateurs) | 🟡 À FAIRE (S-025) | P0
+| CNV-13.3 | Rollout public 0.0.9 (19 dépôts, 67 refs ; bakery/document résiduels) | ✅ TERMINE (S-025) | P0
 | CNV-13.4 | Privés MVP0 : training → workspace → waiter → quizz | 🟡 À FAIRE | P1
-| CNV-13.5 | Garde cross-borough d'adoption + arbitrage kover/logback + ADR-001 | 🟡 À FAIRE | P1
+| CNV-13.5 | Garde cross-borough d'adoption + arbitrage kover/logback | 🟡 À FAIRE | P1
+| CNV-13.6 | Gradle 9.8.2 centralisé + `verifyGradleWrapper` (check) + action CI + 101/101 wrappers | ✅ TERMINE (S-025) | P0
 |===
 
 '''

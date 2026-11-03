@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-03 — S-024 ✅ EPIC CNV-13 ouvert (0.0.9 + adoption payment-scaffold)
+_Derniere mise a jour_ : 2026-11-03 — S-025 ✅ rollout 0.0.9 (19 dépôts) + Gradle 9.8.2 centralisé (0.0.10)
 
 '''
 
@@ -535,19 +535,24 @@ workspace (publics **et** privés). Cadrage complet :
 | ✅ S-024
 
 | CNV-13.3
-| **Rollout public `0.0.9`** — BOM/catalogue MEMPHIS (ordre DAG), consommateur racine `conventions-gradle`, 28 références `lint`/`gradle-plugin`/…, vérification propagation Plugin Portal
+| **Rollout public `0.0.9`** — **67 références dans 19 dépôts** ; `workspace-bom` (catalogue + garde littérale réalignée) ; racine dogfood. Résiduels : `bakery` (4 refs `0.0.7`) et `document` (1 `0.0.7` + 4 `0.0.8`), sessions parallèles actives
 | 5
-| 🟡 S-025
+| ✅ S-025 (résiduels à reprendre)
 
 | CNV-13.4
-| **Privés MVP0** — `training-gradle` (cœur), `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle`
+| **Privés MVP0** — `training-gradle` (cœur), `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle` (wrappers déjà en 9.8.2)
 | 8
 | 🟡 À FAIRE
 
 | CNV-13.5
-| **Outillage & dette** — garde cross-borough d'adoption (pin ≤ version publiée + compilation matrice), arbitrage `kover` (1 consommateur) / `logback-exclusion` (1 consommateur), réécriture ADR-001 (modèle binaire publié)
-| 5
+| **Outillage & dette** — garde cross-borough d'adoption (pin ≤ version publiée + compilation matrice), arbitrage `kover` (1 consommateur) / `logback-exclusion` (1 consommateur). ~~ADR-001~~ ✅ réécrit S-024
+| 4
 | 🟡 À FAIRE
+
+| CNV-13.6
+| **Version Gradle 9.8.2 centralisée** — source unique `[versions].gradle`, ressource plugin, `GradleWrapperVersion` (8 UT), `verifyGradleWrapper` câblée à `check` (gradle-plugin + lint ; 3 FT + 2 BDD), action composite `.github/actions/verify-gradle-wrapper`, **101/101 wrappers** alignés, release **0.0.10**
+| 6
+| ✅ S-025
 |===
 
 === Definition of Done (EPIC)
@@ -622,6 +627,8 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 | CNV-12 | Version alignment — fallbacks bump + BOM publicationType + annotations hack (vision Famille 6 + 8) | 8 | ✅ TERMINE
 | PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
 | CNV-13.0→13.2 | EPIC adoption — lot 1 (publishing paramétrable + payment-scaffold) | 11 | ✅ S-024
-| CNV-13.3→13.5 | EPIC adoption — rollout public + privés MVP0 + outillage | 18 | 🟡 À FAIRE
-| *Total* | | *142* |
+| CNV-13.3 | Rollout public 0.0.9 (19 dépôts) | 5 | ✅ S-025
+| CNV-13.6 | Gradle 9.8.2 centralisé + garde CI + 101/101 wrappers (0.0.10) | 6 | ✅ S-025
+| CNV-13.4→13.5 | Privés MVP0 + outillage restant | 12 | 🟡 À FAIRE
+| *Total* | | *148* |
 |===

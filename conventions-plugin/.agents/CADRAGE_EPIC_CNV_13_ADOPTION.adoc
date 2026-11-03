@@ -84,8 +84,23 @@ mesure l'écart :
 | CNV-13.3 | Rollout public `0.0.9` (catalogue MEMPHIS, racine dogfood, consommateurs) | 5 | 🟡 À FAIRE
 | CNV-13.4 | Privés MVP0 : training → workspace → waiter → quizz | 8 | 🟡 À FAIRE
 | CNV-13.5 | Outillage : garde cross-borough d'adoption ; arbitrage `kover`/`logback-exclusion` | 5 | 🟡 À FAIRE
-| *Total* | | *29* |
+| CNV-13.6 | **Version Gradle 9.8.2 centralisée** — source unique `[versions].gradle`, ressource plugin, `verifyGradleWrapper` câblée à `check` (gradle-plugin + lint), action composite CI, 101/101 wrappers alignés, release 0.0.10 | 6 | ✅ S-025
+| *Total* | | *35* |
 |===
+
+=== CNV-13.6 — détail (version Gradle)
+
+* **Source unique** : `conventions-plugin/gradle/libs.versions.toml`
+  `[versions].gradle = "9.8.2"` → ressource `build/gradle-version.properties`.
+* **Domaine pur** `GradleWrapperVersion` (parsing `bin`/`all`, verdict,
+  diagnostic) — 8 UT.
+* **Garde en CI** : `verifyGradleWrapper` enregistrée par `gradle-plugin` et
+  `lint`, câblée à `check` → tout CI qui lance `check` échoue sur une dérive
+  (3 FT TestKit + 2 BDD). Un projet sans wrapper passe avec un warning.
+* **Action composite réutilisable** :
+  `.github/actions/verify-gradle-wrapper/action.yml` (défaut `9.8.2`,
+  `wrapper-path` configurable, sans pipe → pas de SIGPIPE).
+* **Bump** : 101/101 wrappers du workspace en 9.8.2 ; release **0.0.10**.
 
 == 4. Definition of Done (EPIC)
 

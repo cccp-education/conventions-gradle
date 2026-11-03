@@ -540,3 +540,32 @@ racine dogfood `0.0.5` ; catalogue MEMPHIS `0.0.7` ; BOM de test injecté
 **Reste** : CNV-13.3 (rollout public 0.0.9 + catalogue MEMPHIS), CNV-13.4
 (privés MVP0), CNV-13.5 (garde cross-borough + arbitrage kover/logback +
 ADR-001). Cadrage : `.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc`.
+
+'''
+
+== Session 025 — 2026-11-03
+Type:: release / rollout cross-borough / outillage CI
+Code:: CNV-13.3 + CNV-13.6
+Titre:: Rollout 0.0.9 (19 dépôts) + Gradle 9.8.2 centralisé et gardé en CI (0.0.10)
+Score:: 10/10
+Duree:: 1 session
+
+**CNV-13.3 — rollout 0.0.9** : 67 références `education.cccp.build.*`
+migrées dans **19 dépôts** (compile/assemble VERT, CI verte) ; `workspace-bom`
+avait une garde littérale périmée (S-342 : `0.0.124`/`0.0.32` vs catalogue
+`0.0.125`/`0.0.33`) → réalignée + pin catalogue `0.0.10`. Exclus : `bakery`
+(4 refs `0.0.7`) et `document` (1 `0.0.7` + 4 `0.0.8`) — sessions parallèles.
+Flake `plantuml` (CDN TestKit) reverdi au rerun.
+
+**CNV-13.6 — Gradle 9.8.2** : source unique `[versions].gradle` → ressource
+`build/gradle-version.properties` → domaine pur `GradleWrapperVersion` (8 UT)
+→ tâche `verifyGradleWrapper` câblée à `check` depuis `gradle-plugin` **et**
+`lint` (3 FT + 2 BDD) → tout CI échoue sur dérive ; projet sans wrapper passe
+avec warning. **Action composite** `.github/actions/verify-gradle-wrapper`
+(réutilisable cross-repo, sans pipe). **101/101 wrappers** du workspace en
+9.8.2. Release **0.0.10** : CI `41729277381` verte (182 PASSED), Central
+bundle `6a3b7052`, Portal soumis. Dogfood réel `academy-plugin` : vert aligné,
+rouge sur dérive 9.8.1 forcée.
+
+**Reste** : CNV-13.3 résiduel (bakery/document), CNV-13.4 (privés MVP0),
+CNV-13.5 (garde cross-borough + arbitrage kover/logback).

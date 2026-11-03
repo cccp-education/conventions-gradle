@@ -1,65 +1,67 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 025
+:session: 026
 :date: 2026-11-03
-:epic: CNV-13 — Adoption complète (lot 2 : rollout public 0.0.9)
+:epic: CNV-13 — Adoption complète (lot 2 : privés MVP0 + résiduels)
 :max-lines: 70
 
 == Contexte hérité
 
-Session 024 (2026-11-03) — **EPIC CNV-13 ouvert** (décision pilote). Audit
-mesuré : **0/27 builds privés** adoptants, `kover` 1 consommateur,
-`functional-test` 9/17, `logback-exclusion` 1, racine dogfood `0.0.5`,
-catalogue MEMPHIS `0.0.7`, **BOM de test injecté périmé `0.0.59`**, ADR-001
-obsolète. Livré : `PublishingIdentity` (objet pur) + `publishingConventions
-{ licenseName/licenseUrl/developerId/developerName/developerEmail/website/vcsUrl }`
-(défauts cccp inchangés) ; **0.0.9** ; pin BOM test `0.0.124` ; **16 modules
-`payment-scaffold` migrés** (`gradle-plugin` + `publishing`, POM propriétaire
-CSS/`cheroliv` préservé) ; CI payment JDK 24 → 25. Gates locaux :
-`compileKotlin` 16/16, `compileTestKotlin`, `validatePlugins` 16/16.
-Cadrage `.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc` ; rapport
-`.agents/sessions/024-cnv-13-adoption-payment-scaffold.adoc`.
+Session 025 (2026-11-03) — **CNV-13.3 + CNV-13.6 livrés**. (1) Rollout
+**0.0.9** : **67 références** migrées dans **19 dépôts** (CI verte partout ;
+`plantuml` rouge = flake CDN reverdi au rerun ; `workspace-bom` rouge =
+garde littérale S-342 périmée `0.0.124`/`0.0.32` → réalignée). Exclus :
+`bakery` (4 refs `0.0.7`) et `document` (1 `0.0.7` + 4 `0.0.8`) — sessions
+parallèles actives. (2) **CNV-13.6 — Gradle 9.8.2 centralisé** : source unique
+`[versions].gradle`, ressource plugin, `GradleWrapperVersion` (8 UT),
+`verifyGradleWrapper` câblée à `check` par `gradle-plugin` **et** `lint`
+(3 FT + 2 BDD), **action composite**
+`.github/actions/verify-gradle-wrapper` (sans pipe/SIGPIPE), **101/101
+wrappers** du workspace alignés, release **0.0.10** (CI `41729277381` verte,
+182 PASSED ; Central bundle `6a3b7052` ; Portal soumis). Rapports
+`.agents/sessions/024-*.adoc` et `025-cnv-13-3-rollout-gradle-982.adoc`.
 
-Sessions antérieures : 023 (0.0.8 signature CI release), 022 (0.0.7 + rollout
-15 consommateurs + BOM 0.0.59), 021 (P2/P3 review), 020 (CI + `configureKover`).
+Sessions antérieures : 024 (0.0.9 + payment-scaffold 16 modules + CI JDK 25),
+023 (0.0.8 signature CI release), 022 (0.0.7 + rollout 15 consommateurs).
 
-== Mission session 025 — CNV-13.3 : rollout public 0.0.9
+== Mission session 026 — CNV-13.4 : privés MVP0
 
-Ordre DAG **N0 → consommateurs** (aucun consommateur avant sa dépendance) :
+Ordre recommandé (cœur MVP0 d'abord) :
 
-. **BOM/catalogue MEMPHIS** (borough N0 partagé — vérifier qu'aucune session
-   MEMPHIS parallèle n'est active, sinon attendre) :
-   `gradle/libs.versions.toml` `conventions-plugin 0.0.7 → 0.0.9`, bump
-   BOM/catalog, publication Central, propagation repo1.
-. **Consommateurs publics** : `lint` (28), `gradle-plugin` (15),
-   `publishing` (17), `cucumber` (11), `functional-test` (9), `kover` (2),
-   `logback-exclusion` (1) — `0.0.7`/`0.0.8` → `0.0.9` (77 références) ;
-   `compileKotlin` par dépôt, commit + push par dépôt.
-   *Ne pas toucher* un borough dont une session parallèle est active.
-. **Racine dogfood** `foundry/public/conventions-gradle` : déjà bumpée
-   `0.0.5 → 0.0.9` en S-024 — vérifier `./gradlew tasks`.
-. **Plugin Portal** : vérifier la propagation `0.0.9`
-   (`plugins.gradle.org/m2/education/cccp/build/<plugin>/.../0.0.9/...`).
+. **`training-gradle`** (cœur pipeline formation) — `training-plugin` :
+   appliquer `education.cccp.build.gradle-plugin` + `publishing` `0.0.10`
+   (+ `functional-test`/`cucumber` selon source sets), supprimer POM/signing/
+   test-config dupliqués, conserver `buildscript { force(...) }` si encore
+   nécessaire, `compileKotlin`/`assemble` VERT, commit + push.
+. **`workspace-gradle`** — `pilot-plugin` + `provision-plugin` (même
+   traitement, vérifier le `includeBuild` de `pilot-gradle`).
+. **`waiter-gradle`** (`waiter-plugin`) et **`quizz-benchmark-gradle`**
+   (`quizz-benchmark-plugin`).
+. **Résiduels publics** si leurs sessions ont terminé : `bakery` (4 refs) et
+   `document` (5 refs) → `0.0.10`.
 
-Si le temps le permet : **CNV-13.4** — `training-gradle` (cœur MVP0, 1er lot
-privé), puis `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle`.
+Prérequis : `0.0.10` est publié (Central + mavenLocal). Wrappers déjà en 9.8.2.
+
+Si le temps le permet : **CNV-13.5** — garde cross-borough d'adoption
+(pin consommateur ≤ version publiée + compilation matrice) et arbitrage
+`kover`/`logback-exclusion` (1 consommateur chacun).
 
 == Workflow
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
 - Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/
-  `compileFunctionalTestKotlin`, `validatePlugins`) ; publication autorisée
-  (Règle 2 — accord toujours granted).
+  `compileFunctionalTestKotlin`, `assemble`, `validatePlugins`) ; publication
+  autorisée (Règle 2 — accord toujours granted).
 - **Tests = CI** : aucun `test`/`check`/`cucumberTest`/`functionalTest` en
   local, aucune sonde dans un projet jetable. Preuve = run CI vert du commit.
-- Un **seul sessionneur par borough** (leçon S-020/S-022).
+- Un **seul sessionneur par borough** (leçon S-020/S-022/S-025).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **7 plugins**, version courante **0.0.9** (Central bundle `806b6244` ;
-  Portal soumis), Java 25,
-  Kotlin 2.4.10, Gradle 9.8.1
-- CI : `.github/workflows/test.yml` (JDK 25, `./gradlew check`)
+- **7 plugins**, version courante **0.0.10** (Central bundle `6a3b7052` ;
+  Portal soumis), Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique
+  `[versions].gradle`)
+- CI : `.github/workflows/test.yml` (JDK 25, vérifie le wrapper, `check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
-- Anti-drift BOM : version dans `gradle/libs.versions.toml` → ressource générée
-  (`generateWorkspaceBomInfo`) ; garde `WorkspaceBomTest` ; pin actuel **0.0.124**
+- Anti-drift : BOM test `0.0.124` (`WorkspaceBom`) ; Gradle `9.8.2`
+  (`GradleWrapperVersion`)

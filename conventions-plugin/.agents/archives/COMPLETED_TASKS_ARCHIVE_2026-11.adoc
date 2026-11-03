@@ -20,3 +20,19 @@ build) — lot 1 : `publishing` paramétrable + adoption `payment-scaffold`.
   16/16 VERT. Tests délégués CI (Local = Build).
 * Reste : CNV-13.3 (rollout public 0.0.9), CNV-13.4 (privés MVP0),
   CNV-13.5 (garde cross-borough + arbitrage kover/logback + ADR-001).
+
+== Session 025 (2026-11-03) — CNV-13.3 + CNV-13.6
+
+*Tâche* : rollout 0.0.9 cross-borough + version Gradle unique (9.8.2) gardée
+en CI.
+*Statut* : ✅ TERMINÉ.
+
+* **CNV-13.3** : 67 refs `education.cccp.build.*` → 0.0.9 dans 19 dépôts ;
+  `workspace-bom` (catalogue + garde réalignée). Résiduels bakery/document
+  (sessions parallèles).
+* **CNV-13.6** : `[versions].gradle = 9.8.2` → ressource →
+  `GradleWrapperVersion` (8 UT) → `verifyGradleWrapper` câblée à `check`
+  (`gradle-plugin` + `lint`, 3 FT + 2 BDD) ; action composite
+  `.github/actions/verify-gradle-wrapper` ; 101/101 wrappers en 9.8.2 ;
+  release **0.0.10** (CI `41729277381`, 182 PASSED ; Central `6a3b7052`).
+* Reste : CNV-13.4 (privés MVP0), CNV-13.5 (garde cross-borough + kover/logback).

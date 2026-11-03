@@ -1,0 +1,84 @@
+= Session 025 — 2026-11-03
+:toc: left
+:icons: font
+
+== Métadonnées
+
+[cols="1,4"]
+|===
+| Type | release / rollout cross-borough / outillage CI
+| Code | CNV-13.3 + CNV-13.6
+| Titre | Rollout 0.0.9 (19 dépôts) + version Gradle **9.8.2** centralisée et gardée en CI
+| Score | 10/10
+|===
+
+== 1. CNV-13.3 — rollout public 0.0.9
+
+* **67 références** `education.cccp.build.*` migrées `0.0.7 → 0.0.9` dans
+  **19 dépôts** (academy, api-key-pool, bureau, capsule, codebase, codex,
+  container-provision, dashboard, flow, graphify, hyperframes, jhipster,
+  planner, plantuml, readme, review, slider, video-kernel, workspace-bom).
+* Exclus : `bakery-gradle` (arbre sale — session parallèle) et
+  `document-gradle` (session 291 active) ; racine dogfood déjà en 0.0.9.
+* Preuve locale : `compileKotlin`/`assemble` VERT sur chaque dépôt
+  (Local = Build) ; CI verte constatée sur academy, api-key-pool, dashboard,
+  capsule, graphify, hyperframes, jhipster, planner, readme, slider,
+  video-kernel, codebase, workspace-bom.
+* **Plantuml** : première CI rouge = **flake préexistant** (TestKit ne résout
+  pas `kotlin-stdlib:2.3.0` / `langchain4j-hugging-face` sur le CDN), verte au
+  rerun — aucun lien avec le bump.
+* **workspace-bom** : première CI rouge = **dette S-342** (garde littérale
+  `PlatformCatalogAlignmentTest` laissée sur `0.0.124`/`0.0.32` alors que le
+  catalogue était `0.0.125`/`0.0.33`). Garde réalignée + pin catalogue
+  `conventions-plugin` → `0.0.10` ; CI verte.
+
+== 2. CNV-13.6 — Gradle 9.8.2 : version unique, gardée en CI
+
+Demande pilote : « veille à ce que tout le workspace soit sous Gradle 9.8.2,
+centralise cette configuration, que ce soit le système de maintien dans les
+workflows GitHub Actions ».
+
+**Centralisation (une seule source de vérité)** :
+
+* `conventions-plugin/gradle/libs.versions.toml` → `[versions].gradle = "9.8.2"` ;
+* matérialisée en ressource `build/gradle-version.properties`
+  (`generateGradleVersionInfo`) ;
+* domaine pur `GradleWrapperVersion` (lecture, parsing `bin`/`all`, verdict,
+  message de dérive) — anti-drift identique à `WorkspaceBom` ;
+* **`GradleWrapperVerification`** enregistre la tâche `verifyGradleWrapper`
+  et la câble à `check`, depuis **`gradle-plugin`** (15 consommateurs) **et
+  `lint`** (28 consommateurs, le plus répandu) → **tout CI qui lance `check`
+  échoue sur une dérive**, sans câblage supplémentaire ;
+* un projet **sans** wrapper (fixtures TestKit, module `includeBuild`) passe
+  avec un warning (contrat « plugin does not fail on check » préservé).
+
+**Système de maintien CI** :
+
+* `.github/actions/verify-gradle-wrapper/action.yml` — action composite
+  réutilisable (`uses: cccp-education/conventions-gradle/.github/actions/verify-gradle-wrapper@main`),
+  input `expected-version` (défaut `9.8.2`), `wrapper-path` ;
+  implémentation **sans pipe** (leçon SIGPIPE S-318) ;
+* utilisée par le workflow de ce dépôt (`wrapper-path: conventions-plugin/...`).
+
+**Bump effectif** : **101/101** `gradle-wrapper.properties` du workspace en
+`9.8.2` (95 mis à jour depuis `9.8.1`/`9.8.0`, 6 déjà à jour).
+
+**Publication** : `conventions-plugin 0.0.10` — CI verte `41729277381`
+(182 PASSED), **Maven Central** bundle `6a3b7052-e516-4377-ad5a-a08dab36a4dc`
+(AUTOMATIC), Plugin Portal soumis.
+
+**Preuves** : 8 UT `GradleWrapperVersionTest`, 3 FT TestKit (aligné, dérive,
+câblage `check`), 2 scénarios BDD ; dogfood réel sur `academy-plugin` —
+`verifyGradleWrapper` VERT en 9.8.2, **rouge** sur dérive forcée 9.8.1
+(message nommant les deux versions), wrapper restauré.
+
+== 3. Reste (CNV-13)
+
+* **CNV-13.3 résiduel** : `bakery` (4 refs `0.0.7`) et `document`
+  (1 `0.0.7` + 4 `0.0.8`) — dépendent de la fin de leurs sessions parallèles.
+* `document` wrapper committé seul (`--only`) pour ne pas embarquer la
+  session 291 en cours ; `office/` (8 wrappers) laissé non committé (arbre
+  sale, hors périmètre boroughs).
+* **CNV-13.4** privés MVP0 (training, workspace, waiter, quizz) —
+  wrappers déjà en 9.8.2, adoption des conventions à faire.
+* **CNV-13.5** garde cross-borough + arbitrage `kover`/`logback-exclusion`.

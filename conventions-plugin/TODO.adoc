@@ -6,20 +6,27 @@
 - CI `.github/workflows/test.yml` installé et **vert** (S-020)
 - `configureKover` no-op corrigé (DSL typé, S-020)
 - P2/P3 review S-019 traités (S-021)
-- BOM/catalog **0.0.59** Central, pin `conventions-plugin = "0.0.7"` (S-022)
-- Rollout **15 consommateurs** `0.0.4`/`0.0.6` → `0.0.7` (S-022)
-- `conventions-plugin` **0.0.8** Central — signature en CI release (S-023)
-- **CNV-13.0/13.1/13.2** : `publishing` paramétrable + **0.0.9** + pin BOM test
-  0.0.124 + adoption **payment-scaffold** (16 modules) + CI JDK 25 (S-024)
-- `codebase-gradle` **est migré** en `0.0.7` (constat S-023 périmé, vérifié S-024)
+- `conventions-plugin` **0.0.8** — signature en CI release (S-023)
+- **CNV-13.0/13.1/13.2** : `publishing` paramétrable + **0.0.9** + pin BOM
+  test 0.0.124 + adoption **payment-scaffold** (16 modules) + CI JDK 25 (S-024)
+- **CNV-13.3** : rollout 0.0.9 — **67 refs dans 19 dépôts** ; `workspace-bom`
+  (catalogue + garde réalignée) ; racine dogfood (S-025)
+- **CNV-13.6** : **Gradle 9.8.2** centralisé (`[versions].gradle` →
+  ressource → `GradleWrapperVersion` → `verifyGradleWrapper` câblée à `check`
+  par `gradle-plugin` **et** `lint`) ; action composite
+  `.github/actions/verify-gradle-wrapper` ; **101/101 wrappers** alignés ;
+  release **0.0.10** (Central bundle `6a3b7052`, Portal soumis) (S-025)
+- ADR-001 réécrit (plugin binaire publié) + ADR-003 (adoption par lots) (S-024)
+- `codebase-gradle` **est migré** en `0.0.7` (constat S-023 périmé)
 
 == Restant
 
-- **CNV-13.3** — rollout public `0.0.9` : BOM/catalogue MEMPHIS (ordre DAG),
-  consommateur racine `conventions-gradle` (déjà bumpé en local), 77
-  références consommateur, propagation Plugin Portal.
+- **CNV-13.3 résiduel** : `bakery` (4 refs `0.0.7`) et `document` (1 `0.0.7`
+  + 4 `0.0.8`) — attendre la fin de leurs sessions parallèles.
 - **CNV-13.4** — privés MVP0 : `training-gradle` (cœur), `workspace-gradle`,
   `waiter-gradle`, `quizz-benchmark-gradle`.
-- **CNV-13.5** — garde cross-borough d'adoption ; arbitrage `kover` /
-  `logback-exclusion` (1 consommateur chacun) ; réécriture ADR-001
-  (`CODE_REVIEW_GLOBALE.adoc` décrit encore `includeBuild()`).
+- **CNV-13.5** — garde cross-borough d'adoption (pin ≤ version publiée +
+  compilation matrice) ; arbitrage `kover` / `logback-exclusion`
+  (1 consommateur chacun).
+- Vérifier la propagation Plugin Portal `0.0.10`
+  (`plugins.gradle.org/m2/education/cccp/build/.../0.0.10/...`).

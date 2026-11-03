@@ -56,6 +56,18 @@ Ce projet est OSS (Apache 2.0, groupId `education.cccp`).
 
 Raison : l'anglais est la lingua franca de l'OSS. Le Gherkin français bloque les contributeurs externes.
 
+=== Version Gradle unique — 9.8.2 (CNV-13.6)
+
+* La version du wrapper vit dans **`gradle/libs.versions.toml`
+  `[versions].gradle`** — jamais en dur dans un wrapper.
+* La tâche `verifyGradleWrapper` (câblée à `check` par `gradle-plugin` et
+  `lint`) échoue si un `gradle-wrapper.properties` dérive ; un projet sans
+  wrapper passe avec un warning.
+* CI hors conventions : action composite
+  `cccp-education/conventions-gradle/.github/actions/verify-gradle-wrapper`.
+* Maintenance : bumper `[versions].gradle`, publier le plugin, puis
+  `./gradlew wrapper --gradle-version <version>` dans chaque dépôt.
+
 === Tests
 
 L'agent NE DOIT JAMAIS lancer de tests (`./gradlew test`, etc.) lors de la procedure de fin de session SANS permission explicite de l'utilisateur.
