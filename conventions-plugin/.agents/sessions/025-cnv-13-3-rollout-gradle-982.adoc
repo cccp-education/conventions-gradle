@@ -63,6 +63,14 @@ workflows GitHub Actions ».
   insertion après le checkout, YAML validé) → même les CI qui ne lancent pas
   `check` (shards `test`/`ktlintCheck`/`cucumberTest`) vérifient le wrapper ;
   preuve : step observé dans la CI `planner` (`expected-version: 9.8.2`).
+* **Mode découverte** (correctif après un faux rouge réel) : un dépôt dont le
+  build vit dans un sous-répertoire (`video-kernel-plugin`,
+  `quizz-benchmark-plugin`) n'a **pas** de wrapper à la racine → l'action
+  vérifie **tous** les `gradle-wrapper.properties` trouvés (hors
+  `build/`/`.gradle/`/`node_modules/`), ou le chemin explicite fourni.
+  Preuves : `video-kernel` reverdi ; `quizz` — wrapper OK (1 fichier 9.8.2),
+  échec de build **préexistant** (résolution `codebase-plugin:0.0.11`, CI
+  rouge depuis septembre, hors périmètre).
 
 **Bump effectif** : **101/101** `gradle-wrapper.properties` du workspace en
 `9.8.2` (95 mis à jour depuis `9.8.1`/`9.8.0`, 6 déjà à jour).
