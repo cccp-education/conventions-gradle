@@ -7,7 +7,7 @@ _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-03
 _session terminee_ : 024 — **EPIC CNV-13 ouvert** : `publishing` paramétrable (**0.0.9**) + adoption `payment-scaffold` (16 modules)
-_session en cours_ : 024 — 0.0.9 Maven Local (+ Central après CI verte)
+_session en cours_ : 024 — 0.0.9 **Maven Central** (bundle `806b6244`) + Plugin Portal soumis ; CI `41718428078` verte
 _Prochaine session_ : 025 — **CNV-13.3** rollout public 0.0.9 (catalogue MEMPHIS + racine dogfood + consommateurs)
 
 _Note 2026-11-03 (S-024)_ : **réouverture d'un EPIC d'adoption** (décision pilote).

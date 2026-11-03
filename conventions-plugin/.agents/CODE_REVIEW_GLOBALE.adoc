@@ -361,17 +361,54 @@ via son BOM, ou documenter les versions recommandees dans un `libs.versions.toml
 
 == Architecture Decision Records
 
-=== ADR-001 — Pourquoi des precompiled script plugins et pas un buildSrc partage ?
+=== ADR-001 — Pourquoi un plugin binaire publié et pas un `buildSrc`/`includeBuild` partagé ?
 
-*Contexte* : Les precompiled script plugins (`.gradle.kts` dans `src/main/kotlin`) sont le
-pattern recommande par Gradle pour les convention plugins. Alternatives : `buildSrc/` partage
-(impossible cross-repo), `includeBuild()` (plus lourd), plugin binaire publie (trop tot).
+*Contexte* : les convention plugins sont écrits en plugins binaires
+(`src/main/kotlin/build/*.kt`, `java-gradle-plugin`) — pas en precompiled
+script plugins `.gradle.kts`. Alternatives : `buildSrc/` (impossible
+cross-repo), `includeBuild()` (couplage par chemin local, incompatible avec la
+CI et avec les dépôts privés), « trop tôt pour publier » (hypothèse du
+cadrage initial, invalidée par 26 boroughs consommateurs).
 
-*Decision* : Precompiled script plugins dans `conventions-plugin/src/main/kotlin/`,
-references par `includeBuild()` depuis les projets consommateurs.
+*Décision (révisée 2026-11-03, S-024 — l'ADR initial décrivait
+`includeBuild()` + precompiled scripts, ce qui n'a jamais été la réalité)* :
+plugin **binaire publié** sur Maven Central (+ Gradle Plugin Portal), consommé
+par identifiant et **version explicite** :
 
-*Consequence* : Chaque projet consommateur doit ajouter `includeBuild("../conventions-gradle")`
-dans son `settings.gradle.kts`.
+[source,kotlin]
+----
+plugins {
+    id("education.cccp.build.gradle-plugin") version "0.0.9"
+    id("education.cccp.build.publishing") version "0.0.9"
+}
+----
+
+*Conséquences* :
+* aucune modification de `settings.gradle.kts` n'est requise (hors
+  `pluginManagement` vers `mavenCentral()` / Portal) ;
+* une **session parallèle** sur un consommateur n'est jamais bloquée par une
+  modification locale du plugin : consommer exige une **publication** (ordre
+  DAG `plugin → Central → BOM/catalogue → consommateurs`) ;
+* la CI d'un consommateur ne résout que des artefacts publiés — un pin vers
+  une version non propagée est un faux vert local (mavenLocal) et un rouge CI
+  (constat S-024 sur `payment-scaffold`) ;
+* l'identité POM est **paramétrable** (`publishingConventions { … }`, 0.0.9) :
+  un consommateur non-cccp (propriétaire) ne peut plus être relicencié par
+  accident en adoptant `publishing`.
+
+=== ADR-003 — Adoption par lots, un borough par session
+
+*Contexte* : la vision « 1 source de vérité » mesurait l'outil, pas son
+adoption (S-024 : 0/27 builds privés adoptants).
+
+*Décision* : EPIC **CNV-13** découpé en lots — L1 `payment-scaffold`
+(16 modules), L2 privés MVP0 (`training` → `workspace` → `waiter` → `quizz`),
+L3 rollout public 0.0.9 + catalogue MEMPHIS, L4 outillage (garde
+cross-borough, arbitrage `kover`/`logback-exclusion`). Un seul sessionneur par
+borough ; preuve = CI verte du dépôt migré.
+
+*Conséquence* : chaque lot est une session livrable et vérifiable ; le
+catalogue MEMPHIS n'est bumpé qu'après publication de la version consommée.
 
 === ADR-002 — Ordre de migration
 

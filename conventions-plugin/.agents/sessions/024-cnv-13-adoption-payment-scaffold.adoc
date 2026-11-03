@@ -96,9 +96,19 @@ toolchain exige 25 ; la CI était donc structurellement incapable de builder).
 
 == 4. Publications (Règle 2 — accord toujours granted)
 
-* `conventions-plugin 0.0.9` — Maven Central (bundle `+a1b2c3+` à compléter
-  après le run CI vert) + Plugin Portal.
-* Consommateur racine `conventions-gradle` : `0.0.5 → 0.0.9`.
+* CI conventions **verte** run `41718428078` (commit `05c04bc`, 4m20s) —
+  condition d'entrée de la publication.
+* `conventions-plugin 0.0.9` — **Maven Central**, bundle
+  `806b6244-f085-4297-a7df-e67d882bea4f` (AUTOMATIC) ; propagation repo1
+  vérifiée **HTTP 200** (plugin + marker `gradle-plugin`).
+* **Plugin Portal** : `publishPlugins` BUILD SUCCESSFUL (soumis ; propagation
+  `plugins.gradle.org/m2` en attente à la clôture).
+* Consommateur racine `conventions-gradle` : `0.0.5 → 0.0.9`, `./gradlew tasks`
+  VERT (résolution mavenLocal puis Central).
+* `payment-scaffold` : **CI verte** run `41720074298` (commit `23bb5e7`,
+  8m56s, **110 tests PASSED** — baseline historique 110/110 préservée).
+  Premier run rouge honnête : 0.0.9 pas encore propagée sur repo1 (faux vert
+  local via mavenLocal) → rerun après propagation.
 * *Non fait volontairement* : bump catalogue/BOM MEMPHIS (borough N0 partagé,
   traité en CNV-13.3 pour respecter l'ordre DAG et l'unicité de sessionneur).
 

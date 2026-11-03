@@ -56,7 +56,8 @@ privé), puis `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle`.
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **7 plugins**, version courante **0.0.9** (Central + Portal), Java 25,
+- **7 plugins**, version courante **0.0.9** (Central bundle `806b6244` ;
+  Portal soumis), Java 25,
   Kotlin 2.4.10, Gradle 9.8.1
 - CI : `.github/workflows/test.yml` (JDK 25, `./gradlew check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
