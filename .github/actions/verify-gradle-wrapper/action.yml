@@ -1,8 +1,9 @@
 name: Verify Gradle wrapper
 description: >-
-  Fails when gradle/wrapper/gradle-wrapper.properties does not match the
-  workspace Gradle version (single source of truth, CNV-13.3). Reusable by any
-  repository: `uses: cccp-education/conventions-gradle/.github/actions/verify-gradle-wrapper@main`.
+  Fails when any gradle/wrapper/gradle-wrapper.properties of the repository
+  does not match the workspace Gradle version (single source of truth,
+  CNV-13.6). Reusable by any repository:
+  `uses: cccp-education/conventions-gradle/.github/actions/verify-gradle-wrapper@main`.
 author: cccp-education
 
 inputs:
@@ -11,9 +12,11 @@ inputs:
     required: false
     default: "9.8.2"
   wrapper-path:
-    description: Path to gradle-wrapper.properties, relative to the repository root
+    description: >-
+      Explicit gradle-wrapper.properties path. When empty (default), every
+      wrapper found in the repository is verified (multi-module repositories).
     required: false
-    default: "gradle/wrapper/gradle-wrapper.properties"
+    default: ""
 
 runs:
   using: composite
@@ -22,20 +25,41 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        file="${{ inputs.wrapper-path }}"
+        explicit="${{ inputs.wrapper-path }}"
         expected="${{ inputs.expected-version }}"
 
-        if [ ! -f "$file" ]; then
-          echo "::error::Gradle wrapper not found at '$file' (workspace requires Gradle $expected)"
+        if [ -n "$explicit" ] && [ -f "$explicit" ]; then
+          files="$explicit"
+        else
+          # Discovery mode: verify every wrapper of the repository. A repository
+          # whose Gradle build lives in a sub-directory (e.g. `*-plugin/`) has
+          # no root wrapper, so a fixed default path would produce a false red.
+          files=$(find . -name gradle-wrapper.properties \
+            -not -path '*/build/*' \
+            -not -path '*/.gradle/*' \
+            -not -path '*/node_modules/*' \
+            -not -path './.git/*')
+        fi
+
+        if [ -z "$files" ]; then
+          echo "::error::No gradle-wrapper.properties found (workspace requires Gradle $expected)"
           exit 1
         fi
 
-        # No pipe: a `sed | head` under pipefail dies with SIGPIPE (lesson S-318).
-        actual=$(sed -nE 's/.*gradle-([0-9]+\.[0-9]+(\.[0-9]+)?)-(bin|all)\.zip.*/\1/p' "$file")
+        failed=0
+        checked=0
+        last=""
+        for file in $files; do
+          checked=$((checked + 1))
+          # No pipe: a `sed | head` under pipefail dies with SIGPIPE (lesson S-318).
+          actual=$(sed -nE 's/.*gradle-([0-9]+\.[0-9]+(\.[0-9]+)?)-(bin|all)\.zip.*/\1/p' "$file")
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::'$file' declares Gradle '$actual' but the workspace requires $expected — run ./gradlew wrapper --gradle-version $expected"
+            failed=1
+          else
+            last="$actual"
+          fi
+        done
 
-        if [ "$actual" != "$expected" ]; then
-          echo "::error::'$file' declares Gradle '$actual' but the workspace requires $expected — run ./gradlew wrapper --gradle-version $expected"
-          exit 1
-        fi
-
-        echo "Gradle wrapper OK: $actual"
+        [ "$failed" -eq 0 ] || exit 1
+        echo "Gradle wrapper OK: $checked file(s) at $last"
