@@ -19,7 +19,7 @@ open class KoverConventionsPlugin : Plugin<Project> {
 
             project.pluginManager.apply("org.jetbrains.kotlinx.kover")
 
-            configureKover(project)
+            configureKover(project, extension)
             configureThresholdCheck(project, extension)
         }
     }
@@ -34,16 +34,26 @@ open class KoverConventionsPlugin : Plugin<Project> {
      * and `reports` lives on the extension itself, not on the variant config.
      * Replaced by direct typed access so the configuration can no longer be skipped.
      */
-    private fun configureKover(project: Project) {
+    private fun configureKover(project: Project, extension: KoverConventionsExtension) {
         val kover = project.extensions.getByType(KoverProjectExtension::class.java)
 
         kover.currentProject { variant ->
-            variant.sources { sources -> sources.includedSourceSets.addAll(KoverReportSources.included) }
+            variant.sources { sources -> sources.includedSourceSets.addAll(extension.includedSourceSets) }
         }
 
         kover.reports.total { report ->
-            report.html { html -> html.onCheck.set(true) }
-            report.xml { xml -> xml.onCheck.set(true) }
+            report.html { html ->
+                html.onCheck.set(extension.htmlOnCheck)
+                extension.htmlDir?.let { dir ->
+                    html.htmlDir.set(project.layout.buildDirectory.dir(dir))
+                }
+            }
+            report.xml { xml ->
+                xml.onCheck.set(extension.xmlOnCheck)
+                extension.xmlFile?.let { file ->
+                    xml.xmlFile.set(project.layout.buildDirectory.file(file))
+                }
+            }
         }
     }
 

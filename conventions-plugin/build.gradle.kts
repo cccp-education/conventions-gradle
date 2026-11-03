@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.10"
+version = "0.0.11"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -77,6 +77,25 @@ val generateGradleVersionInfo by tasks.registering {
 
 sourceSets.main {
     resources.srcDir(generateGradleVersionInfo)
+}
+
+// ── The conventions version itself, materialised for the adoption audit ────
+// AdoptionAuditTask compares every consumer pin to this version, so the
+// expected value can never drift from the published plugin.
+val generateConventionsVersionInfo by tasks.registering {
+    val conventionsVersion = version.toString()
+    val outputDir = layout.buildDirectory.dir("generated/conventions-info")
+    inputs.property("conventionsVersion", conventionsVersion)
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.get().file("build/conventions-version.properties").asFile
+        file.parentFile.mkdirs()
+        file.writeText("version=$conventionsVersion\n")
+    }
+}
+
+sourceSets.main {
+    resources.srcDir(generateConventionsVersionInfo)
 }
 
 dependencies {

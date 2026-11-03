@@ -13,6 +13,7 @@ class LintConventionsPlugin : Plugin<Project> {
         // convention (lint: 28 consumers) so every CI enforces the workspace
         // Gradle version, even for builds that only adopt lint.
         GradleWrapperVerification.register(project)
+        AdoptionAuditTask.register(project)
 
         val ktlint = project.extensions.getByType(KtlintExtension::class.java)
         ktlint.version.set("1.5.0")

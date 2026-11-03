@@ -78,6 +78,58 @@ class KoverConventionsSteps : En {
             taskListResult = runTasks("tasks", "--all")
         }
 
+        Given("a project applies the kover conventions plugin with custom report options") {
+            testProjectDir = createTempDir("kover-test-custom-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("""
+                rootProject.name = "test-project"
+                pluginManagement {
+                    repositories {
+                        mavenLocal()
+                        gradlePluginPortal()
+                        mavenCentral()
+                    }
+                }
+            """)
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("org.jetbrains.kotlinx.kover") version "0.9.8"
+                    id("education.cccp.build.kover")
+                }
+                koverConventions {
+                    enabled = true
+                    includedSourceSets = listOf("main")
+                    htmlOnCheck = false
+                    xmlOnCheck = false
+                }
+
+                tasks.register("probeKover") {
+                    doLast {
+                        fun invoke(target: Any, name: String): Any =
+                            target.javaClass.methods.first { it.name == name }.invoke(target)!!
+
+                        val kover = project.extensions.getByName("kover")
+                        val currentProject = invoke(kover, "getCurrentProject")
+                        val sources = invoke(currentProject, "getSources")
+                        val included = invoke(sources, "getIncludedSourceSets")
+                        @Suppress("UNCHECKED_CAST")
+                        val includedValues = invoke(included, "get") as Set<String>
+                        println("PROBE_INCLUDED=" + includedValues.sorted().joinToString(","))
+                        val reports = invoke(kover, "getReports")
+                        val total = invoke(reports, "getTotal")
+                        println(
+                            "PROBE_HTML_ONCHECK=" +
+                                invoke(invoke(invoke(total, "getHtml"), "getOnCheck"), "get")
+                        )
+                        println(
+                            "PROBE_XML_ONCHECK=" +
+                                invoke(invoke(invoke(total, "getXml"), "getOnCheck"), "get")
+                        )
+                    }
+                }
+            """)
+            taskListResult = runTasks("tasks", "--all")
+        }
+
         Then("the kover plugin is applied") {
             assert(taskListResult.output.contains("koverXmlReport")) {
                 "Expected koverXmlReport task to be present when enabled\n${taskListResult.output}"
@@ -92,6 +144,21 @@ class KoverConventionsSteps : En {
             val expected = listOf(first, second).sorted().joinToString(",")
             assert(probeResult.output.contains("PROBE_INCLUDED=$expected")) {
                 "Expected measured source sets to be exactly $expected\n${probeResult.output}"
+            }
+        }
+
+        Then("the measured source sets are exactly {string}") { only: String ->
+            assert(probeResult.output.contains("PROBE_INCLUDED=$only")) {
+                "Expected measured source sets to be exactly $only\n${probeResult.output}"
+            }
+        }
+
+        Then("the HTML and XML reports are detached from check") {
+            assert(probeResult.output.contains("PROBE_HTML_ONCHECK=false")) {
+                "Expected the HTML report to be detached from check\n${probeResult.output}"
+            }
+            assert(probeResult.output.contains("PROBE_XML_ONCHECK=false")) {
+                "Expected the XML report to be detached from check\n${probeResult.output}"
             }
         }
 

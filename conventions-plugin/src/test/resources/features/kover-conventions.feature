@@ -21,3 +21,12 @@ Feature: Kover Conventions
     When the project runs the kover sources probe
     Then the HTML and XML reports are attached to check
 
+  # CNV-13.5 — a consumer with divergent needs (plantuml measures main only,
+  # codex cannot instrument TestKit tests) configures the convention instead of
+  # duplicating the whole kover block.
+  Scenario: Kover options are configurable
+    Given a project applies the kover conventions plugin with custom report options
+    When the project runs the kover sources probe
+    Then the measured source sets are exactly "main"
+    And the HTML and XML reports are detached from check
+
