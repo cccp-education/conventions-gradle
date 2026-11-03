@@ -13,20 +13,22 @@
   (catalogue + garde réalignée) ; racine dogfood (S-025)
 - **CNV-13.6** : **Gradle 9.8.2** centralisé (`[versions].gradle` →
   ressource → `GradleWrapperVersion` → `verifyGradleWrapper` câblée à `check`
-  par `gradle-plugin` **et** `lint`) ; action composite
-  `.github/actions/verify-gradle-wrapper` ; **101/101 wrappers** alignés ;
-  release **0.0.10** (Central bundle `6a3b7052`, Portal soumis) (S-025)
+  par `gradle-plugin` **et** `lint`) ; action composite câblée dans **35
+  workflows / 26 dépôts** ; **101/101 wrappers** alignés ; release **0.0.10**
+  (Central bundle `6a3b7052`, Portal soumis) (S-025)
+- **CNV-13.4** : privés MVP0 sur **0.0.10** — `training` (`gradle-plugin` +
+  `publishing` + `functional-test`), `workspace/pilot`, `workspace/provision`
+  (+ `functional-test` + `cucumber`), `waiter` (+ `functional-test`), `quizz` ;
+  effets révélés/corrigés : JDK 24→25 (4 workflows),
+  `codebase-plugin 0.0.11→0.0.18` (quizz/waiter), `validatePlugins` Gradle 9.8
+  (4 tâches) → **CI quizz verte** (S-026)
 - ADR-001 réécrit (plugin binaire publié) + ADR-003 (adoption par lots) (S-024)
-- `codebase-gradle` **est migré** en `0.0.7` (constat S-023 périmé)
 
 == Restant
 
 - **CNV-13.3 résiduel** : `bakery` (4 refs `0.0.7`) et `document` (1 `0.0.7`
   + 4 `0.0.8`) — attendre la fin de leurs sessions parallèles.
-- **CNV-13.4** — privés MVP0 : `training-gradle` (cœur), `workspace-gradle`,
-  `waiter-gradle`, `quizz-benchmark-gradle`.
-- **CNV-13.5** — garde cross-borough d'adoption (pin ≤ version publiée +
-  compilation matrice) ; arbitrage `kover` / `logback-exclusion`
+- **CNV-13.5** — garde cross-borough d'adoption (pin consommateur ≤ version
+  publiée + compilation matrice) ; arbitrage `kover` / `logback-exclusion`
   (1 consommateur chacun).
-- Vérifier la propagation Plugin Portal `0.0.10`
-  (`plugins.gradle.org/m2/education/cccp/build/.../0.0.10/...`).
+- Vérifier la propagation Plugin Portal `0.0.9`/`0.0.10` (soumis, en revue).

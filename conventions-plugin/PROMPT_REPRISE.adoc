@@ -1,49 +1,46 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 026
+:session: 027
 :date: 2026-11-03
-:epic: CNV-13 — Adoption complète (lot 2 : privés MVP0 + résiduels)
+:epic: CNV-13 — Adoption complète (dernier lot : outillage CNV-13.5)
 :max-lines: 70
 
 == Contexte hérité
 
-Session 025 (2026-11-03) — **CNV-13.3 + CNV-13.6 livrés**. (1) Rollout
-**0.0.9** : **67 références** migrées dans **19 dépôts** (CI verte partout ;
-`plantuml` rouge = flake CDN reverdi au rerun ; `workspace-bom` rouge =
-garde littérale S-342 périmée `0.0.124`/`0.0.32` → réalignée). Exclus :
-`bakery` (4 refs `0.0.7`) et `document` (1 `0.0.7` + 4 `0.0.8`) — sessions
-parallèles actives. (2) **CNV-13.6 — Gradle 9.8.2 centralisé** : source unique
-`[versions].gradle`, ressource plugin, `GradleWrapperVersion` (8 UT),
-`verifyGradleWrapper` câblée à `check` par `gradle-plugin` **et** `lint`
-(3 FT + 2 BDD), **action composite**
-`.github/actions/verify-gradle-wrapper` (sans pipe/SIGPIPE), **101/101
-wrappers** du workspace alignés, release **0.0.10** (CI `41729277381` verte,
-182 PASSED ; Central bundle `6a3b7052` ; Portal soumis). Rapports
-`.agents/sessions/024-*.adoc` et `025-cnv-13-3-rollout-gradle-982.adoc`.
+Session 026 (2026-11-03) — **CNV-13.4 livré** : conventions **0.0.10** dans les
+**4 builds privés MVP0** — `training` (`gradle-plugin` + `publishing` +
+`functional-test`), `workspace/pilot`, `workspace/provision` (+
+`functional-test` + `cucumber`, `featuresDir = src/test/features`), `waiter`
+(+ `functional-test`), `quizz` (`gradle-plugin`). `assemble` +
+`compileTestKotlin` VERT partout. L'adoption a révélé **3 verrous préexistants**
+corrigés : **JDK 24 → 25** (4 workflows), **`codebase-plugin 0.0.11 → 0.0.18`**
+(quizz + waiter), **`validatePlugins` Gradle 9.8** (4 tâches :
+`@DisableCachingByDefault`, `@PathSensitive`, `codingameOutputFile` → `@InputFile
+@Optional`). **CI quizz verte pour la première fois depuis septembre**
+(`41741295431`, 1m06s). Rapport `.agents/sessions/026-cnv-13-4-prives-mvp0.adoc`.
 
-Sessions antérieures : 024 (0.0.9 + payment-scaffold 16 modules + CI JDK 25),
-023 (0.0.8 signature CI release), 022 (0.0.7 + rollout 15 consommateurs).
+Sessions antérieures : 025 (rollout 0.0.9 + Gradle 9.8.2 centralisé/0.0.10),
+024 (0.0.9 + payment-scaffold 16 modules), 023 (0.0.8 signature CI release).
 
-== Mission session 026 — CNV-13.4 : privés MVP0
+== Mission session 027 — CNV-13.5 : outillage & dette
 
-Ordre recommandé (cœur MVP0 d'abord) :
-
-. **`training-gradle`** (cœur pipeline formation) — `training-plugin` :
-   appliquer `education.cccp.build.gradle-plugin` + `publishing` `0.0.10`
-   (+ `functional-test`/`cucumber` selon source sets), supprimer POM/signing/
-   test-config dupliqués, conserver `buildscript { force(...) }` si encore
-   nécessaire, `compileKotlin`/`assemble` VERT, commit + push.
-. **`workspace-gradle`** — `pilot-plugin` + `provision-plugin` (même
-   traitement, vérifier le `includeBuild` de `pilot-gradle`).
-. **`waiter-gradle`** (`waiter-plugin`) et **`quizz-benchmark-gradle`**
-   (`quizz-benchmark-plugin`).
-. **Résiduels publics** si leurs sessions ont terminé : `bakery` (4 refs) et
-   `document` (5 refs) → `0.0.10`.
-
-Prérequis : `0.0.10` est publié (Central + mavenLocal). Wrappers déjà en 9.8.2.
-
-Si le temps le permet : **CNV-13.5** — garde cross-borough d'adoption
-(pin consommateur ≤ version publiée + compilation matrice) et arbitrage
-`kover`/`logback-exclusion` (1 consommateur chacun).
+. **Garde cross-borough d'adoption** (inspirée de `verifyCrossBoroughPins`
+   MEMPHIS) :
+   * vérifier que chaque pin consommateur `education.cccp.build.*` **≤
+     version publiée** (Central) et non-`SNAPSHOT` ;
+   * vérifier la **matrice d'adoption** (liste des dépôts attendus vs
+     effectifs) et compiler les consommateurs touchés ;
+   * l'implémenter en **domaine pur testable** (parser `build.gradle.kts`,
+     verdict) + garde CI, avec RED prouvé. Ne pas lire le working tree d'un
+     autre dépôt en test (patron D5-RACE graphify : injecter les valeurs par
+     Gradle).
+. **Arbitrage des plugins à 1 consommateur** :
+   * `kover` : 1 usage (bakery) alors que capsule/codex/plantuml configurent
+     Kover à la main → soit migrer ces 3, soit documenter le statu quo ;
+   * `logback-exclusion` : 1 usage (slider) → fusion/absorption ou
+     justification écrite.
+3. **Résiduels CNV-13.3** si leurs sessions ont terminé : `bakery`
+   (4 refs `0.0.7`) et `document` (1 `0.0.7` + 4 `0.0.8`) → `0.0.10`.
+4. Vérifier la propagation Plugin Portal `0.0.9`/`0.0.10` (soumis).
 
 == Workflow
 
@@ -64,4 +61,5 @@ Si le temps le permet : **CNV-13.5** — garde cross-borough d'adoption
 - CI : `.github/workflows/test.yml` (JDK 25, vérifie le wrapper, `check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
 - Anti-drift : BOM test `0.0.124` (`WorkspaceBom`) ; Gradle `9.8.2`
-  (`GradleWrapperVersion`)
+  (`GradleWrapperVersion`) ; wrapper vérifié aussi par l'action composite
+  dans 35 workflows

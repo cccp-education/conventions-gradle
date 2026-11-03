@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-03 — S-025 ✅ rollout 0.0.9 (19 dépôts) + Gradle 9.8.2 centralisé (0.0.10)
+_Derniere mise a jour_ : 2026-11-03 — S-026 ✅ privés MVP0 sur 0.0.10 + CI quizz ressuscitée
 
 '''
 
@@ -540,9 +540,9 @@ workspace (publics **et** privés). Cadrage complet :
 | ✅ S-025 (résiduels à reprendre)
 
 | CNV-13.4
-| **Privés MVP0** — `training-gradle` (cœur), `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle` (wrappers déjà en 9.8.2)
+| **Privés MVP0** — `training` (`gradle-plugin`+`publishing`+`functional-test`), `workspace/pilot` (`gradle-plugin`), `workspace/provision` (+`functional-test`+`cucumber`), `waiter` (+`functional-test`), `quizz` (`gradle-plugin`). Effets révélés/corrigés : JDK 24→25 (4 workflows), `codebase-plugin 0.0.11→0.0.18`, `validatePlugins` Gradle 9.8 (4 tâches). **CI quizz verte** (`41741295431`)
 | 8
-| 🟡 À FAIRE
+| ✅ S-026
 
 | CNV-13.5
 | **Outillage & dette** — garde cross-borough d'adoption (pin ≤ version publiée + compilation matrice), arbitrage `kover` (1 consommateur) / `logback-exclusion` (1 consommateur). ~~ADR-001~~ ✅ réécrit S-024
@@ -629,6 +629,7 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 | CNV-13.0→13.2 | EPIC adoption — lot 1 (publishing paramétrable + payment-scaffold) | 11 | ✅ S-024
 | CNV-13.3 | Rollout public 0.0.9 (19 dépôts) | 5 | ✅ S-025
 | CNV-13.6 | Gradle 9.8.2 centralisé + garde CI + 101/101 wrappers (0.0.10) | 6 | ✅ S-025
-| CNV-13.4→13.5 | Privés MVP0 + outillage restant | 12 | 🟡 À FAIRE
+| CNV-13.4 | Privés MVP0 (training, workspace, waiter, quizz) | 8 | ✅ S-026
+| CNV-13.5 | Garde cross-borough + arbitrage kover/logback | 4 | 🟡 À FAIRE
 | *Total* | | *148* |
 |===

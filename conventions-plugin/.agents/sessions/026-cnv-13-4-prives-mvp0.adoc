@@ -1,0 +1,62 @@
+= Session 026 — 2026-11-03
+:toc: left
+:icons: font
+
+== Métadonnées
+
+[cols="1,4"]
+|===
+| Type | adoption cross-borough (privés MVP0)
+| Code | CNV-13.4
+| Titre | Conventions 0.0.10 dans les 4 boroughs privés + CI quizz ressuscitée
+| Score | 10/10
+|===
+
+== 1. Périmètre
+
+Les 4 builds privés MVP0, tous en Gradle 9.8.2 depuis S-025 :
+
+|===
+| Borough | Module(s) | Conventions appliquées | Preuve CI
+| training | `training-plugin` | `gradle-plugin` + `publishing` + `functional-test` | ✅ `Test` verte
+| workspace | `pilot-plugin` | `gradle-plugin` | pas de CI
+| workspace | `provision-plugin` | `gradle-plugin` + `functional-test` + `cucumber` (`featuresDir = src/test/features`) | pas de CI
+| waiter | `waiter-plugin` | `gradle-plugin` + `functional-test` | pas de CI
+| quizz-benchmark | `quizz-benchmark-plugin` | `gradle-plugin` | ✅ `Test` verte (1m06s)
+|===
+
+Supprimés par module : toolchain/JvmTarget manuels, `repositories`, config
+`tasks.withType<Test>`, POM/signing manuels, source sets `functionalTest` et
+tâche `cucumberTest` manuelles, deps JUnit/AssertJ redondantes.
+
+Preuves locales (Local = Build) : `assemble` VERT sur les 5 modules,
+`compileTestKotlin`/`compileFunctionalTestKotlin` VERT.
+
+== 2. Effets de bord vertueux (révélés par l'adoption)
+
+L'adoption a **révélé puis corrigé** trois verrous préexistants :
+
+. **JDK 24 → 25** dans 4 workflows (`quizz`, `training/readme_truth`,
+   `training-catalogue-site`, `waiter` imbriqué). `codebase-plugin:0.0.11`
+   exige un runtime 25 → quizz ne pouvait pas configurer.
+. **`codebase-plugin 0.0.11 → 0.0.18`** (quizz + waiter) : 0.0.11 est stale,
+   `CodebaseOcrExtension` référence `contracts.ocr.OcrEngine` absent de son
+   classpath (`Cannot have abstract method getOcrEngine`).
+. **`validatePlugins` Gradle 9.8** (quizz) : 4 tâches sans `@CacheableTask`/
+   `@DisableCachingByDefault`, `@InputFile` sans `@PathSensitive`, et
+   `codingameOutputFile: File` annoté `@Input` → corrigé (`@InputFile
+   @Optional`, lecture texte = fichier d'entrée).
+
+**Résultat** : la CI `quizz-benchmark` est **verte pour la première fois depuis
+septembre** (5 runs rouges historiques) — run `41741295431`, tests PASSED,
+1m06s.
+
+== 3. Reste (CNV-13)
+
+* **CNV-13.3 résiduel** : `bakery` (4 refs `0.0.7`) et `document`
+  (1 `0.0.7` + 4 `0.0.8`) — sessions parallèles actives.
+* **CNV-13.5** : garde cross-borough d'adoption (pin ≤ version publiée +
+  compilation matrice) ; arbitrage `kover` / `logback-exclusion`
+  (1 consommateur chacun).
+* Optionnel : aligner `training` sur `codebase-plugin 0.0.18` (aujourd'hui
+  0.0.17, compile VERT) — non nécessaire.

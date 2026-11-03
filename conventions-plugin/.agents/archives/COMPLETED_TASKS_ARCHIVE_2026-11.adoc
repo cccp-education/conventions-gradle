@@ -36,3 +36,16 @@ en CI.
   `.github/actions/verify-gradle-wrapper` ; 101/101 wrappers en 9.8.2 ;
   release **0.0.10** (CI `41729277381`, 182 PASSED ; Central `6a3b7052`).
 * Reste : CNV-13.4 (privés MVP0), CNV-13.5 (garde cross-borough + kover/logback).
+
+== Session 026 (2026-11-03) — CNV-13.4
+
+*Tâche* : adopter les conventions 0.0.10 dans les 4 boroughs privés MVP0.
+*Statut* : ✅ TERMINÉ.
+
+* training (`gradle-plugin` + `publishing` + `functional-test`), workspace
+  pilot (`gradle-plugin`), workspace provision (+ `functional-test` +
+  `cucumber`), waiter (+ `functional-test`), quizz (`gradle-plugin`).
+* Corrections révélées : JDK 24→25 (4 workflows), `codebase-plugin
+  0.0.11→0.0.18` (quizz/waiter), `validatePlugins` Gradle 9.8 (4 tâches).
+* **CI quizz verte** (`41741295431`) — première depuis septembre.
+* Reste : CNV-13.3 résiduel (bakery/document), CNV-13.5.

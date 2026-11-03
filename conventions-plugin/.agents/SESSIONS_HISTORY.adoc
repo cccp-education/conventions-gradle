@@ -569,3 +569,36 @@ rouge sur dérive 9.8.1 forcée.
 
 **Reste** : CNV-13.3 résiduel (bakery/document), CNV-13.4 (privés MVP0),
 CNV-13.5 (garde cross-borough + arbitrage kover/logback).
+
+'''
+
+== Session 026 — 2026-11-03
+Type:: adoption cross-borough (privés MVP0)
+Code:: CNV-13.4
+Titre:: Conventions 0.0.10 dans les 4 boroughs privés + CI quizz ressuscitée
+Score:: 10/10
+Duree:: 1 session
+
+**Livré** : `training` (`gradle-plugin` + `publishing` + `functional-test`),
+`workspace/pilot` (`gradle-plugin`), `workspace/provision` (+ `functional-test`
++ `cucumber`, `featuresDir = src/test/features`), `waiter` (+
+`functional-test`), `quizz` (`gradle-plugin`). Suppression des
+toolchain/repositories/test-config/POM/source sets manuels. `assemble` +
+`compileTestKotlin` VERT partout.
+
+**Verrous préexistants révélés puis corrigés** :
+- **JDK 24 → 25** dans 4 workflows (quizz, training/readme_truth,
+  training-catalogue-site, waiter imbriqué) — `codebase-plugin:0.0.11` exige
+  un runtime 25 ;
+- **`codebase-plugin 0.0.11 → 0.0.18`** (quizz + waiter) —
+  `CodebaseOcrExtension.getOcrEngine()` référençait `contracts.ocr.OcrEngine`
+  absent (abstract method) ;
+- **`validatePlugins` Gradle 9.8** (quizz) — `@DisableCachingByDefault` sur
+  4 tâches, `@PathSensitive(RELATIVE)` sur les `@InputFile`, et
+  `codingameOutputFile` `@Input` → `@InputFile @Optional`.
+
+**Preuve** : CI `quizz-benchmark` **verte** (`41741295431`, 1m06s, tests
+PASSED) — première depuis septembre (5 runs rouges). CI `training` verte.
+
+**Reste** : CNV-13.3 résiduel (bakery/document), CNV-13.5 (garde
+cross-borough + arbitrage kover/logback).
