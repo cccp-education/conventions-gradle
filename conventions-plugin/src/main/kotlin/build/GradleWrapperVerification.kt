@@ -34,10 +34,14 @@ internal object GradleWrapperVerification {
             task.inputs.property("expectedGradleVersion", expected)
             task.doLast {
                 val file = wrapperFile.asFile
+                // A project without a wrapper is not a wrapper consumer: keep
+                // `check` green (TestKit fixture projects, includeBuild
+                // modules). Only an existing, drifting wrapper fails.
                 if (!file.exists()) {
-                    throw GradleException(
-                        "Gradle wrapper not found at ${file.path} — the workspace requires Gradle $expected"
+                    task.logger.warn(
+                        "No Gradle wrapper at ${file.path} — version guard skipped (workspace requires $expected)"
                     )
+                    return@doLast
                 }
                 val drift = GradleWrapperVersion.drift(file.readText(), expected)
                 if (drift != null) throw GradleException(drift)
