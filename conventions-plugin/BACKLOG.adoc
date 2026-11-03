@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-09-27 — S-022 ✅ Publication 0.0.7 Central + rollout 15 consommateurs
+_Derniere mise a jour_ : 2026-11-03 — S-024 ✅ EPIC CNV-13 ouvert (0.0.9 + adoption payment-scaffold)
 
 '''
 
@@ -51,14 +51,14 @@ _Validee sur 3 profils differents — pret pour generalisation._
 
 '''
 
-== A FAIRE — CNV-6 : Bugs fixes + Generalisation
+== ✅ TERMINE — CNV-6 : Bugs fixes + Generalisation
 
 _Bugs fixes (runnerClass, mavenLocal, extendsFrom, cucumberTest name) — TDD 100% — v0.0.1 published_
 
 *Priorite* : P1 (fixes) / P2 (generalisation)
 *Charge estimee* : 8 pts fixes + 15 pts generalisation
 *Depend de* : CNV-5
-*Statut* : Fix terminés, generalisation en cours
+*Statut* : ✅ TERMINÉ (session 009 — 10 boroughs migrés, ~470 lignes supprimées)
 
 === Projets cibles pour generalisation (par ordre de priorite)
 
@@ -193,13 +193,17 @@ Workflow : `cd conventions-plugin && ./gradlew publishToMavenLocal && cd .. && .
 
 '''
 
-== A FAIRE — CNV-10 : Test Coverage Gaps (TDD rétroactif)
+== ✅ TERMINE — CNV-10 : Test Coverage Gaps (TDD rétroactif)
 
 _Gaps de couverture identifiés session 012 — audit complet des 6 plugins + TestDependencies._
 
 *Priorite* : P0 — 0 test unitaire, branches internes non couvertes, feature file désynchronisé
 *Charge estimee* : ~14 pts (~2-3 sessions)
 *Depend de* : CNV-9
+*Statut* : ✅ TERMINÉ (session 014) — 7/7 gaps couverts. Les tests unitaires
+créés depuis portent sur les **objets purs** (`KoverCoverage`,
+`KoverReportSources`, `SigningPolicy`, `WorkspaceBom`, `PublishingIdentity`) ;
+les classes de plugin restent couvertes par FT + BDD (voir CNV-13.5).
 
 === Gaps par plugin
 
@@ -265,7 +269,7 @@ les 3 niveaux : unit → functional → cucumber.
 * [ ] `addPlatformBom` exception path testé
 
 '''
-== A FAIRE — CNV-11 : GradlePluginConventionsExtension — JVM options + Kover
+== ✅ TERMINE — CNV-11 : GradlePluginConventionsExtension — JVM options + Kover
 
 _Alignement sur la vision fondatrice CODE_REVIEW_GLOBALE (Famille 1 + Famille 7)._
 
@@ -483,20 +487,76 @@ Bump `0.0.6 → 0.0.7` local (publication Central = décision pilote séparée).
 | ✅ S-022 (bundle `2a15ef0f` ; Portal soumis)
 |===
 
-=== 🟡 À FAIRE — Rollout résiduel (session 023)
+=== ✅ TERMINE — Rollout résiduel (constat S-023 périmé, vérifié S-024)
 
 [cols="1,4,2"]
 |===
 | # | Item | Priorite
 
 | codebase-gradle
-| Migrer `codebase-plugin` vers conventions `0.0.7` (seul consommateur non migré — session parallèle Queens) ; réaligner `settings.gradle.kts` nu sur le patron des 15 autres (`pluginManagement` mavenLocal/Central/Portal)
-| 🟠 P2
+| ✅ **déjà migré** en `0.0.7` (vérifié S-024 — le constat « non migré » était périmé). Rollout `0.0.9` = CNV-13.3.
+| ✅ Vérifié
 
 | Portal 0.0.7
-| Vérifier la propagation Plugin Portal des 7 plugins `0.0.7` (soumis)
+| Remplacé par la vérification de propagation `0.0.9` (CNV-13.3)
 | 🟡 P3
 |===
+
+'''
+== 🟡 EN COURS — CNV-13 : Adoption complète des conventions
+
+_Vision : 1 source de vérité de build pour **tous** les builds Gradle du
+workspace (publics **et** privés). Cadrage complet :
+`.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc`._
+
+*Priorité* : P0 — le code des conventions est stable ; le reste est du déploiement.
+*Charge estimée* : ~29 pts.
+*Origine* : audit d'ouverture S-024 — 0/27 builds privés adoptants, `kover`
+1 consommateur, `functional-test` 9/17, `logback-exclusion` 1, racine dogfood
+`0.0.5`, catalogue MEMPHIS `0.0.7`, BOM de test injecté périmé `0.0.59`.
+
+[cols="1,4,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| CNV-13.0
+| Cadrage EPIC + resynchronisation de la gouvernance (PROMPT_REPRISE/BACKLOG/TODO/INDEX faux)
+| 1
+| ✅ S-024
+
+| CNV-13.1
+| **`publishing` paramétrable** — `PublishingIdentity` (objet pur) + `publishingConventions { licenseName, licenseUrl, developerId, developerName, developerEmail, website, vcsUrl }` (défauts cccp inchangés) ; pin BOM de test `0.0.59 → 0.0.124` ; bump **0.0.9** ; 5 UT + 1 FT + 1 BDD
+| 4
+| ✅ S-024
+
+| CNV-13.2
+| **Adoption `payment-scaffold`** — 16 modules vers `gradle-plugin` + `publishing` ; POM propriétaire (CSS + `cheroliv`) préservé ; CI JDK 24 → 25. Gates : `compileKotlin` 16/16, `compileTestKotlin`, `validatePlugins` 16/16
+| 6
+| ✅ S-024
+
+| CNV-13.3
+| **Rollout public `0.0.9`** — BOM/catalogue MEMPHIS (ordre DAG), consommateur racine `conventions-gradle`, 28 références `lint`/`gradle-plugin`/…, vérification propagation Plugin Portal
+| 5
+| 🟡 S-025
+
+| CNV-13.4
+| **Privés MVP0** — `training-gradle` (cœur), `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle`
+| 8
+| 🟡 À FAIRE
+
+| CNV-13.5
+| **Outillage & dette** — garde cross-borough d'adoption (pin ≤ version publiée + compilation matrice), arbitrage `kover` (1 consommateur) / `logback-exclusion` (1 consommateur), réécriture ADR-001 (modèle binaire publié)
+| 5
+| 🟡 À FAIRE
+|===
+
+=== Definition of Done (EPIC)
+
+* Tous les builds Gradle du workspace appliquent les conventions ; zéro bloc
+  POM/signing/test dupliqué.
+* `conventions-plugin` publié, catalogue MEMPHIS aligné, racine dogfood alignée.
+* Garde cross-borough active (pin ≤ version publiée + compilation).
+* ADR-001 réécrit. Aucune régression : CI verte sur chaque dépôt touché.
 
 '''
 == ✅ TERMINE — Maintenance S-018 (2026-09-27) : correction racine `koverThresholdCheck`
@@ -561,5 +621,7 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 | CNV-11 | GradlePluginConventionsExtension — JVM options + Kover (vision Famille 1 + 7) | 10 | ✅ TERMINE
 | CNV-12 | Version alignment — fallbacks bump + BOM publicationType + annotations hack (vision Famille 6 + 8) | 8 | ✅ TERMINE
 | PUB | Publication Plugin Portal + Maven Central | 7 | ✅ TERMINE
-| *Total* | | *113* |
+| CNV-13.0→13.2 | EPIC adoption — lot 1 (publishing paramétrable + payment-scaffold) | 11 | ✅ S-024
+| CNV-13.3→13.5 | EPIC adoption — rollout public + privés MVP0 + outillage | 18 | 🟡 À FAIRE
+| *Total* | | *142* |
 |===

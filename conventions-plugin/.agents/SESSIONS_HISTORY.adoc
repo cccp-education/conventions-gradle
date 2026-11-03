@@ -502,3 +502,41 @@ en CI aurait échoué. Impossible à corriger côté document seul (plugin distr
 
 **Reste** : rollout 0.0.8 consommateurs (optionnel) ; bump catalogue MEMPHIS pour
 pinner 0.0.8.
+
+'''
+
+== Session 024 — 2026-11-03
+Type:: dev / adoption cross-borough
+Code:: CNV-13.0 + CNV-13.1 + CNV-13.2
+Titre:: EPIC CNV-13 « Adoption complète » — `publishing` paramétrable 0.0.9 + payment-scaffold (16 modules)
+Score:: 10/10
+Duree:: 1 session
+
+**Mission** : rouvrir le borough non pas pour écrire de nouveaux plugins, mais
+pour **déployer** la vision « 1 source de vérité de build » (décision pilote
+« je suis ta recommandation et attaquons »).
+
+**Audit d'ouverture (mesuré)** : 31 fichiers consommateurs / 77 références
+(`72 × 0.0.7`, `4 × 0.0.8`, `1 × 0.0.5`) ; **0/27 builds privés** adoptants ;
+`kover` 1 consommateur ; `functional-test` 9/17 ; `logback-exclusion` 1 ;
+racine dogfood `0.0.5` ; catalogue MEMPHIS `0.0.7` ; BOM de test injecté
+**périmé** `0.0.59` ; ADR-001 obsolète.
+
+**Livrables** :
+- `PublishingIdentity` (objet pur) — licence + developer, repli sur les défauts
+  cccp si surcharge vide, valeurs trimmées ; 5 UT.
+- `publishingConventions { licenseName, licenseUrl, developerId,
+  developerName, developerEmail, website, vcsUrl }` — additif, backward
+  compatible ; 1 FT TestKit + 1 scénario BDD.
+- `conventions-plugin` **0.0.9** ; pin BOM de test `0.0.59 → 0.0.124`
+  (+ `WorkspaceBom.FALLBACK_VERSION` + garde UT).
+- **`payment-scaffold` : 16 modules migrés** vers `gradle-plugin` +
+  `publishing` (suppression des blocs POM/signing/test/java dupliqués),
+  identité propriétaire préservée (`Proprietary — CSS` + `cheroliv`) ;
+  `pluginManagement` + `mavenCentral()` ; CI **JDK 24 → 25**.
+- Gates locaux (Local = Build) : `compileKotlin` **16/16**, `compileTestKotlin`,
+  `validatePlugins` **16/16** VERT ; POM stripe vérifié.
+
+**Reste** : CNV-13.3 (rollout public 0.0.9 + catalogue MEMPHIS), CNV-13.4
+(privés MVP0), CNV-13.5 (garde cross-borough + arbitrage kover/logback +
+ADR-001). Cadrage : `.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc`.

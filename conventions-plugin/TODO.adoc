@@ -3,16 +3,23 @@
 == Completed
 
 - CNV-0→CNV-12 + PUB : tous TERMINÉS (sessions 000→016)
-- 7 plugins **0.0.7** sur Maven Central + Gradle Plugin Portal (soumis)
-- Tag git **`v0.0.7`** (P4-A)
 - CI `.github/workflows/test.yml` installé et **vert** (S-020)
 - `configureKover` no-op corrigé (DSL typé, S-020)
 - P2/P3 review S-019 traités (S-021)
 - BOM/catalog **0.0.59** Central, pin `conventions-plugin = "0.0.7"` (S-022)
 - Rollout **15 consommateurs** `0.0.4`/`0.0.6` → `0.0.7` (S-022)
+- `conventions-plugin` **0.0.8** Central — signature en CI release (S-023)
+- **CNV-13.0/13.1/13.2** : `publishing` paramétrable + **0.0.9** + pin BOM test
+  0.0.124 + adoption **payment-scaffold** (16 modules) + CI JDK 25 (S-024)
+- `codebase-gradle` **est migré** en `0.0.7` (constat S-023 périmé, vérifié S-024)
 
 == Restant
 
-- **codebase-gradle** : migrer vers 0.0.7 quand sa session parallèle Queens aura
-  terminé (seul consommateur non migré ; `settings.gradle.kts` nu à réaligner).
-- Vérifier la propagation Plugin Portal `0.0.7` (soumis).
+- **CNV-13.3** — rollout public `0.0.9` : BOM/catalogue MEMPHIS (ordre DAG),
+  consommateur racine `conventions-gradle` (déjà bumpé en local), 77
+  références consommateur, propagation Plugin Portal.
+- **CNV-13.4** — privés MVP0 : `training-gradle` (cœur), `workspace-gradle`,
+  `waiter-gradle`, `quizz-benchmark-gradle`.
+- **CNV-13.5** — garde cross-borough d'adoption ; arbitrage `kover` /
+  `logback-exclusion` (1 consommateur chacun) ; réécriture ADR-001
+  (`CODE_REVIEW_GLOBALE.adoc` décrit encore `includeBuild()`).

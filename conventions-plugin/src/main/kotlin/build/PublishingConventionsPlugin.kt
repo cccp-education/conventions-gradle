@@ -19,6 +19,24 @@ open class PublishingConventionsExtension @Inject constructor() {
     var publicationType: String = "PLUGIN"
     var relocationGroupId: String? = null
     var relocationArtifactId: String? = null
+
+    /**
+     * POM identity overrides. `null` (default) keeps the cccp defaults
+     * (Apache-2.0 + cccp-education), so existing consumers are unchanged.
+     * A non-cccp consumer sets these to publish under its own licence and
+     * developer (CNV-13 — proprietary payment-scaffold providers).
+     */
+    var licenseName: String? = null
+    var licenseUrl: String? = null
+    var developerId: String? = null
+    var developerName: String? = null
+    var developerEmail: String? = null
+
+    /** Explicit POM url override (highest precedence over gradlePlugin.website). */
+    var website: String? = null
+
+    /** Explicit SCM url override (highest precedence over gradlePlugin.vcsUrl). */
+    var vcsUrl: String? = null
 }
 
 class PublishingConventionsPlugin : Plugin<Project> {
@@ -49,6 +67,13 @@ class PublishingConventionsPlugin : Plugin<Project> {
     private fun configurePom(project: Project, extension: PublishingConventionsExtension, publication: MavenPublication) {
         val website = resolveWebsite(project, extension)
         val vcsUrl = resolveVcsUrl(project, extension)
+        val identity = PublishingIdentity.resolve(
+            licenseName = extension.licenseName,
+            licenseUrl = extension.licenseUrl,
+            developerId = extension.developerId,
+            developerName = extension.developerName,
+            developerEmail = extension.developerEmail,
+        )
 
         publication.pom(
             Action { pom: MavenPom ->
@@ -58,9 +83,9 @@ class PublishingConventionsPlugin : Plugin<Project> {
                     Action { devs: MavenPomDeveloperSpec ->
                         devs.developer(
                             Action { dev ->
-                                dev.id.set("cccp-education")
-                                dev.name.set("CCCP Education")
-                                dev.email.set("cccp@cccp.education")
+                                dev.id.set(identity.developerId)
+                                dev.name.set(identity.developerName)
+                                dev.email.set(identity.developerEmail)
                             }
                         )
                     }
@@ -79,8 +104,8 @@ class PublishingConventionsPlugin : Plugin<Project> {
                     Action { lic: MavenPomLicenseSpec ->
                         lic.license(
                             Action { license ->
-                                license.name.set("Apache-2.0")
-                                license.url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                                license.name.set(identity.licenseName)
+                                license.url.set(identity.licenseUrl)
                             }
                         )
                     }
@@ -127,6 +152,7 @@ class PublishingConventionsPlugin : Plugin<Project> {
         )
 
     private fun resolveWebsite(project: Project, extension: PublishingConventionsExtension): String {
+        extension.website?.takeIf { it.isNotBlank() }?.let { return it }
         if (extension.publicationType == "PLUGIN") {
             try {
                 val gradlePlugin = project.extensions.getByType(GradlePluginDevelopmentExtension::class.java)
@@ -140,6 +166,7 @@ class PublishingConventionsPlugin : Plugin<Project> {
     }
 
     private fun resolveVcsUrl(project: Project, extension: PublishingConventionsExtension): String {
+        extension.vcsUrl?.takeIf { it.isNotBlank() }?.let { return it }
         if (extension.publicationType == "PLUGIN") {
             try {
                 val gradlePlugin = project.extensions.getByType(GradlePluginDevelopmentExtension::class.java)

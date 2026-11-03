@@ -5,10 +5,24 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-09-28
-_session terminee_ : 023 — conventions-plugin **0.0.8** : signature activée sur CI release (`CCCP_PUBLISH`)
-_session en cours_ : 023 — publiée Central (repo1 200)
-_Prochaine session_ : 024 — rollout 0.0.8 consommateurs (optionnel) / veille Plugin Portal
+_Derniere mise a jour_ : 2026-11-03
+_session terminee_ : 024 — **EPIC CNV-13 ouvert** : `publishing` paramétrable (**0.0.9**) + adoption `payment-scaffold` (16 modules)
+_session en cours_ : 024 — 0.0.9 Maven Local (+ Central après CI verte)
+_Prochaine session_ : 025 — **CNV-13.3** rollout public 0.0.9 (catalogue MEMPHIS + racine dogfood + consommateurs)
+
+_Note 2026-11-03 (S-024)_ : **réouverture d'un EPIC d'adoption** (décision pilote).
+Audit mesuré : **0/27 builds privés** n'utilisent les conventions, `kover` 1
+consommateur, `functional-test` 9/17, `logback-exclusion` 1, racine dogfood
+pinnée `0.0.5`, catalogue MEMPHIS `0.0.7`, BOM de test injecté **périmé
+(0.0.59)**. Livré : `PublishingIdentity` (objet pur) +
+`publishingConventions { licenseName/…/website/vcsUrl }` (défauts cccp
+inchangés, backward compatible) → **0.0.9** ; pin BOM test réaligné
+`0.0.59 → 0.0.124` ; **16 modules `payment-scaffold` migrés** (`gradle-plugin`
++ `publishing`, POM propriétaire `cheroliv`/CSS préservé) ; CI payment
+**JDK 24 → 25** (verrou V1, la CI ne pouvait pas builder). Preuves locales :
+`compileKotlin` 16/16, `compileTestKotlin`, `validatePlugins` 16/16 VERT.
+Cadrage `.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc` ; rapport
+`.agents/sessions/024-cnv-13-adoption-payment-scaffold.adoc`.
 
 _Note 2026-09-28 (S-023)_ : **`conventions-plugin` 0.0.8 publié** Maven Local +
 **Maven Central** (deployment `a0d3f630`, repo1 POM + marker publishing HTTP 200,
@@ -146,6 +160,8 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 020 | 2026-09-27 | dev | P1 review S-019 — CI `.github/workflows/test.yml` + creds nmcp `?: ""` (P1-A) ; bug signature latent révélé par le CI (`SigningPolicy` + TestKit `withEnvironment`) ; P1-B session parallèle (`configureKover` typé + `KoverReportSources`, 0.0.6 Central). 3 commits, CI run `36350037003` VERT (15 UT + 28 FT + 49 scénarios). | 10/10
   | 021 | 2026-09-27 | dev | P2/P3 review S-019 — P2-A anti-drift BOM (`WorkspaceBom` objet pur + ressource générée depuis le catalogue + garde, 7 UT + 2 FT + BDD dé-hardcodé) ; P2-B `additionalTasksInCheck` opt-in (2 BDD + 2 FT) ; P3-2 8 `assert(true)` → sonde `probeConventions` ; P3-3 `check.dependsOn(detekt)` robuste ; P3-1 vérifié non reproduit. Bump 0.0.6 → 0.0.7 local. | 10/10
   | 022 | 2026-09-27 | release | Publication 0.0.7 Central (bundle 2a15ef0f) + Plugin Portal + tag `v0.0.7` ; BOM/catalog 0.0.59 Central (bundle ad9d763e, pin conventions 0.0.7) ; rollout 15 consommateurs 0.0.4/0.0.6 → 0.0.7 (45 refs) + compile + push. codebase-gradle exclu (session parallèle Queens). | 10/10
+  | 023 | 2026-09-28 | build/CI | 0.0.8 — `SigningPolicy.shouldSign(isCi, isPublishing, version)` : la CI release (`CCCP_PUBLISH=true`) signe, la CI test ne signe pas. Central (deployment a0d3f630). | 10/10
+  | 024 | 2026-11-03 | adoption | EPIC CNV-13 ouvert — `publishing` paramétrable (identité POM) **0.0.9** + pin BOM test 0.0.124 + adoption `payment-scaffold` 16 modules + CI JDK 25. `compileKotlin` 16/16, `validatePlugins` 16/16. | 10/10
   |===
 
 '''
@@ -168,6 +184,12 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-11 | GradlePluginConventionsExtension — JVM options + Kover (vision Famille 1 + 7) | ✅ TERMINE | P0
 | CNV-12 | Version alignment — fallbacks bump + BOM + annotations hack + publicationType (vision Famille 6 + 8) | ✅ TERMINE | P0
 | PUB | Publication Gradle Plugin Portal + Maven Central | ✅ TERMINE (4/4 US) | P1
+| CNV-13.0 | Cadrage EPIC adoption + resynchronisation gouvernance | ✅ TERMINE (S-024) | P0
+| CNV-13.1 | `publishing` paramétrable (identité propriétaire) + bump 0.0.9 + pin BOM test | ✅ TERMINE (S-024) | P0
+| CNV-13.2 | Adoption `payment-scaffold` (16 modules) + CI JDK 25 | ✅ TERMINE (S-024) | P0
+| CNV-13.3 | Rollout public 0.0.9 (catalogue MEMPHIS, racine dogfood, consommateurs) | 🟡 À FAIRE (S-025) | P0
+| CNV-13.4 | Privés MVP0 : training → workspace → waiter → quizz | 🟡 À FAIRE | P1
+| CNV-13.5 | Garde cross-borough d'adoption + arbitrage kover/logback + ADR-001 | 🟡 À FAIRE | P1
 |===
 
 '''

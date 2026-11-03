@@ -46,3 +46,12 @@ Feature: Publishing Conventions
     Given a project applies the publishing plugin with default publicationType
     Then the generated POM has url "https://github.com/cccp-education/sample-gradle"
     And the generated POM has SCM url "https://github.com/cccp-education/sample-gradle.git"
+
+  # CNV-13 — a non-cccp consumer (proprietary payment-scaffold) overrides the
+  # POM identity instead of duplicating the whole publishing block.
+  Scenario: Publishing plugin supports a proprietary POM identity
+    Given a project applies the publishing plugin with a proprietary identity
+    Then the generated POM has developer id "cheroliv"
+    And the generated POM has developer name "cheroliv"
+    And the generated POM has license "Proprietary"
+    And the generated POM has url "https://cheroliv.com"

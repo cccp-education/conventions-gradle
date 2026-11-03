@@ -207,6 +207,32 @@ class PublishingConventionsSteps : En {
             }
         }
 
+        // ── CNV-13 — proprietary POM identity override ───────────────────────
+        Given("a project applies the publishing plugin with a proprietary identity") {
+            testProjectDir = createTempDir("publishing-proprietary-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project-proprietary\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java-library")
+                    id("education.cccp.build.publishing")
+                }
+                group = "com.cheroliv"
+                version = "0.0.1"
+
+                publishingConventions {
+                    licenseName = "Proprietary — CSS"
+                    licenseUrl = "https://cheroliv.com/license"
+                    developerId = "cheroliv"
+                    developerName = "cheroliv"
+                    developerEmail = "cheroliv.developer@gmail.com"
+                    website = "https://cheroliv.com"
+                    vcsUrl = "https://github.com/cheroliv/payment-scaffold-gradle.git"
+                }
+
+                $publicationBlock
+            """)
+        }
+
         // ── CNV-12.3 — publicationType default PLUGIN ────────────────────────
         Given("a project applies the publishing plugin with default publicationType") {
             testProjectDir = createTempDir("publishing-default-")

@@ -1,0 +1,98 @@
+= Cadrage — EPIC CNV-13 « Adoption complète des conventions »
+:toc: left
+:toclevels: 3
+:icons: font
+:sectnums:
+
+_Créé_ : 2026-11-03 (session 024) — décision pilote : « je suis ta recommandation et attaquons ».
+_Statut_ : 🟡 EN COURS (lot 1 livré S-024).
+
+== 1. Contexte — pourquoi rouvrir le borough
+
+Le borough était déclaré **LIQUIDÉ / maintenance** : CNV-0→CNV-12 + PUB clos,
+`conventions-plugin 0.0.8` publié. Or la vision fondatrice
+(`.agents/CODE_REVIEW_GLOBALE.adoc`) — **« 1 source de vérité, ~1 200–1 760
+lignes de build supprimées »** — n'est pas atteinte. L'audit d'ouverture S-024
+mesure l'écart :
+
+[cols="3,2,6"]
+|===
+| Constat | Mesure | Conséquence
+
+| Builds privés adoptants
+| **0 / 27**
+| Le cœur MVP0 (`training-gradle`) et 17 modules `payment-scaffold` dupliquent
+  tout le build (POM, signing, test config, java/javadoc/sources)
+
+| `kover` (CNV-11)
+| **1 consommateur** (bakery)
+| capsule / codex / plantuml configurent Kover à la main
+
+| `functional-test` (CNV-3)
+| **9 applications / 17 source sets**
+| academy, document, hyperframes, plantuml, readme, sites… dupliquent
+
+| `logback-exclusion` (CNV-10.6)
+| **1 consommateur** (slider)
+| plugin à un seul usage, à interroger (fusion ?)
+
+| Auto-dogfood
+| racine pinnée **0.0.5**
+| drift de 4 versions sur le consommateur de référence
+
+| Catalogue MEMPHIS
+| pin **0.0.7**
+| 0.0.8 puis 0.0.9 publiés mais non consommés par le catalogue
+
+| BOM injecté dans les tests
+| pin **0.0.59** (11 versions de retard)
+| `TestDependencies.addPlatformBom` ne lisait pas le catalogue consommateur
+
+| ADR-001
+| obsolète
+| décrit `includeBuild()` + precompiled scripts, alors que la réalité est un
+  **plugin binaire publié** consommé par version catalog
+|===
+
+== 2. Décisions d'architecture
+
+. **CNV-13 = EPIC d'adoption**, pas de nouveaux plugins : le code des
+  conventions est stable, le reste est du déploiement.
+. **`publishing` paramétrable** : identité POM (licence + developer) et
+  `website`/`vcsUrl` surchargeables via `publishingConventions { … }`, défauts
+  cccp inchangés (backward compatible). Indispensable pour les builds
+  **propriétaires** (payment-scaffold est CSS, pas Apache-2.0).
+. **Adoption par lots**, un borough par session :
+  * **L1 — payment-scaffold** (16 modules, gain mécanique) ✅ S-024 ;
+  * **L2 — privés MVP0** : training (cœur), workspace, waiter, quizz ;
+  * **L3 — rollout public** `0.0.9` + catalogue MEMPHIS + propagation Portal ;
+  * **L4 — outillage** : garde cross-borough de pin/compilation (modèle
+    `verifyCrossBoroughPins` MEMPHIS), réévaluation `kover`/`logback-exclusion`.
+. **Pin BOM de test réaligné** sur la dernière version publiée (0.0.59 →
+  0.0.124) : le platform injecté ne doit jamais être périmé.
+. **Tests = CI** : compilation + `validatePlugins` en local ; `test`/
+  `functionalTest`/`cucumberTest` exclusivement en CI après push.
+
+== 3. User Stories
+
+[cols="1,5,2,2"]
+|===
+| US | Description | Pts | Statut
+| CNV-13.0 | Cadrage + resynchronisation de la gouvernance (PROMPT_REPRISE, BACKLOG, TODO, INDEX faux) | 1 | ✅ S-024
+| CNV-13.1 | `publishing` paramétrable (identité propriétaire) + bump 0.0.9 + pin BOM test 0.0.124 + UT/FT/BDD | 4 | ✅ S-024
+| CNV-13.2 | Adoption `payment-scaffold` : 16 modules, `gradle-plugin` + `publishing`, CI JDK 25 | 6 | ✅ S-024
+| CNV-13.3 | Rollout public `0.0.9` (catalogue MEMPHIS, racine dogfood, consommateurs) | 5 | 🟡 À FAIRE
+| CNV-13.4 | Privés MVP0 : training → workspace → waiter → quizz | 8 | 🟡 À FAIRE
+| CNV-13.5 | Outillage : garde cross-borough d'adoption ; arbitrage `kover`/`logback-exclusion` | 5 | 🟡 À FAIRE
+| *Total* | | *29* |
+|===
+
+== 4. Definition of Done (EPIC)
+
+* Tous les builds Gradle du workspace (publics **et** privés) appliquent les
+  conventions ; zéro bloc POM/signing/test dupliqué.
+* `conventions-plugin` publié, catalogue MEMPHIS aligné, racine dogfood alignée.
+* Une **garde** interdit un pin de consommateur supérieur à la version publiée
+  et compile la matrice des consommateurs.
+* ADR-001 réécrit (modèle binaire publié).
+* Aucune régression : CI verte sur chaque dépôt touché.

@@ -95,4 +95,51 @@ class PublishingConventionsFunctionalTest {
         assertTrue(pomContent.contains("cccp-education"), "POM should contain developer id cccp-education\n$pomContent")
         assertTrue(pomContent.contains("Apache-2.0"), "POM should contain Apache-2.0 license\n$pomContent")
     }
+
+    // CNV-13 — a non-cccp consumer (proprietary payment-scaffold) overrides the
+    // POM identity through publishingConventions without losing the shared wiring.
+    @Test
+    fun `plugin generates pom with a proprietary identity`() {
+        settingsFile.writeText("rootProject.name = \"test-project-proprietary\"")
+        buildFile.writeText("""
+            plugins {
+                id("java-library")
+                id("education.cccp.build.publishing")
+            }
+
+            group = "com.cheroliv"
+            version = "0.0.1"
+
+            publishingConventions {
+                licenseName = "Proprietary — CSS"
+                licenseUrl = "https://cheroliv.com/license"
+                developerId = "cheroliv"
+                developerName = "cheroliv"
+                developerEmail = "cheroliv.developer@gmail.com"
+                website = "https://cheroliv.com"
+                vcsUrl = "https://github.com/cheroliv/payment-scaffold-gradle.git"
+            }
+
+            publishing {
+                publications {
+                    register("maven", org.gradle.api.publish.maven.MavenPublication::class.java) {
+                        from(components["java"])
+                    }
+                }
+            }
+        """)
+
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("generatePomFileForMavenPublication")
+            .withPluginClasspath()
+            .build()
+
+        val pomFile = testProjectDir.resolve("build/publications/maven/pom-default.xml")
+        assertTrue(pomFile.exists(), "POM file should exist at ${pomFile.absolutePath}")
+        val pomContent = pomFile.readText()
+        assertTrue(pomContent.contains("Proprietary"), "POM should carry the proprietary license\n$pomContent")
+        assertTrue(pomContent.contains("<id>cheroliv</id>"), "POM should carry the cheroliv developer\n$pomContent")
+        assertTrue(!pomContent.contains("cccp-education"), "POM should not carry the cccp developer\n$pomContent")
+    }
 }

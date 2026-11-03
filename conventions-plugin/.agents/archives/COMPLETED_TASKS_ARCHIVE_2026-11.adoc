@@ -1,0 +1,22 @@
+= Tâches Complétées — Novembre 2026
+
+== Session 024 (2026-11-03) — EPIC CNV-13 « Adoption complète » (lot 1)
+
+*Tâche* : rouvrir ABIDJAN pour **déployer** la vision (1 source de vérité de
+build) — lot 1 : `publishing` paramétrable + adoption `payment-scaffold`.
+*Statut* : ✅ TERMINÉ (CNV-13.0 / CNV-13.1 / CNV-13.2).
+
+* Audit mesuré : 0/27 builds privés adoptants, `kover` 1 consommateur,
+  `functional-test` 9/17, `logback-exclusion` 1, racine dogfood `0.0.5`,
+  catalogue MEMPHIS `0.0.7`, BOM de test injecté périmé `0.0.59`.
+* `PublishingIdentity` (objet pur, 5 UT) + `publishingConventions
+  { licenseName/licenseUrl/developerId/developerName/developerEmail/website/vcsUrl }`
+  (défauts cccp inchangés) + 1 FT + 1 scénario BDD.
+* Pin BOM de test `0.0.59 → 0.0.124` (+ garde `WorkspaceBomTest`).
+* `conventions-plugin` **0.0.9** ; racine dogfood `0.0.5 → 0.0.9`.
+* `payment-scaffold` : **16 modules** migrés vers `gradle-plugin` +
+  `publishing`, POM propriétaire (CSS + `cheroliv`) préservé ; CI JDK 24 → 25.
+* Gates locaux : `compileKotlin` 16/16, `compileTestKotlin`, `validatePlugins`
+  16/16 VERT. Tests délégués CI (Local = Build).
+* Reste : CNV-13.3 (rollout public 0.0.9), CNV-13.4 (privés MVP0),
+  CNV-13.5 (garde cross-borough + arbitrage kover/logback + ADR-001).

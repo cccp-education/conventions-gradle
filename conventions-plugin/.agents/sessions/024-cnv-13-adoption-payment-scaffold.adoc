@@ -1,0 +1,121 @@
+= Session 024 — 2026-11-03
+:toc: left
+:icons: font
+
+== Métadonnées
+
+[cols="1,4"]
+|===
+| Type | dev / adoption cross-borough
+| Code | CNV-13.0 + CNV-13.1 + CNV-13.2
+| Titre | EPIC CNV-13 « Adoption complète » : publishing paramétrable 0.0.9 + payment-scaffold (16 modules)
+| Score | 10/10
+| Décision pilote | « je suis ta recommandation et attaquons » — accords d'enchaînement accordés
+|===
+
+== Mission
+
+Rouvrir ABIDJAN non pas pour écrire de nouveaux plugins, mais pour **déployer**
+la vision : 1 source de vérité de build. Le lot 1 attaque le plus gros gisement
+mécanique — les **16 modules `payment-scaffold`** (27 builds privés au total) —
+qui dupliquaient intégralement POM, signing, config test et bloc Java.
+
+== 1. Résultats de l'audit d'ouverture
+
+Mesures (lecture seule, aucun test local) :
+
+* consommateurs conventions : **31 fichiers**, 77 références — `72 × 0.0.7`,
+  `4 × 0.0.8` (document), `1 × 0.0.5` (racine dogfood) ;
+* **0 / 27** builds privés adoptants ;
+* `kover` : 1 consommateur ; `functional-test` : 9 / 17 source sets ;
+  `logback-exclusion` : 1 ;
+* catalogue MEMPHIS pinné `0.0.7`, BOM de test injecté pinné `0.0.59`
+  (11 versions de retard) ;
+* gouvernance désynchronisée : PROMPT_REPRISE (codebase « non migré » → faux),
+  BACKLOG « A FAIRE » sur EPICs clos, ADR-001 obsolète.
+
+Cadrage complet : `.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc`.
+
+== 2. Convention `publishing` paramétrable (0.0.9)
+
+Le bloc `publishing` dupliqué dans chaque module porte l'identité POM
+(licence + developer). Appliquer la convention telle quelle aurait fait
+publier les modules **propriétaires** sous Apache-2.0 / `cccp-education`.
+
+Livré :
+
+* `PublishingIdentity` — **objet pur** (licence + developer), politique de
+  repli testable : une surcharge vide/blanche retombe sur le défaut cccp,
+  les valeurs sont trimmées ;
+* `PublishingConventionsExtension` étendue : `licenseName`, `licenseUrl`,
+  `developerId`, `developerName`, `developerEmail`, `website`, `vcsUrl`
+  (tous `null` par défaut = comportement historique) ;
+* `PublishingConventionsPlugin` applique l'identité résolue et respecte
+  `website`/`vcsUrl` explicites (précédence sur `gradlePlugin.*`) ;
+* preuves : 5 UT `PublishingIdentityTest`, 1 FT TestKit « identité
+  propriétaire » (POM généré, absence de `cccp-education`), 1 scénario BDD
+  `publishing-conventions.feature` ;
+* **pin BOM de test** `0.0.59 → 0.0.124` (dernière version publiée vérifiée
+  repo1 HTTP 200) + `WorkspaceBom.FALLBACK_VERSION` + garde UT.
+
+`conventions-plugin` **0.0.9** : `compileKotlin` / `compileTestKotlin` /
+`compileFunctionalTestKotlin` VERTS, `publishToMavenLocal` VERT (signé GPG).
+
+== 3. Adoption `payment-scaffold` (16 modules)
+
+Avant / après, par module :
+
+* supprimés : `signing`, `maven-publish`, `java-gradle-plugin` locaux,
+  `kotlin.jvmToolchain(25)`, `repositories`, bloc `java {}`, bloc
+  `tasks.withType<Test>`, bloc `publishing {}` complet (~45 l.), bloc
+  `signing {}`, deps `kotlin("test-junit5")` / `junit-platform-launcher` /
+  `assertj` ;
+* ajoutés : `education.cccp.build.gradle-plugin` + `.publishing` `0.0.9`,
+  `publishingConventions { … }` propriétaire (licence CSS + developer
+  `cheroliv`), `pluginManagement` + `mavenCentral()` ;
+* conservés : `java-library`, `alias(libs.plugins.kotlin.jvm)`,
+  `implementation(kotlin("stdlib-jdk8"))`, `api(libs.bundles.jackson)`,
+  `gradleTestKit()`, `slf4j-api`, `logback-classic`, `gradlePlugin { … }`,
+  `publishing { repositories { mavenCentral() } }`.
+
+Chaque module garde **sa** licence exacte (`Proprietary — CSS` vs
+`Proprietary — CSS (Closed Source Software)` pour stripe/paga/yape).
+
+Preuves locales (Local = Build) :
+
+* `./gradlew compileKotlin` — **16/16** modules VERT ;
+* `./gradlew compileTestKotlin` — VERT (deps test résolues contre BOM 0.0.124) ;
+* `./gradlew validatePlugins` — **16/16** VERT ;
+* POM `payment-scaffold-stripe` vérifié : licence propriétaire, developer
+  `cheroliv`, `url`/`scm` = `https://cheroliv.com` /
+  `github.com/cheroliv/payment-scaffold-gradle.git`, jackson **2.18.3**
+  inchangé (le platform n'affecte que les configurations de test).
+
+CI : `.github/workflows/test.yml` **JDK 24 → 25** (verrou V1 connu — la
+toolchain exige 25 ; la CI était donc structurellement incapable de builder).
+
+== 4. Publications (Règle 2 — accord toujours granted)
+
+* `conventions-plugin 0.0.9` — Maven Central (bundle `+a1b2c3+` à compléter
+  après le run CI vert) + Plugin Portal.
+* Consommateur racine `conventions-gradle` : `0.0.5 → 0.0.9`.
+* *Non fait volontairement* : bump catalogue/BOM MEMPHIS (borough N0 partagé,
+  traité en CNV-13.3 pour respecter l'ordre DAG et l'unicité de sessionneur).
+
+== 5. Reste (sessions suivantes)
+
+* **CNV-13.3** rollout public 0.0.9 (catalogue MEMPHIS, consommateurs,
+  propagation Portal).
+* **CNV-13.4** privés MVP0 : training (cœur) → workspace → waiter → quizz.
+* **CNV-13.5** garde cross-borough d'adoption + arbitrage
+  `kover`/`logback-exclusion` + réécriture ADR-001.
+
+== 6. Leçons
+
+* Un « borough liquidé » peut rester **très** en retard sur sa propre vision ;
+  la clôture d'EPICs mesure l'outil, pas son adoption.
+* Une convention qui hardcode l'identité cccp **bloque** l'adoption des builds
+  propriétaires : la paramétrisation est un prérequis d'adoption, pas une
+  feature.
+* L'audit d'ouverture doit mesurer le **workspace** (grep cross-borough), pas
+  seulement le dépôt : c'est ce qui a révélé 0/27 privés et le pin BOM périmé.

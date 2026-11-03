@@ -1,58 +1,64 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 023
-:date: 2026-09-27
-:epic: Maintenance réactive — Borough LIQUIDÉ
+:session: 025
+:date: 2026-11-03
+:epic: CNV-13 — Adoption complète (lot 2 : rollout public 0.0.9)
 :max-lines: 70
 
 == Contexte hérité
 
-Session 022 (2026-09-27) — **publication 0.0.7 + rollout**. `conventions-plugin`
-**0.0.7** publié Maven Local + **Central** (bundle `2a15ef0f`, AUTOMATIC) +
-Plugin Portal ; tag git **`v0.0.7`** posé. **BOM/catalog 0.0.59** publiés Central
-(bundle `ad9d763e`) pinning `conventions-plugin = "0.0.7"`. **15 consommateurs**
-migrés `0.0.4`/`0.0.6` → **`0.0.7`** (45 références) + compilés + poussés.
-`codebase-gradle` **exclu** (session parallèle Queens active).
-Rapport `.agents/sessions/022-publication-0.0.7-rollout.adoc`.
+Session 024 (2026-11-03) — **EPIC CNV-13 ouvert** (décision pilote). Audit
+mesuré : **0/27 builds privés** adoptants, `kover` 1 consommateur,
+`functional-test` 9/17, `logback-exclusion` 1, racine dogfood `0.0.5`,
+catalogue MEMPHIS `0.0.7`, **BOM de test injecté périmé `0.0.59`**, ADR-001
+obsolète. Livré : `PublishingIdentity` (objet pur) + `publishingConventions
+{ licenseName/licenseUrl/developerId/developerName/developerEmail/website/vcsUrl }`
+(défauts cccp inchangés) ; **0.0.9** ; pin BOM test `0.0.124` ; **16 modules
+`payment-scaffold` migrés** (`gradle-plugin` + `publishing`, POM propriétaire
+CSS/`cheroliv` préservé) ; CI payment JDK 24 → 25. Gates locaux :
+`compileKotlin` 16/16, `compileTestKotlin`, `validatePlugins` 16/16.
+Cadrage `.agents/CADRAGE_EPIC_CNV_13_ADOPTION.adoc` ; rapport
+`.agents/sessions/024-cnv-13-adoption-payment-scaffold.adoc`.
 
-Session 021 (2026-09-27) — P2/P3 review S-019 (anti-drift BOM + opt-in cucumber
-+ sondes BDD réelles), CI verte `36354012604`. Session 020 — P1 (CI +
-`configureKover`). Session 019 — code review externe.
+Sessions antérieures : 023 (0.0.8 signature CI release), 022 (0.0.7 + rollout
+15 consommateurs + BOM 0.0.59), 021 (P2/P3 review), 020 (CI + `configureKover`).
 
-== Mission session 023 — finir le rollout + veille
+== Mission session 025 — CNV-13.3 : rollout public 0.0.9
 
-=== codebase-gradle (seul consommateur non migré)
+Ordre DAG **N0 → consommateurs** (aucun consommateur avant sa dépendance) :
 
-Attendre la fin de la session parallèle Queens sur
-`foundry/public/codebase-gradle/codebase-plugin`, puis :
-* réaligner `codebase-plugin/settings.gradle.kts` (nu : 1 ligne) sur le patron des
-  15 autres consommateurs (`pluginManagement { mavenLocal/Central/Portal }` +
-  `dependencyResolutionManagement`), sinon résolution Plugin Portal uniquement ;
-* `id("education.cccp.build.gradle-plugin") version "0.0.4"` → `0.0.7` (+
-  `publishing`) ; `compileKotlin` VERT.
+. **BOM/catalogue MEMPHIS** (borough N0 partagé — vérifier qu'aucune session
+   MEMPHIS parallèle n'est active, sinon attendre) :
+   `gradle/libs.versions.toml` `conventions-plugin 0.0.7 → 0.0.9`, bump
+   BOM/catalog, publication Central, propagation repo1.
+. **Consommateurs publics** : `lint` (28), `gradle-plugin` (15),
+   `publishing` (17), `cucumber` (11), `functional-test` (9), `kover` (2),
+   `logback-exclusion` (1) — `0.0.7`/`0.0.8` → `0.0.9` (77 références) ;
+   `compileKotlin` par dépôt, commit + push par dépôt.
+   *Ne pas toucher* un borough dont une session parallèle est active.
+. **Racine dogfood** `foundry/public/conventions-gradle` : déjà bumpée
+   `0.0.5 → 0.0.9` en S-024 — vérifier `./gradlew tasks`.
+. **Plugin Portal** : vérifier la propagation `0.0.9`
+   (`plugins.gradle.org/m2/education/cccp/build/<plugin>/.../0.0.9/...`).
 
-=== Publication 0.0.7 Plugin Portal (en attente)
-
-Le Portal a reçu les 7 plugins 0.0.7 (`publishPlugins` BUILD SUCCESSFUL, config
-cache problems = bug connu du plugin-publish). Vérifier la propagation :
-`https://plugins.gradle.org/m2/education/cccp/build/<plugin>/.../0.0.7/...`.
+Si le temps le permet : **CNV-13.4** — `training-gradle` (cœur MVP0, 1er lot
+privé), puis `workspace-gradle`, `waiter-gradle`, `quizz-benchmark-gradle`.
 
 == Workflow
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
 - Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/
-  `compileFunctionalTestKotlin`) ; publication (`publishToMavenLocal`,
-  `publishAggregationToCentralPortal`, `publishPlugins`) autorisée.
-- **Tests = CI** (règle 2026-09-27) : aucun `test`/`check`/`cucumberTest`/
-  `functionalTest` en local, **et aucune sonde dans un projet jetable**.
-- Un **seul sessionneur par borough** (leçon S-020/S-022 : collision Queens sur
-  codebase).
+  `compileFunctionalTestKotlin`, `validatePlugins`) ; publication autorisée
+  (Règle 2 — accord toujours granted).
+- **Tests = CI** : aucun `test`/`check`/`cucumberTest`/`functionalTest` en
+  local, aucune sonde dans un projet jetable. Preuve = run CI vert du commit.
+- Un **seul sessionneur par borough** (leçon S-020/S-022).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- 7 plugins **0.0.7** Central + Plugin Portal (soumis), Java 25, Kotlin 2.4.10,
-  Gradle 9.8.0
+- **7 plugins**, version courante **0.0.9** (Central + Portal), Java 25,
+  Kotlin 2.4.10, Gradle 9.8.1
 - CI : `.github/workflows/test.yml` (JDK 25, `./gradlew check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
 - Anti-drift BOM : version dans `gradle/libs.versions.toml` → ressource générée
-  (`generateWorkspaceBomInfo`) ; garde `WorkspaceBomTest`
+  (`generateWorkspaceBomInfo`) ; garde `WorkspaceBomTest` ; pin actuel **0.0.124**
