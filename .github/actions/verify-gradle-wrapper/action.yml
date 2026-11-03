@@ -1,0 +1,41 @@
+name: Verify Gradle wrapper
+description: >-
+  Fails when gradle/wrapper/gradle-wrapper.properties does not match the
+  workspace Gradle version (single source of truth, CNV-13.3). Reusable by any
+  repository: `uses: cccp-education/conventions-gradle/.github/actions/verify-gradle-wrapper@main`.
+author: cccp-education
+
+inputs:
+  expected-version:
+    description: Expected Gradle distribution version
+    required: false
+    default: "9.8.2"
+  wrapper-path:
+    description: Path to gradle-wrapper.properties, relative to the repository root
+    required: false
+    default: "gradle/wrapper/gradle-wrapper.properties"
+
+runs:
+  using: composite
+  steps:
+    - name: Check the wrapper distribution version
+      shell: bash
+      run: |
+        set -euo pipefail
+        file="${{ inputs.wrapper-path }}"
+        expected="${{ inputs.expected-version }}"
+
+        if [ ! -f "$file" ]; then
+          echo "::error::Gradle wrapper not found at '$file' (workspace requires Gradle $expected)"
+          exit 1
+        fi
+
+        # No pipe: a `sed | head` under pipefail dies with SIGPIPE (lesson S-318).
+        actual=$(sed -nE 's/.*gradle-([0-9]+\.[0-9]+(\.[0-9]+)?)-(bin|all)\.zip.*/\1/p' "$file")
+
+        if [ "$actual" != "$expected" ]; then
+          echo "::error::'$file' declares Gradle '$actual' but the workspace requires $expected — run ./gradlew wrapper --gradle-version $expected"
+          exit 1
+        fi
+
+        echo "Gradle wrapper OK: $actual"

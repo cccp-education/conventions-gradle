@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.9"
+version = "0.0.10"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -56,6 +56,27 @@ val generateWorkspaceBomInfo by tasks.registering {
 
 sourceSets.main {
     resources.srcDir(generateWorkspaceBomInfo)
+}
+
+// ── Single source of truth for the workspace Gradle wrapper version ────────
+// The version lives in gradle/libs.versions.toml ([versions].gradle) and is
+// materialised as a resource so GradleWrapperVersion can read it at consumer
+// runtime. `verifyGradleWrapper` (wired to `check`) then fails any CI whose
+// wrapper drifts from it.
+val generateGradleVersionInfo by tasks.registering {
+    val gradleVersion = libs.versions.gradle.get()
+    val outputDir = layout.buildDirectory.dir("generated/gradle-info")
+    inputs.property("gradleVersion", gradleVersion)
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.get().file("build/gradle-version.properties").asFile
+        file.parentFile.mkdirs()
+        file.writeText("version=$gradleVersion\n")
+    }
+}
+
+sourceSets.main {
+    resources.srcDir(generateGradleVersionInfo)
 }
 
 dependencies {

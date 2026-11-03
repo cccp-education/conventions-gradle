@@ -1,4 +1,8 @@
 [versions]
+# Single source of truth for the workspace Gradle wrapper version. Materialised
+# into the plugin as a resource (GradleWrapperVersion) so every consumer's CI
+# can fail on drift through the `verifyGradleWrapper` task wired into `check`.
+gradle = "9.8.2"
 kotlin = "2.4.10"
 junit-jupiter = "5.12.2"
 junit-platform = "1.14.3"

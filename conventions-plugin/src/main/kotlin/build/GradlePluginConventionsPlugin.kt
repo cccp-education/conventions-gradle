@@ -28,6 +28,7 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         configureTestTasks(project, extension)
         configureTestDependencies(project)
         configureAnnotationsConflict(project, extension)
+        GradleWrapperVerification.register(project)
     }
 
     private fun configureJava(project: Project) {

@@ -25,6 +25,11 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
 
+      - name: Verify the Gradle wrapper version
+        uses: ./.github/actions/verify-gradle-wrapper
+        with:
+          wrapper-path: conventions-plugin/gradle/wrapper/gradle-wrapper.properties
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 

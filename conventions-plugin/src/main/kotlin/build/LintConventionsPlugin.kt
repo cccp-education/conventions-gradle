@@ -9,6 +9,11 @@ class LintConventionsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.pluginManager.apply("org.jlleitschuh.gradle.ktlint")
 
+        // CNV-13.3 — the wrapper guard travels with the most widely applied
+        // convention (lint: 28 consumers) so every CI enforces the workspace
+        // Gradle version, even for builds that only adopt lint.
+        GradleWrapperVerification.register(project)
+
         val ktlint = project.extensions.getByType(KtlintExtension::class.java)
         ktlint.version.set("1.5.0")
 
