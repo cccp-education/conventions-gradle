@@ -786,3 +786,31 @@ release `0.0.13` + rollout → **non exécutées sans feu vert**.
 
 Aucun code modifié, aucune release, aucun rollout.
 Rapport `.agents/sessions/032-cnv-15-cadrage.adoc`.
+
+'''
+
+== Session 033 — 2026-11-04
+Type:: dev / release / rollout
+Code:: CNV-15.1 + CNV-15.2 + CNV-15.3
+Titre:: Auto-publication N0 + garde detekt + release `0.0.13` + rollout
+Score:: 10/10
+Duree:: 1 session
+
+**US-15.1** : `PublishingConventionsExtension.createMavenPublication` (défaut
+false) ; création conditionnelle de la publication `maven` ; 2 FT + 1 BDD ;
+**9 contrats N0** migrés (bloc `publishing { }` supprimé, workspace-bom
+`cfbbf8c`, **−104/+41 l.**).
+
+**US-15.2** : `DetektCompatibility` (objet pur, majeur ≤ 22) remplace le
+`startsWith("25")` de `LintConventionsPlugin` ; 7 UT + BDD Scenario Outline.
+
+**US-15.3** : BOM de test `0.0.126` + release **`0.0.13`** (Central bundle
+`f2ad3ce0-0c5c-4ba3-b190-ffeddc6acb8e` PUBLISHED + Portal) ; **rollout**
+113 pins / 44 fichiers / 26 dépôts, 28/28 `assemble` VERTES ; **audit strict
+`OK: 133 build file(s) at 0.0.13`** ; **BOM/catalog `0.0.127`** (Central
+`d07a994f-6525-4ae3-b785-802589e3da1d`, catalogue `conventions-plugin =
+"0.0.13"`).
+
+CI : conventions `41917976471` ✅, workspace-bom `41924833092` ✅.
+Reste : CNV-15.4 (actions CI, optionnelle), propagation `0.0.127` à confirmer.
+Rapport `.agents/sessions/033-cnv-15-implementation.adoc`.

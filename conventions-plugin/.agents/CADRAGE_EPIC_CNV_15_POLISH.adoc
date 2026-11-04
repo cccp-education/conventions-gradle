@@ -5,8 +5,8 @@
 :sectnums:
 
 _Créé_ : 2026-11-04 (session 032) — veille post-CNV-14, aucun EPIC ouvert.
-_Statut_ : 🟡 CADRÉ — en attente de feu vert pilote (US-1→US-3 imposent une
-release `0.0.13` + rollout des 133 builds).
+_Statut_ : ✅ TERMINÉ (S-033) — US-1→US-3 livrées (release `0.0.13`, rollout
+133 builds, audit strict 0, BOM/catalog `0.0.127`). Reste US-4 optionnelle.
 
 == 1. Contexte — après CNV-14
 
@@ -56,27 +56,29 @@ sain. Restent trois petites dettes, mesurées :
 
 | CNV-15.1
 | **Auto-publication `publishing`** — `createMavenPublication` (défaut false) +
-  création conditionnelle ; 9 contrats N0 migrés (bloc supprimé). FT + BDD.
+  création conditionnelle ; 9 contrats N0 migrés (bloc supprimé, −104/+41 l.).
+  FT + BDD.
 | 3
-| 🟡 À FAIRE
+| ✅ S-033
 
 | CNV-15.2
-| **`DetektCompatibility`** — objet pur + `LintConventionsPlugin` ; 6 UT +
-  scénario BDD (JVM courante).
+| **`DetektCompatibility`** — objet pur + `LintConventionsPlugin` ; 7 UT +
+  BDD Scenario Outline.
 | 2
-| 🟡 À FAIRE
+| ✅ S-033
 
 | CNV-15.3
 | **Alignement BOM de test `0.0.126`** — toml + fallback + `WorkspaceBomTest` ;
-  release `0.0.13` (Central + Portal) + rollout 133 builds + audit strict 0.
+  release `0.0.13` (Central `f2ad3ce0` + Portal) + rollout 133 builds + audit
+  strict `OK: 133 builds at 0.0.13` + catalogue/BOM `0.0.127`.
 | 4
-| 🟡 À FAIRE
+| ✅ S-033
 
 | CNV-15.4
 | **Maintenance CI actions** — `checkout`/`setup-java`/`setup-gradle` à jour,
   sans régression (CI verte). Indépendante de la release.
 | 2
-| 🟡 À FAIRE
+| 🟡 À FAIRE (S-034)
 |===
 
 == 4. Definition of Done

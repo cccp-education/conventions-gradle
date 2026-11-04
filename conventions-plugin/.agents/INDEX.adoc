@@ -6,9 +6,21 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-04
-_session terminee_ : 032 — **veille post-CNV-14 + cadrage CNV-15** : audit strict `OK: 133 builds at 0.0.12`, BOM/catalog `0.0.126` propagé (repo1 200) ; aucun code modifié
-_session en cours_ : 032 — clôture de session (commit/push)
-_Prochaine session_ : 033 — **CNV-15 sur feu vert** : auto-publication `publishing`, `DetektCompatibility`, alignement BOM `0.0.126` → release `0.0.13` + rollout 133 builds
+_session terminee_ : 033 — **CNV-15.1/15.2/15.3** : auto-publication N0 (−104/+41 l.), `DetektCompatibility`, BOM `0.0.126` ; release `0.0.13` (Central `f2ad3ce0` + Portal), rollout 113 pins / 26 dépôts, **audit strict `OK: 133 builds at 0.0.13`**, BOM/catalog `0.0.127` publié
+_session en cours_ : 033 — clôture de session (commit/push)
+_Prochaine session_ : 034 — vérifier propagation `0.0.127`, CNV-15.4 optionnelle (actions CI), veille
+
+_Note 2026-11-04 (S-033)_ : **CNV-15.1/15.2/15.3 livrées**. (1) `publishing`
+auto-publication opt-in (`createMavenPublication`, défaut false) — les 9 contrats
+N0 migrés (bloc `publishing { }` supprimé, workspace-bom `cfbbf8c`, −104/+41 l.) ;
+FT + BDD. (2) `DetektCompatibility` (majeur ≤ 22) remplace le `startsWith("25")` ;
+7 UT + BDD Scenario Outline. (3) BOM de test `0.0.126` + **release `0.0.13`**
+(Central bundle `f2ad3ce0-0c5c-4ba3-b190-ffeddc6acb8e`, Portal) ; **rollout**
+113 pins / 26 dépôts, 28/28 `assemble` VERTES ; **audit strict
+`OK: 133 build file(s) at 0.0.13`** ; **BOM/catalog `0.0.127`** (Central
+`d07a994f-6525-4ae3-b785-802589e3da1d`, catalogue `conventions-plugin = "0.0.13"`).
+CI conventions `41917976471` ✅, workspace-bom `41924833092` ✅.
+Rapport `.agents/sessions/033-cnv-15-implementation.adoc`.
 
 _Note 2026-11-04 (S-032)_ : **veille + cadrage CNV-15**. Veille : audit strict
 `OK: 133 build file(s) at 0.0.12`, BOM/catalog `0.0.126` propagé (repo1 200,
@@ -276,6 +288,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 030 | 2026-11-04 | release/adoption | **CNV-14.2/14.3/14.4** — `0.0.12` Central (`b1623b20`) + Portal ; POM `pomName`/`pomDescription` ; 9 contrats N0 adoptés (−596/+142 l., 3 tests fantômes câblés) ; CI `41888846264` verte ; audit 113 pins à rollouter. | 10/10
   | 031 | 2026-11-04 | rollout/release | **CNV-14.5 + BOM 0.0.126** — 113 pins / 26 dépôts, 28/28 builds VERTES ; audit strict `OK: 133 builds at 0.0.12` ; BOM/catalog `0.0.126` Central (`964c3bf7`). **EPIC CNV-14 TERMINÉ.** | 10/10
   | 032 | 2026-11-04 | veille/cadrage | Veille post-CNV-14 (audit vert, BOM `0.0.126` propagé, CI publiques vertes, privés bloqués facturation) + **cadrage CNV-15** (auto-publication, detekt, BOM, CI) — aucun code modifié. | 10/10
+  | 033 | 2026-11-04 | dev/release/rollout | **CNV-15.1/15.2/15.3** — auto-publication N0 (−104/+41 l.), `DetektCompatibility`, BOM `0.0.126` ; release `0.0.13` (`f2ad3ce0` + Portal), rollout 113 pins / 26 dépôts, audit strict `OK: 133 builds at 0.0.13`, BOM/catalog `0.0.127`. | 10/10
   |===
 
 '''
@@ -312,10 +325,10 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-14.4 | `publishingConventions { pomName; pomDescription }` | ✅ TERMINE (S-030) | P2
 | CNV-14.5 | Rollout public `0.0.12` (113 pins, ~28 dépôts) + audit strict | ✅ TERMINE (S-031 — `OK: 133 builds at 0.0.12`) | P0
 | CNV-15.0 | Cadrage durcissement | ✅ TERMINE (S-032) | P2
-| CNV-15.1 | Auto-publication `publishing` (9 N0) | 🟡 CADRÉ (sur feu vert) | P2
-| CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | 🟡 CADRÉ (sur feu vert) | P2
-| CNV-15.3 | Alignement BOM de test + release 0.0.13 | 🟡 CADRÉ (sur feu vert) | P2
-| CNV-15.4 | Maintenance CI actions | 🟡 CADRÉ | P3
+| CNV-15.1 | Auto-publication `publishing` (9 N0) | ✅ TERMINE (S-033) | P2
+| CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | ✅ TERMINE (S-033) | P2
+| CNV-15.3 | Alignement BOM de test + release 0.0.13 + rollout | ✅ TERMINE (S-033 — `OK: 133 builds at 0.0.13`) | P2
+| CNV-15.4 | Maintenance CI actions | 🟡 À FAIRE (S-034) | P3
 |===
 
 '''

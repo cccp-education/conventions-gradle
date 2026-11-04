@@ -1,44 +1,41 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 033
+:session: 034
 :date: 2026-11-04
-:epic: CNV-15 « durcissement » — sur feu vert pilote
+:epic: CNV-15 TERMINÉ (US-1→US-3) — veille + US-4 optionnelle
 :max-lines: 70
 
 == Contexte hérité
 
-**EPIC CNV-14 TERMINÉ** (S-029→S-031) : convention `library`, release
-`0.0.12` (Central `b1623b20` + Portal), 9 contrats N0 adoptés, rollout
-**133 builds**, **audit strict `OK: 133 build file(s) at 0.0.12`**,
-BOM/catalog MEMPHIS **`0.0.126`** propagé (repo1 200, constraint
-`conventions-plugin:0.0.12`).
+**CNV-15.1/15.2/15.3 TERMINÉES** (S-033) :
+* `publishingConventions { createMavenPublication = true }` (défaut false) —
+  les 9 contrats N0 l'activent et n'ont plus de bloc `publishing { }`
+  (workspace-bom `cfbbf8c`, −104/+41 l.) ;
+* `DetektCompatibility` (objet pur, majeur ≤ 22) remplace le
+  `startsWith("25")` ; 7 UT + BDD ;
+* BOM de test `0.0.126` ; **release `0.0.13`** : Central bundle
+  `f2ad3ce0-0c5c-4ba3-b190-ffeddc6acb8e` (PUBLISHED) + Plugin Portal ;
+* **rollout** 113 pins / 26 dépôts, 28/28 `assemble` VERTES ;
+* **audit strict `OK: 133 build file(s) at 0.0.13`** ;
+* **BOM/catalog MEMPHIS `0.0.127`** : catalogue `conventions-plugin = "0.0.13"`,
+  Central bundle `d07a994f-6525-4ae3-b785-802589e3da1d` (AUTOMATIC),
+  **propagation repo1 confirmée** (200 ×2).
 
-**S-032 (veille + cadrage)** : audit revérifié vert ; BOM `0.0.126` propagé ;
-CI publiques rolloutées vertes ; privés `training`/`payment`/`quizz`/
-`waiter`/`workspace` bloqués par la facturation Actions (préexistant).
-**CNV-15 cadré** : `.agents/CADRAGE_EPIC_CNV_15_POLISH.adoc`.
-Aucun code modifié en S-032.
+CI : conventions `41917976471` ✅, workspace-bom `41924833092` ✅.
 
-Rapports : `.agents/sessions/029-*.adoc` → `032-cnv-15-cadrage.adoc`.
+Rapports : `.agents/sessions/033-cnv-15-implementation.adoc` ;
+`workspace-bom/.agents/sessions/345-*.adoc` (à créer).
 
-== Mission session 033 — CNV-15 (sur feu vert pilote)
+== Mission session 034
 
-1. **CNV-15.1** — `publishingConventions { createMavenPublication = true }`
-   (défaut `false`, backward compatible) : crée la publication `maven` depuis
-   `components["java"]` si aucune `MavenPublication` n'existe. Migrer les
-   9 contrats N0 (supprimer leur bloc `publishing { }` manuel).
-   Preuves : FT + BDD.
-2. **CNV-15.2** — `DetektCompatibility` (objet pur, `supports(javaVersion)` =
-   majeur ≤ 22) ; `LintConventionsPlugin` ne code plus `startsWith("25")`.
-   6 UT + scénario BDD.
-3. **CNV-15.3** — aligner `[versions].workspace-bom` et
-   `WorkspaceBom.FALLBACK_VERSION` sur `0.0.126` ; bump **`0.0.13`** ;
-   release Central + Portal ; rollout **133 builds** ; audit strict 0 ;
-   catalogue MEMPHIS `0.0.13` + BOM/catalog **`0.0.127`**.
-4. **CNV-15.4** (indépendante) — maintenance des actions CI
-   (`checkout`/`setup-java`/`setup-gradle`), CI verte.
-
-**Si le pilote ne donne pas le feu vert** : ne rien publier, ne pas bumper ;
-rester en veille (l'état `0.0.12` / audit vert est sain).
+1. **Propagation `0.0.127` : ✅ confirmée** (`workspace-bom` +
+   `workspace-catalog` repo1 200 ×2 ; POM contraint `conventions-plugin:0.0.13`).
+   Rien à publier.
+2. **CNV-15.4 (optionnelle, indépendante)** — maintenance des actions CI
+   (`actions/checkout`, `actions/setup-java`, `gradle/actions/setup-gradle`),
+   CI verte. Ne pas toucher au code du plugin.
+3. **Veille** : audit strict (attendu `OK: 133 builds at 0.0.13`) ; detekt
+   JVM > 22 (limitation) ; CI privées (facturation Actions).
+4. **Aucun EPIC ouvert.** Proposer au pilote le prochain cadrage si besoin.
 
 == Workflow
 
@@ -55,13 +52,11 @@ rester en veille (l'état `0.0.12` / audit vert est sain).
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **8 plugins**, version **0.0.12** (Central `b1623b20` ; Portal publié),
+- **8 plugins**, version **0.0.13** (Central `f2ad3ce0` ; Portal publié),
   Java 25, Kotlin 2.4.10, Gradle **9.8.2** (source unique `[versions].gradle`)
 - CI : `.github/workflows/test.yml` (JDK 25, wrapper vérifié, `check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp
   AUTOMATIC) + `publishPlugins` (Portal)
-- Anti-drift : BOM test `0.0.125` (`WorkspaceBom`) ; Gradle `9.8.2`
+- Anti-drift : BOM test `0.0.126` (`WorkspaceBom`) ; Gradle `9.8.2`
   (`GradleWrapperVersion`) ; version du plugin injectée dans le FT d'audit
   (`conventions.version`) ; adoption auditée (`AdoptionAudit`)
-- Limitation connue : `detekt 1.23.8` incompatible JVM 25 (max 22) → ktlint
-  seul linter actif ; CNV-15.2 future-proofe la garde.

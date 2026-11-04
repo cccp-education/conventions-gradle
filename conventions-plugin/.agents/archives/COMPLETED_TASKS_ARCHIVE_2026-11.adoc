@@ -134,3 +134,16 @@ pour les contrats N0.
 * CNV-15 cadré : auto-publication, `DetektCompatibility`, alignement BOM,
   maintenance CI — implémentation conditionnée au feu vert (release 0.0.13).
 * Aucun code modifié, aucune release.
+
+== Session 033 (2026-11-04) — CNV-15.1/15.2/15.3
+
+*Tâche* : auto-publication N0, garde detekt future-proof, release 0.0.13.
+*Statut* : ✅ US-1→US-3 TERMINÉES.
+
+* Auto-publication `publishing` opt-in + 9 contrats N0 migrés (−104/+41 l.).
+* `DetektCompatibility` (JVM ≤ 22), 7 UT + BDD ; fin du `startsWith("25")`.
+* BOM de test `0.0.126` ; release `0.0.13` (Central `f2ad3ce0` + Portal) ;
+  rollout 113 pins / 26 dépôts ; audit strict `OK: 133 builds at 0.0.13`.
+* BOM/catalog `0.0.127` (Central `d07a994f`, catalogue `conventions-plugin =
+  "0.0.13"`), CI `41924833092` verte.
+* Reste : CNV-15.4 (actions CI) ; propagation `0.0.127`.

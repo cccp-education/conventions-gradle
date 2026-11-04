@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-032 🟡 **CNV-15 cadré** (durcissement : auto-publication N0, garde detekt, alignement BOM, CI actions) — en attente de feu vert (release `0.0.13` + rollout)
+_Derniere mise a jour_ : 2026-11-04 — S-033 ✅ **CNV-15.1/15.2/15.3 TERMINÉES** : auto-publication N0, `DetektCompatibility`, BOM `0.0.126` ; release `0.0.13` + rollout 133 builds, audit strict `OK: 133 builds at 0.0.13` ; BOM/catalog `0.0.127`. Reste US-4 (actions CI)
 
 '''
 
@@ -694,7 +694,7 @@ contrats N0 ne sont pas adoptants).
 
 '''
 
-== 🟡 CADRÉ — CNV-15 : durcissement des conventions
+== ✅ TERMINÉ (US-1→US-3) — CNV-15 : durcissement des conventions
 
 _Vision : solder les trois petites dettes restantes (duplication publication N0,
 garde detekt Java 25, BOM de test) + maintenance CI. Cadrage :
@@ -715,28 +715,29 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | CNV-15.1
 | **Auto-publication `publishing`** — `createMavenPublication` (défaut false)
   crée la `maven` publication depuis `components["java"]` si aucune n'existe ;
-  les 9 contrats N0 l'activent et suppriment leur bloc. FT + BDD.
+  les 9 contrats N0 l'activent et suppriment leur bloc (workspace-bom
+  `cfbbf8c`, −104/+41 l.). FT + BDD.
 | 3
-| 🟡 À FAIRE (sur feu vert)
+| ✅ S-033
 
 | CNV-15.2
 | **`DetektCompatibility`** — objet pur `supports(javaVersion)` (majeur ≤ 22) ;
-  `LintConventionsPlugin` ne code plus `startsWith("25")`. 6 UT.
+  `LintConventionsPlugin` ne code plus `startsWith("25")`. 7 UT + BDD.
 | 2
-| 🟡 À FAIRE (sur feu vert)
+| ✅ S-033
 
 | CNV-15.3
 | **Alignement BOM de test `0.0.126`** — toml + fallback + `WorkspaceBomTest` ;
-  release `0.0.13` (Central + Portal), rollout 133 builds, audit strict 0,
-  catalogue/BOM `0.0.127`.
+  release `0.0.13` (Central `f2ad3ce0` + Portal), rollout 133 builds,
+  audit strict `OK: 133 builds at 0.0.13`, catalogue/BOM `0.0.127`.
 | 4
-| 🟡 À FAIRE (sur feu vert)
+| ✅ S-033
 
 | CNV-15.4
 | **Maintenance CI actions** — `checkout` / `setup-java` / `setup-gradle` à
   jour ; indépendante de la release.
 | 2
-| 🟡 À FAIRE
+| 🟡 À FAIRE (S-034)
 |===
 
 '''
@@ -772,10 +773,10 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | CNV-14.4 | POM `publishing` nom/description paramétrable | 2 | ✅ S-030
 | CNV-14.5 | Rollout public 0.0.12 (113 pins) + audit strict | 4 | ✅ S-031
 | CNV-15.0 | Cadrage durcissement | 1 | ✅ S-032
-| CNV-15.1 | Auto-publication `publishing` (9 N0) | 3 | 🟡 sur feu vert
-| CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | 2 | 🟡 sur feu vert
-| CNV-15.3 | Alignement BOM de test + release 0.0.13 | 4 | 🟡 sur feu vert
-| CNV-15.4 | Maintenance CI actions | 2 | 🟡 à faire
+| CNV-15.1 | Auto-publication `publishing` (9 N0) | 3 | ✅ S-033
+| CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | 2 | ✅ S-033
+| CNV-15.3 | Alignement BOM de test + release 0.0.13 + rollout | 4 | ✅ S-033
+| CNV-15.4 | Maintenance CI actions | 2 | 🟡 S-034
 | *Total* | | *179* |
 |===
 
