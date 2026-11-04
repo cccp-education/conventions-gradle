@@ -6,9 +6,19 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-04
-_session terminee_ : 030 — **CNV-14.2/14.3/14.4** : release `0.0.12` (Central `b1623b20` + Portal), POM nom/description, adoption des 9 contrats N0 (−596/+142 l., 3 tests fantômes câblés, CI `41888846264` verte)
-_session en cours_ : 030 — clôture de session (commit/push)
-_Prochaine session_ : 031 — **CNV-14.5 rollout public `0.0.12`** (113 pins, ~28 dépôts) puis audit strict à 0 finding ; release BOM/catalog MEMPHIS `0.0.126`
+_session terminee_ : 031 — **CNV-14.5 TERMINÉ** : rollout `0.0.12` (113 pins / 44 fichiers / 26 dépôts, 28/28 builds VERTES), **audit strict `OK: 133 builds at 0.0.12`** ; BOM/catalog MEMPHIS `0.0.126` publié (bundle `964c3bf7`)
+_session en cours_ : 031 — clôture de session (commit/push)
+_Prochaine session_ : 032 — veille post-rollout : propagation repo1 `0.0.126`, audit strict, detekt JVM 25, CI privées ; aucun EPIC ouvert
+
+_Note 2026-11-04 (S-031)_ : **EPIC CNV-14 TERMINÉ**. (1) **Rollout `0.0.12`** :
+**113 pins** remplacés sur **44 fichiers / 26 dépôts** (motif vérifié, 0 faux
+positif), `assemble` **28/28 VERTES** (payment-scaffold, dashboard, jhipster et
+flow en builds racine), commits + push par dépôt (document en
+`git commit --only`, session parallèle S-291). (2) **Audit strict final** :
+`CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.12` — **0 finding**.
+(3) **BOM/catalog MEMPHIS `0.0.126`** : `workspace-bom` + garde réalignés,
+CI `41904522564` verte, Central bundle `964c3bf7-d…` (AUTOMATIC), propagation
+repo1 à confirmer. Rapport `.agents/sessions/031-cnv-14-5-rollout.adoc`.
 
 _Note 2026-11-04 (S-030)_ : **release `0.0.12` + adoption N0**. (1) **US-14.4** :
 `publishingConventions { pomName; pomDescription }` (additif) — FT + BDD,
@@ -254,6 +264,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 028 | 2026-11-04 | veille | Propagation Plugin Portal `0.0.9`/`0.0.10`/`0.0.11` confirmée, catalogue MEMPHIS `0.0.11`, audit strict OK — EPIC CNV-13 définitivement clos. | 10/10
   | 029 | 2026-11-04 | dev/cadrage | **CNV-14 cadré + US-14.1** — convention `library` (contrats N0) + `JvmProjectConventions` factorisé + BOM test 0.0.125 ; 4 UT + 5 FT + 5 BDD `@library` ; version locale 0.0.12 (publication reportée). | 10/10
   | 030 | 2026-11-04 | release/adoption | **CNV-14.2/14.3/14.4** — `0.0.12` Central (`b1623b20`) + Portal ; POM `pomName`/`pomDescription` ; 9 contrats N0 adoptés (−596/+142 l., 3 tests fantômes câblés) ; CI `41888846264` verte ; audit 113 pins à rollouter. | 10/10
+  | 031 | 2026-11-04 | rollout/release | **CNV-14.5 + BOM 0.0.126** — 113 pins / 26 dépôts, 28/28 builds VERTES ; audit strict `OK: 133 builds at 0.0.12` ; BOM/catalog `0.0.126` Central (`964c3bf7`). **EPIC CNV-14 TERMINÉ.** | 10/10
   |===
 
 '''
@@ -288,7 +299,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-14.2 | Release `0.0.12` (Central + Portal) + catalogue MEMPHIS | ✅ TERMINE (S-030) | P0
 | CNV-14.3 | Adoption des 9 contrats N0 (`workspace-bom`) | ✅ TERMINE (S-030 / MEMPHIS 343) | P1
 | CNV-14.4 | `publishingConventions { pomName; pomDescription }` | ✅ TERMINE (S-030) | P2
-| CNV-14.5 | Rollout public `0.0.12` (113 pins, ~28 dépôts) + audit strict | 🟡 À FAIRE (S-031) | P0
+| CNV-14.5 | Rollout public `0.0.12` (113 pins, ~28 dépôts) + audit strict | ✅ TERMINE (S-031 — `OK: 133 builds at 0.0.12`) | P0
 |===
 
 '''

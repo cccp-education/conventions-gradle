@@ -1,47 +1,51 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 031
+:session: 032
 :date: 2026-11-04
-:epic: CNV-14 — rollout public 0.0.12 (CNV-14.5) + catalogue BOM 0.0.126
+:epic: CNV-14 TERMINÉ — veille post-rollout
 :max-lines: 70
 
 == Contexte hérité
 
-**CNV-14 US-1→US-4 TERMINÉES** (S-029/S-030) :
-* convention `education.cccp.build.library` (`java-library` + kotlin,
-  sans `java-gradle-plugin` ni publishing) ; `JvmProjectConventions`
-  factorisé ; `TestTaskOptions` lazy ;
-* `publishingConventions { pomName; pomDescription; … }` (US-14.4) ;
-* **release `0.0.12` publiée** : Central bundle
-  `b1623b20-e3fb-42a8-9f06-3d3746f46b29`, Portal publié, propagation repo1
-  200 pour `conventions-plugin` + les **8 markers** ;
-* **adoption des 9 contrats N0** (session MEMPHIS 343) : `library` +
-  `publishing` + `lint` `0.0.12`, **−596/+142 lignes**, 3 tests fantômes
-  Cucumber câblés ; CI workspace-bom `41888846264` ✅ ;
-* BOM de test bumpé `0.0.125` ; catalogue source MEMPHIS
-  `conventions-plugin = "0.0.12"` (garde réalignée).
+**EPIC CNV-14 « convention `library` » TERMINÉ** (S-029→S-031) :
+* US-1 : `education.cccp.build.library` (`java-library` + kotlin, sans
+  `java-gradle-plugin` ni publishing) + `JvmProjectConventions` factorisé +
+  `TestTaskOptions` lazy ; 4 UT + 5 FT + 5 BDD ;
+* US-4 : `publishingConventions { pomName; pomDescription }` ;
+* US-2 : **release `0.0.12`** — Central bundle
+  `b1623b20-e3fb-42a8-9f06-3d3746f46b29`, Portal publié, 8 markers repo1 200 ;
+* US-3 : **9 contrats N0** sur `library` + `publishing` + `lint` `0.0.12`
+  (MEMPHIS 343, −596/+142 l., 3 tests fantômes Cucumber câblés) ;
+* US-5 : **rollout `0.0.12`** — 113 pins / 44 fichiers / 26 dépôts,
+  28/28 builds `assemble` VERTES, **audit strict
+  `OK: 133 build file(s) at 0.0.12`**.
 
-Rapports : `.agents/sessions/029-cnv-14-1-library-convention.adoc`,
-`.agents/sessions/030-cnv-14-release-adoption.adoc`,
+BOM de test injecté : `0.0.125` (une release de retard, non bloquant).
+BOM/catalog MEMPHIS **`0.0.126`** publié Central bundle
+`964c3bf7-c3ba-4271-b63b-201254e1b480` (catalogue `conventions-plugin =
+"0.0.12"`) — propagation repo1 à confirmer.
+
+Rapports : `.agents/sessions/029-*.adoc` → `031-cnv-14-5-rollout.adoc` ;
 `workspace-bom/.agents/sessions/343-cnv-14-n0-adoption.adoc`.
 
-== Mission session 031
+== Mission session 032
 
-1. **CNV-14.5 — rollout public `0.0.12`** (seul travail restant de l'EPIC).
-   Audit mesuré S-030 : **113 pins `0.0.11 < 0.0.12`** sur ~28 dépôts
-   (payment-scaffold, publics, video-kernel/youtube-auth, etc.).
-   Procédure : motif vérifié `education.cccp.build.*` version `0.0.11` →
-   `0.0.12` (zéro faux positif), `compileKotlin`/`compileTestKotlin` ou
-   `assemble` par dépôt, commit + push **par dépôt** ; exclure les fichiers
-   d'une session parallèle (`git status`, `--only`).
-2. **Vérification finale** : `./gradlew auditConventionsAdoption
-   -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true` depuis un
-   consommateur 0.0.12 (ex. `codebase-contracts`) → **0 finding attendu**.
-3. **MEMPHIS** : release **BOM/catalog `0.0.126`** (le catalogue source
-   porte déjà `conventions-plugin = "0.0.12"` ; la publication relève de la
-   session MEMPHIS) ; puis optionnellement aligner le BOM de test injecté
-   (`0.0.125`) sur cette release.
-4. **Veille** : Portal + repo1 `0.0.12` déjà vérifiés ; re-vérifier après tout
-   nouveau bump cross-borough.
+1. **Vérifier la propagation** `workspace-bom` / `workspace-catalog`
+   `0.0.126` sur repo1 (HTTP 200) et le POM (`conventions-plugin:0.0.12`
+   dans les constraints). Rien à publier si déjà propagé.
+2. **Veille** :
+   * relancer `auditConventionsAdoption -PworkspaceRoot=… -Pstrict=true`
+     après tout bump cross-borough (attendu : `OK: 133 builds at 0.0.12`) ;
+   * `detekt 1.23.8` reste incompatible JVM 25 (max 22), aucune release 2.x
+     sur Central → ktlint seul linter actif ; réévaluer à la sortie de
+     detekt 2.x ;
+   * CI privées (`payment`, `quizz`) dépendantes de la facturation GitHub
+     Actions — re-déclencher après rétablissement.
+3. **Optionnel (décision pilote)** : aligner `WorkspaceBom.FALLBACK_VERSION`
+   / `[versions].workspace-bom` sur `0.0.126` → release `0.0.13` + rollout
+   des 133 builds. Non bloquant (0.0.125 est une release valide). À ne faire
+   que sur demande explicite.
+4. **Aucun EPIC ouvert.** Proposer au pilote le prochain cadrage (le
+   borough n'a plus de dette actionnable connue).
 
 == Workflow
 
@@ -66,5 +70,3 @@ Rapports : `.agents/sessions/029-cnv-14-1-library-convention.adoc`,
 - Anti-drift : BOM test `0.0.125` (`WorkspaceBom`) ; Gradle `9.8.2`
   (`GradleWrapperVersion`) ; version du plugin injectée dans le FT d'audit
   (`conventions.version`) ; adoption auditée (`AdoptionAudit`)
-- Limitation connue : `detekt 1.23.8` incompatible JVM 25 (max 22) → ktlint
-  seul linter actif ; pas de release detekt 2.x sur Central.

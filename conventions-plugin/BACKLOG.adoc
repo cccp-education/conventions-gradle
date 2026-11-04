@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-030 ✅ **CNV-14.2/14.3/14.4** (release `0.0.12` Central+Portal, POM nom/description, 9 contrats N0 adoptés) ; reste **CNV-14.5 rollout `0.0.12`**
+_Derniere mise a jour_ : 2026-11-04 — S-031 ✅ **EPIC CNV-14 TERMINÉ** (release `0.0.12`, 9 N0 adoptés, rollout 113 pins / 26 dépôts, audit strict `OK: 133 builds at 0.0.12`, BOM `0.0.126`)
 
 '''
 
@@ -607,7 +607,7 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 
 '''
 
-== 🟡 EN COURS — CNV-14 : convention `library` pour les contrats N0
+== ✅ TERMINÉ — CNV-14 : convention `library` pour les contrats N0
 
 _Vision : supprimer la dernière duplication structurante du workspace — les
 9 contrats N0 de `workspace-bom` (≈ 1 047 lignes, `lint` seul) — via une
@@ -676,10 +676,11 @@ contrats N0 ne sont pas adoptants).
 | ✅ S-030
 
 | CNV-14.5
-| **Rollout public `0.0.12`** — 113 pins `0.0.11` sur ~28 dépôts, compiles par
-  dépôt, puis `auditConventionsAdoption -Pstrict=true` → 0 finding
+| **Rollout public `0.0.12`** — 113 pins `0.0.11` sur 44 fichiers / 26 dépôts,
+  28/28 builds `assemble` VERTES, puis `auditConventionsAdoption
+  -Pstrict=true` → **0 finding** (`OK: 133 builds at 0.0.12`)
 | 4
-| 🟡 À FAIRE (S-031)
+| ✅ S-031
 |===
 
 === Definition of Done
@@ -722,7 +723,7 @@ contrats N0 ne sont pas adoptants).
 | CNV-14.2 | Release 0.0.12 (Central + Portal) + catalogue MEMPHIS | 2 | ✅ S-030
 | CNV-14.3 | Adoption des 9 contrats N0 | 5 | ✅ S-030 (MEMPHIS 343)
 | CNV-14.4 | POM `publishing` nom/description paramétrable | 2 | ✅ S-030
-| CNV-14.5 | Rollout public 0.0.12 (113 pins) + audit strict | 4 | 🟡 S-031
+| CNV-14.5 | Rollout public 0.0.12 (113 pins) + audit strict | 4 | ✅ S-031
 | *Total* | | *167* |
 |===
 

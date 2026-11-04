@@ -734,3 +734,30 @@ consommateurs (rollout attendu), 0 finding sur les 9 N0.
 audit strict à 0 ; release BOM/catalog MEMPHIS `0.0.126`.
 Rapports `.agents/sessions/030-cnv-14-release-adoption.adoc` +
 `workspace-bom/.agents/sessions/343-cnv-14-n0-adoption.adoc`.
+
+'''
+
+== Session 031 — 2026-11-04
+Type:: rollout / release
+Code:: CNV-14.5 (+ BOM/catalog MEMPHIS 0.0.126)
+Titre:: Rollout public `0.0.12` (113 pins / 26 dépôts) — EPIC CNV-14 TERMINÉ
+Score:: 10/10
+Duree:: 1 session
+
+**Rollout** : 113 pins `0.0.11` remplacés sur 44 fichiers / 26 dépôts (motif
+vérifié `education.cccp.build.<id>" ) version "0.0.11"`, 0 résidu, 0 faux
+positif). Validation `./gradlew assemble` **28/28 builds VERTES** (payment,
+dashboard, jhipster et flow en builds racine). Commit + push par dépôt
+(document en `git commit --only`, session parallèle S-291).
+
+**Audit strict** : `CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.12` —
+**0 finding**.
+
+**BOM/catalog MEMPHIS `0.0.126`** : `workspace-bom` + garde
+`PlatformCatalogAlignmentTest` réalignés, CI `41904522564` verte, Central
+bundle `964c3bf7-c3ba-4271-b63b-201254e1b480` (AUTOMATIC), catalogue
+`conventions-plugin = "0.0.12"` ; propagation repo1 à confirmer.
+
+**EPIC CNV-14 TERMINÉ** (US-0→US-5).
+
+Rapport `.agents/sessions/031-cnv-14-5-rollout.adoc`.

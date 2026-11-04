@@ -22,7 +22,7 @@
     (S-027).
 - ADR-001 réécrit (plugin binaire publié) + ADR-003 (adoption par lots).
 
-== En cours — CNV-14 « convention `library` » (S-029→S-030)
+== ✅ TERMINÉ — CNV-14 « convention `library` » (S-029→S-031)
 
 - [x] **CNV-14.0** cadrage + mesure des 9 contrats N0
   (`.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc`).
@@ -36,16 +36,20 @@
 - [x] **CNV-14.3** adoption des 9 contrats N0 (session MEMPHIS 343) :
   **−596/+142 lignes**, POM via `pomName`/`pomDescription`, 3 tests fantômes
   Cucumber câblés ; CI workspace-bom `41888846264` ✅.
-- [ ] **CNV-14.5** rollout public `0.0.12` : **113 pins** `0.0.11` sur ~28
-  dépôts, compiles par dépôt, puis `auditConventionsAdoption -Pstrict=true`
-  → 0 finding.
+- [x] **CNV-14.5** rollout public `0.0.12` : **113 pins** sur **44 fichiers /
+  26 dépôts**, 28/28 builds `assemble` VERTES, puis
+  `auditConventionsAdoption -Pstrict=true` → **0 finding**
+  (`OK: 133 builds at 0.0.12`). **EPIC CNV-14 TERMINÉ.**
+- [x] **BOM/catalog MEMPHIS `0.0.126`** publié Central (bundle `964c3bf7`,
+  catalogue `conventions-plugin = "0.0.12"`).
 
 == Veille (hors EPIC)
 
 - **Plugin Portal ✅** / **Central ✅** : `0.0.12` publié et propagé
   (`conventions-plugin` + 8 markers repo1 200).
-- **Catalogue MEMPHIS** : source `conventions-plugin = "0.0.12"` ; release
-  **BOM/catalog `0.0.126`** à publier par la session MEMPHIS.
+- **Catalogue MEMPHIS ✅** : BOM/catalog **`0.0.126`** publié (bundle
+  `964c3bf7`), catalogue `conventions-plugin = "0.0.12"`.
+- **Rollout ✅** : 133 builds à `0.0.12` (audit strict 0 finding).
 - **CI dépôts privés** (`payment`, `quizz`) : job non démarré (limite de
   facturation GitHub Actions) → re-déclencher après rétablissement. Derniers
   verts : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).

@@ -1,0 +1,71 @@
+= Session 031 — CNV-14.5 : rollout public `0.0.12` + BOM/catalog `0.0.126`
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 031
+:date: 2026-11-04
+:type: rollout / release
+:epic: CNV-14 (US-5) + MEMPHIS BOM/catalog
+
+== Mission
+
+Suite du `PROMPT_REPRISE` S-031, continuation autorisée par le pilote :
+router `0.0.12` sur les consommateurs restants, repasser l'audit strict à 0,
+publier le BOM/catalog MEMPHIS `0.0.126`.
+
+== 1. Rollout public `0.0.12` (CNV-14.5)
+
+Audit de départ : **113 pins `0.0.11`** sur **44 fichiers / 26 dépôts**.
+
+Remplacement ciblé (motif vérifié `education.cccp.build.<id>" ) version
+"0.0.11"` → `0.0.12`, **113/113** remplacés, **0** résiduel, **0** faux
+positif (seuls les pins des conventions sont touchés).
+
+Validation locale par build (Local = Build, aucun test) :
+`./gradlew assemble --no-daemon` **28/28 builds VERTES** (payment-scaffold
+16 modules en un build racine ; dashboard et jhipster en builds racine ;
+video-kernel + youtube-auth ; flow racine multi-projet).
+
+Commits + push **26 dépôts** (un commit par dépôt) :
+payment-scaffold, quizz, training, waiter, workspace, academy,
+api-key-pool, bakery, bureau, capsule, codebase, codex, container-provision,
+conventions, dashboard, document (`git commit --only` — session parallèle
+S-291 en cours), flow, graphify, hyperframes, jhipster, planner, plantuml,
+readme, review, slider, video-kernel.
+
+**Audit strict final** depuis `codebase-contracts` (plugin 0.0.12) :
+`CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.12` — **0 finding**.
+
+== 2. BOM/catalog MEMPHIS `0.0.126`
+
+* `workspace-bom = "0.0.125"` → `"0.0.126"` dans le toml (source unique) ;
+* garde `PlatformCatalogAlignmentTest` réalignée (`0.0.125` → `0.0.126`) ;
+* `compileTestKotlin` + `ktlintCheck` VERT ;
+* CI workspace-bom `41904522564` ✅ ;
+* publication **Central** bundle `964c3bf7-c3ba-4271-b63b-201254e1b480`
+  (AUTOMATIC) — propagation repo1 à confirmer (`workspace-bom` +
+  `workspace-catalog` 0.0.126). Le catalogue publié porte
+  `conventions-plugin = "0.0.12"`.
+
+== 3. État final
+
+[cols="2,3"]
+|===
+| Élément | État
+| `conventions-plugin 0.0.12` | ✅ Central (`b1623b20`) + Portal, 8 markers repo1 200
+| Consommateurs | ✅ 133 builds à `0.0.12` (26 dépôts, 113 pins)
+| Audit strict | ✅ `OK: 133 build file(s) at 0.0.12`
+| 9 contrats N0 | ✅ `library` + `publishing` + `lint` 0.0.12 (S-030)
+| BOM/catalog `0.0.126` | ✅ Central `964c3bf7` (propagation repo1 en cours)
+|===
+
+== 4. Suivant (S-032)
+
+1. Vérifier la propagation repo1 `workspace-bom` / `workspace-catalog`
+   `0.0.126` (HTTP 200) et le POM (constraint `conventions-plugin:0.0.12`).
+2. Optionnel : aligner le BOM de test injecté par conventions (`0.0.125` sur
+   `0.0.126`) — implique une release `0.0.13` + rollout (reporté, non
+   bloquant : 0.0.125 reste une release valide).
+3. Veille : `detekt 1.23.8` incompatible JVM 25 (aucune 2.x sur Central),
+   CI privées dépendantes de la facturation GitHub Actions.

@@ -110,3 +110,16 @@ pour les contrats N0.
 * **Audit** : 113 pins `0.0.11 < 0.0.12` (rollout attendu), 0 sur les 9 N0.
 * Reste : CNV-14.5 rollout public `0.0.12` + audit strict ; BOM/catalog
   MEMPHIS `0.0.126`.
+
+== Session 031 (2026-11-04) — CNV-14.5 + BOM 0.0.126
+
+*Tâche* : rollout public `0.0.12` et publication BOM/catalog MEMPHIS.
+*Statut* : ✅ TERMINÉ — **EPIC CNV-14 clos**.
+
+* 113 pins `0.0.11` → `0.0.12` sur 44 fichiers / 26 dépôts ; 28/28 builds
+  `assemble` VERTES ; commits + push par dépôt (document `--only`).
+* Audit strict : **`OK: 133 build file(s) at 0.0.12`** (0 finding).
+* BOM/catalog `0.0.126` : Central bundle `964c3bf7` (catalogue
+  `conventions-plugin = "0.0.12"`), CI `41904522564` verte.
+* Reste (veille) : propagation repo1 `0.0.126` ; alignement optionnel du BOM
+  de test `0.0.125` ; detekt JVM 25 ; CI privées (facturation Actions).
