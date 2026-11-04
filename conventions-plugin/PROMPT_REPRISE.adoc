@@ -27,10 +27,8 @@ Gradle 9.8.2/0.0.10), 024 (0.0.9 + payment-scaffold 16 modules),
 
 == Mission session 028 — veille (aucun EPIC actif)
 
-1. **Plugin Portal** : vérifier la propagation des versions `0.0.9`,
-   `0.0.10`, `0.0.11`
-   (`plugins.gradle.org/m2/education/cccp/build/<plugin>/…`). Si une
-   version reste absente après revue, documenter.
+1. ~~**Plugin Portal**~~ ✅ vérifié S-028 : `0.0.9`, `0.0.10` et `0.0.11`
+   sont propagées (`plugins.gradle.org/m2` → 200 après redirection).
 2. **Catalogue/BOM MEMPHIS `0.0.125`** : le dépôt pointe
    `conventions-plugin = "0.0.11"` (garde `PlatformCatalogAlignmentTest`
    réalignée). La publication effective relève de la session MEMPHIS — ne
@@ -61,7 +59,7 @@ Gradle 9.8.2/0.0.10), 024 (0.0.9 + payment-scaffold 16 modules),
 
 - Racine de travail : `conventions-plugin/`
 - **7 plugins**, version **0.0.11** (Central bundle `19e4ee75` ; Portal
-  soumis), Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique)
+  **propagé**), Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique)
 - Audit d'adoption : `./gradlew auditConventionsAdoption
   -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true`
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)

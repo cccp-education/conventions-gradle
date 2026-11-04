@@ -24,7 +24,7 @@
 
 == Veille (hors EPIC)
 
-- **Plugin Portal** : propagation `0.0.9`/`0.0.10`/`0.0.11` soumise, en revue.
+- **Plugin Portal ✅** : propagation `0.0.9`/`0.0.10`/`0.0.11` **confirmée** (`plugins.gradle.org/m2` → 200 après redirection, vérifié S-028).
 - **Catalogue MEMPHIS** : pin `conventions-plugin = "0.0.11"` posé ; publication
   de la release `0.0.125` par la session MEMPHIS.
 - **CI dépôts privés** (`payment`, `quizz`) : job non démarré (limite de
