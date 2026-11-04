@@ -66,8 +66,18 @@ BACKLOG.
 
 == 4. CI — résultats et incident infra
 
-* Vertes : `capsule` et `codex` (Test) avec la convention kover ; `bakery`,
-  `plantuml`, `document`, `workspace-bom` en cours de run à la clôture.
+* Vertes : `capsule`, `codex`, `bakery` et `plantuml` (Test) — la convention
+  kover est prouvée sur les 4 profils (défauts, rapports off, seuil 75 % +
+  `main` only, seuil 85 %). `document` (Test) et `workspace-bom`
+  (`runAllTests`) **verts** — la CI `workspace-bom` verte couvre aussi les
+  contrôles cross-borough (bakery shards, dashboard, slider, planner,
+  api-key-pool).
+* **Flake N0 réparé** (`workspace-bom`) : le job lançait 5 `./gradlew check`
+  concurrents sur un même `GRADLE_USER_HOME` → course sur le registre de
+  daemons (« Timeout waiting to connect to the Gradle daemon », « Cannot
+  start managing file contention »), deux fois de suite, sans rapport avec
+  le bump. Correctif : `-Dorg.gradle.daemon.registry.base` **par build**
+  (caches de dépendances toujours partagés).
 * **Incident infra (non imputable au code)** : `payment-scaffold` et
   `quizz-benchmark` (dépôts privés) — le job **n'a pas démarré** :
   « recent account payments have failed or your spending limit needs to be
