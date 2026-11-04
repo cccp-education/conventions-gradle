@@ -1,0 +1,53 @@
+= Session 034 — Veille finale : CI privées + `setup-gradle` v6
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 034
+:date: 2026-11-04
+:type: veille / maintenance CI
+:epic: CNV-15.4 (complément) + veille
+
+== Mission
+
+Traiter les deux points résiduels de la veille post-CNV-15 : CI privées
+(facturation GitHub Actions) et warning `gradle/actions/setup-gradle@v4`.
+
+== 1. CI privées — tentative de re-déclenchement
+
+Re-run des derniers runs privés `0.0.13` : `training` `41924568435`,
+`payment` `41924562853`, `quizz` `41924564808`.
+
+Résultat : **attempt 2**, job `Build & Test` toujours `failure` avec
+**0 step** → la **limite de facturation GitHub Actions persiste**. Ce n'est
+pas une régression du code (l'état est identique aux runs `0.0.11`/`0.0.12`).
+Aucune action possible côté dépôt ; re-déclencher après rétablissement de la
+facturation.
+
+== 2. `gradle/actions/setup-gradle` v4 → v6
+
+`.github/workflows/test.yml` : `gradle/actions/setup-gradle@v4` → **`@v6`**
+(avec `actions/checkout@v5` + `actions/setup-java@v5` déjà en place).
+
+* CI **`41931693366` ✅** (commit `17a1ba3`).
+* Plus de warning Node 20 sur les actions du workflow (seul reste
+  l'information `ubuntu-latest` → Ubuntu 26, non bloquante).
+
+== 3. État final
+
+[cols="2,3"]
+|===
+| Élément | État
+| conventions `0.0.13` | ✅ Central `f2ad3ce0` + Portal, 8 markers 200
+| Rollout | ✅ 133 builds `0.0.13`, audit strict 0 finding
+| BOM/catalog `0.0.127` | ✅ Central `d07a994f`, repo1 200 ×2, constraint `0.0.13`
+| CNV-15 | ✅ US-1→US-4 TERMINÉES
+| CI privées | ⏸ facturation GitHub Actions (hors code)
+| EPIC ouvert | aucun
+|===
+
+== 4. Suivant
+
+Aucun travail actionnable côté conventions. Veille : facturation Actions
+(privés), limite detekt JVM > 22 (aucune release 2.x), information
+`ubuntu-latest` → Ubuntu 26.

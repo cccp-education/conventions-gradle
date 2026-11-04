@@ -818,3 +818,24 @@ CI : conventions `41917976471` ✅ + `41930286354` ✅, workspace-bom
 `41924833092` ✅ ; propagation `0.0.127` confirmée (repo1 200 ×2).
 **CNV-15 TERMINÉ (US-1→US-4).**
 Rapport `.agents/sessions/033-cnv-15-implementation.adoc`.
+
+'''
+
+== Session 034 — 2026-11-04
+Type:: veille / maintenance CI
+Code:: Veille finale (CNV-15.4 complément)
+Titre:: setup-gradle v6 + tentative CI privées
+Score:: 10/10
+Duree:: session courte
+
+**CI privées** : re-run des runs `0.0.13` (`training` `41924568435`,
+`payment` `41924562853`, `quizz` `41924564808`) → **attempt 2**, job
+`Build & Test` toujours `failure` avec **0 step** : la limite de facturation
+GitHub Actions persiste (hors code, identique aux runs 0.0.11/0.0.12).
+
+**CI actions** : `gradle/actions/setup-gradle@v4` → **`v6`** (avec
+`checkout@v5` + `setup-java@v5` déjà en place) ; CI **`41931693366` ✅**,
+plus de warning Node 20.
+
+**CNV-15 TERMINÉ (US-1→US-4)** ; aucun EPIC ouvert, aucune dette actionnable.
+Rapport `.agents/sessions/034-veille-finale-ci.adoc`.

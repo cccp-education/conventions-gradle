@@ -734,10 +734,11 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | ✅ S-033
 
 | CNV-15.4
-| **Maintenance CI actions** — `actions/checkout@v5` + `actions/setup-java@v5`
-  (`setup-gradle@v4` conservé) ; indépendante de la release.
+| **Maintenance CI actions** — `actions/checkout@v5` +
+  `actions/setup-java@v5` + `gradle/actions/setup-gradle@v6` ; indépendante de
+  la release. CI `41931693366` verte.
 | 2
-| ✅ S-033
+| ✅ S-033/S-034
 |===
 
 '''

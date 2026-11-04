@@ -54,7 +54,8 @@
   `f2ad3ce0` + Portal) + rollout 133 builds + audit strict
   `OK: 133 builds at 0.0.13` + catalogue/BOM `0.0.127` (`d07a994f`).
 - [x] **CNV-15.4** maintenance des actions CI : `actions/checkout@v5` +
-  `actions/setup-java@v5` (`setup-gradle@v4` conservé) ; CI à re-prouver.
+  `actions/setup-java@v5` + `gradle/actions/setup-gradle@v6` ; CI
+  `41931693366` verte.
 
 == Veille (hors EPIC)
 
