@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-033 ✅ **CNV-15.1/15.2/15.3 TERMINÉES** : auto-publication N0, `DetektCompatibility`, BOM `0.0.126` ; release `0.0.13` + rollout 133 builds, audit strict `OK: 133 builds at 0.0.13` ; BOM/catalog `0.0.127`. Reste US-4 (actions CI)
+_Derniere mise a jour_ : 2026-11-04 — S-034 ✅ **aucun EPIC/US ouvert**. CNV-15 TERMINÉ (US-1→US-4) ; `0.0.13` + rollout 133 builds ; audit strict `OK: 133 builds at 0.0.13` ; BOM/catalog `0.0.127` ; CI actions v5/v6. Reste : veille (facturation Actions privées, detekt JVM > 22, alignement BOM de test optionnel)
 
 '''
 
@@ -498,8 +498,8 @@ Bump `0.0.6 → 0.0.7` local (publication Central = décision pilote séparée).
 | ✅ Vérifié
 
 | Portal 0.0.7
-| Remplacé par la vérification de propagation `0.0.9` (CNV-13.3)
-| 🟡 P3
+| Remplacé par les vérifications de propagation `0.0.9` → `0.0.13` (CNV-13.3 / S-031 / S-033) — **caduc**
+| ✅ Caduc
 |===
 
 '''
@@ -781,24 +781,19 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | *Total* | | *179* |
 |===
 
-=== Suivi hors EPIC (S-027)
+=== Suivi hors EPIC (S-034) — aucun EPIC/US ouvert
 
-* **Propagation Plugin Portal** `0.0.9`/`0.0.10`/`0.0.11` : soumise, en revue.
-* **Catalogue MEMPHIS 0.0.125** : pin `conventions-plugin = "0.0.11"` posé
-  dans le dépôt ; publication par la session MEMPHIS.
-* **CI dépôts privés** (`payment`, `quizz`) : job non démarré — limite de
-  facturation GitHub Actions ; re-déclencher après rétablissement. Dernier
-  vert connu : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).
-* `training` : `codebase-plugin 0.0.17` (compile VERT) — alignement 0.0.18
+* **CI dépôts privés** (`training`, `payment`, `quizz`) : jobs non démarrés
+  (0 step) — **limite de facturation GitHub Actions**. Re-run tenté S-034
+  (attempt 2) : toujours bloqué. Re-déclencher après rétablissement. Derniers
+  verts connus : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).
+* **`detekt`** : `1.23.8` (dernière release, 2025-02) refuse JVM > 22
+  (`--jvm-target` max `22`) → branche detekt désactivée, ktlint seul linter
+  actif. Aucune release 2.x sur Central ; réévaluer à sa sortie.
+* **BOM de test injecté** : `0.0.126` (aligné S-033) alors que le BOM publié
+  est `0.0.127`. **Optionnel / non bloquant** : aligner sur `0.0.127` impose
+  une release `0.0.14` + rollout des 133 builds — à ne faire que sur demande.
+* **`training` (hors borough)** : `codebase-plugin 0.0.17` — alignement 0.0.18
   optionnel.
-
-=== Suivi hors EPIC (S-029)
-
-* **`workspace-bom 0.0.125`** : publié (repo1 HTTP 200, `<latest>0.0.125</latest>`)
-  — le BOM de test injecté par `TestDependencies` est bumpé `0.0.124 → 0.0.125`.
-* **CI dépôts privés** (`payment`, `quizz`) : toujours non démarrées
-  (facturation GitHub Actions, hors borough).
-* **`detekt`** : `1.23.8` est la dernière release (2025-02) et refuse JVM 25
-  (`--jvm-target` max `22`) ; la branche detekt est donc désactivée sur tout le
-  workspace, ktlint reste le linter actif. Aucune release 2.x sur Central —
-  limitation documentée, pas de correctif possible côté conventions.
+* **Info** : `ubuntu-latest` migrera vers Ubuntu 26 (information GitHub, non
+  bloquante).
