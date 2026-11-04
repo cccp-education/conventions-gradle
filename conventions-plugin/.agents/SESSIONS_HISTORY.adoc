@@ -751,7 +751,9 @@ dashboard, jhipster et flow en builds racine). Commit + push par dépôt
 (document en `git commit --only`, session parallèle S-291).
 
 **Audit strict** : `CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.12` —
-**0 finding**.
+**0 finding**. CI des dépôts publics rolloutés : **toutes vertes** (spot-check
+17 dépôts) ; privés `training`/`payment`/`quizz`/`waiter`/`workspace` : jobs
+non démarrés (facturation Actions, préexistant).
 
 **BOM/catalog MEMPHIS `0.0.126`** : `workspace-bom` + garde
 `PlatformCatalogAlignmentTest` réalignés, CI `41904522564` verte, Central

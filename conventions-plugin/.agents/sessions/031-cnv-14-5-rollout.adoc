@@ -37,6 +37,16 @@ readme, review, slider, video-kernel.
 **Audit strict final** depuis `codebase-contracts` (plugin 0.0.12) :
 `CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.12` — **0 finding**.
 
+**Preuves CI des dépôts rolloutés** (spot-check exhaustif des dépôts publics
+disposant d'un workflow) : academy, api-key-pool, bakery, capsule, codebase,
+codex, conventions, dashboard, document, graphify, hyperframes, jhipster,
+planner, plantuml, readme, slider, video-kernel → **tous VERTES** sur le
+commit `0.0.12`. `bureau`, `container-provision`, `flow`, `review` n'ont pas
+de workflow CI. **Privés** `training`/`payment` (`quizz`, `waiter`,
+`workspace` idem) : jobs non démarrés (steps vides) — **limite de facturation
+GitHub Actions préexistante**, pas une régression du bump (le run 0.0.11
+précédent est rouge pour la même raison).
+
 == 2. BOM/catalog MEMPHIS `0.0.126`
 
 * `workspace-bom = "0.0.125"` → `"0.0.126"` dans le toml (source unique) ;
