@@ -6,9 +6,28 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-03
-_session terminee_ : 026 — **CNV-13.4** : conventions 0.0.10 dans les 4 boroughs privés MVP0 + **CI quizz ressuscitée**
-_session en cours_ : 026 — quizz CI verte `41741295431` (1m06s) ; training CI verte
-_Prochaine session_ : 027 — **CNV-13.5** garde cross-borough + arbitrage kover/logback ; résiduels bakery/document
+_session terminee_ : 027 — **CNV-13.5 TERMINÉ** : options Kover + audit d'adoption cross-borough → **EPIC CNV-13 CLOS**
+_session en cours_ : 027 — 0.0.11 Central (bundle `19e4ee75`), audit strict `OK: 133 build files at 0.0.11`
+_Prochaine session_ : 028 — veille : propagation Plugin Portal, reprise CI des dépôts privés (facturation Actions), catalogue MEMPHIS 0.0.125
+
+_Note 2026-11-03 (S-027)_ : **CNV-13.5 + clôture de l'EPIC CNV-13**.
+(1) **Kover** : `KoverConventionsExtension` gagne `includedSourceSets`,
+`htmlOnCheck`, `xmlOnCheck`, `xmlFile`, `htmlDir` (défauts inchangés) ; les
+3 consommateurs divergents migrent — capsule (défauts), codex (rapports hors
+`check`, TestKit non instrumentable), plantuml (`main` only, chemins custom,
+seuil 75 %) ; `assemble` + `validatePlugins` VERT. **`logback-exclusion`
+conservé** (1 consommateur légitime, contournement JRuby/asciidoctor).
+(2) **Garde cross-borough** : domaine pur `AdoptionAudit` (Ahead/Obsolete/
+Snapshot/Invalid) + tâche `auditConventionsAdoption` (`-PworkspaceRoot`,
+`-Pstrict`), version attendue matérialisée depuis le plugin ; 8 UT + 3 FT +
+1 BDD. **Audit strict : `OK: 133 build file(s) at 0.0.11`** — zéro pin
+résiduel (`bakery` et `document` alignés `0.0.11`).
+(3) **Release 0.0.11** : CI `41742651109` verte, Central bundle `19e4ee75`,
+rollout **28 dépôts**, catalogue MEMPHIS pinné `0.0.11`.
+**Incident infra** : CI privées `payment`/`quizz` non démarrées (limite de
+facturation GitHub Actions) — dernier vert connu conservé (`quizz`
+`41741295431`, `payment` 110/110). Rapport
+`.agents/sessions/027-cnv-13-5-kover-audit.adoc`.
 
 _Note 2026-11-03 (S-026)_ : adoption de `education.cccp.build.*` **0.0.10** sur
 les **4 builds privés MVP0** — `training` (`gradle-plugin` + `publishing` +
@@ -193,6 +212,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 024 | 2026-11-03 | adoption | EPIC CNV-13 ouvert — `publishing` paramétrable (identité POM) **0.0.9** + pin BOM test 0.0.124 + adoption `payment-scaffold` 16 modules + CI JDK 25. `compileKotlin` 16/16, `validatePlugins` 16/16. | 10/10
   | 025 | 2026-11-03 | release/CI | Rollout 0.0.9 (19 dépôts, 67 refs) + **Gradle 9.8.2 centralisé** : source unique, `verifyGradleWrapper` câblée à `check` (gradle-plugin + lint), action composite, 101/101 wrappers ; **0.0.10** Central (bundle 6a3b7052). | 10/10
   | 026 | 2026-11-03 | adoption | Privés MVP0 (training, workspace pilot/provision, waiter, quizz) sur 0.0.10 ; JDK 24→25 (4 workflows), codebase 0.0.11→0.0.18 (quizz/waiter), validatePlugins Gradle 9.8 corrigé → **CI quizz verte**. | 10/10
+  | 027 | 2026-11-03 | outillage | CNV-13.5 — kover options (capsule/codex/plantuml) + `AdoptionAudit`/`auditConventionsAdoption` ; **0.0.11** Central (bundle 19e4ee75) ; rollout 28 dépôts ; **audit strict OK (133 builds)**. **EPIC CNV-13 TERMINÉ.** | 10/10
   |===
 
 '''
@@ -220,7 +240,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-13.2 | Adoption `payment-scaffold` (16 modules) + CI JDK 25 | ✅ TERMINE (S-024) | P0
 | CNV-13.3 | Rollout public 0.0.9 (19 dépôts, 67 refs ; bakery/document résiduels) | ✅ TERMINE (S-025) | P0
 | CNV-13.4 | Privés MVP0 : training → workspace → waiter → quizz | ✅ TERMINE (S-026) | P1
-| CNV-13.5 | Garde cross-borough d'adoption + arbitrage kover/logback | 🟡 À FAIRE (S-027) | P1
+| CNV-13.5 | Kover options + garde cross-borough d'adoption + arbitrage kover/logback | ✅ TERMINE (S-027) | P1
 | CNV-13.6 | Gradle 9.8.2 centralisé + `verifyGradleWrapper` (check) + action CI + 101/101 wrappers | ✅ TERMINE (S-025) | P0
 |===
 

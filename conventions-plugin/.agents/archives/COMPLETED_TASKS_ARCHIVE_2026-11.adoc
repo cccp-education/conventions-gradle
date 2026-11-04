@@ -49,3 +49,17 @@ en CI.
   0.0.11→0.0.18` (quizz/waiter), `validatePlugins` Gradle 9.8 (4 tâches).
 * **CI quizz verte** (`41741295431`) — première depuis septembre.
 * Reste : CNV-13.3 résiduel (bakery/document), CNV-13.5.
+
+== Session 027 (2026-11-03) — CNV-13.5 + clôture EPIC CNV-13
+
+*Tâche* : options Kover, garde cross-borough d'adoption, arbitrage
+kover/logback.
+*Statut* : ✅ TERMINÉ — **EPIC CNV-13 clos**.
+
+* `KoverConventionsExtension` : `includedSourceSets`, `htmlOnCheck`,
+  `xmlOnCheck`, `xmlFile`, `htmlDir` ; capsule/codex/plantuml migrés.
+* `AdoptionAudit` + `auditConventionsAdoption` (`-PworkspaceRoot`,
+  `-Pstrict`) ; 8 UT + 3 FT + 1 BDD ; audit strict **OK: 133 builds @ 0.0.11**.
+* `logback-exclusion` conservé (1 consommateur, contournement légitime).
+* Release **0.0.11** (CI `41742651109`, Central `19e4ee75`), rollout 28 dépôts.
+* Incident infra : CI privées non démarrées (facturation Actions).

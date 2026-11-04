@@ -602,3 +602,37 @@ PASSED) — première depuis septembre (5 runs rouges). CI `training` verte.
 
 **Reste** : CNV-13.3 résiduel (bakery/document), CNV-13.5 (garde
 cross-borough + arbitrage kover/logback).
+
+'''
+
+== Session 027 — 2026-11-03
+Type:: outillage / arbitrage cross-borough
+Code:: CNV-13.5 (+ clôture EPIC CNV-13)
+Titre:: Kover options + audit d'adoption cross-borough — EPIC CNV-13 TERMINÉ
+Score:: 10/10
+Duree:: 1 session
+
+**Kover** : `KoverConventionsExtension` gagne `includedSourceSets`,
+`htmlOnCheck`, `xmlOnCheck`, `xmlFile`, `htmlDir` (défauts inchangés) ; capsule
+(défauts), codex (rapports hors `check`, TestKit non instrumentable) et
+plantuml (`main` only, chemins custom, seuil 75 %) migrent sans dupliquer.
+`assemble` + `validatePlugins` VERT. **`logback-exclusion` conservé**
+(1 consommateur légitime : contournement JRuby/asciidoctor).
+
+**Garde cross-borough** : `AdoptionAudit` (domaine pur : Ahead/Obsolete/
+Snapshot/Invalid, comparaison semver numérique) + tâche
+`auditConventionsAdoption` (`-PworkspaceRoot`, `-Pstrict`), version attendue
+matérialisée depuis le plugin (`build/conventions-version.properties`, jamais
+de lecture d'un working tree voisin). 8 UT + 3 FT + 1 BDD.
+**Audit strict : `OK: 133 build file(s) at 0.0.11`** — bakery et document
+alignés (`0.0.7`/`0.0.8` → `0.0.11`, document en commit `--only`).
+
+**Release 0.0.11** : CI `41742651109` verte, Central bundle `19e4ee75`,
+propagation repo1 200, Portal soumis ; rollout **28 dépôts** ; catalogue
+MEMPHIS pinné `0.0.11` (release 0.0.125 côté MEMPHIS).
+
+**Incident infra** : CI privées `payment`/`quizz` non démarrées (limite de
+facturation GitHub Actions). Derniers verts connus : `payment` 110/110,
+`quizz` `41741295431`.
+
+**EPIC CNV-13 CLOS** (13.0→13.6).

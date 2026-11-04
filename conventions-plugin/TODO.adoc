@@ -3,32 +3,32 @@
 == Completed
 
 - CNV-0→CNV-12 + PUB : tous TERMINÉS (sessions 000→016)
-- CI `.github/workflows/test.yml` installé et **vert** (S-020)
-- `configureKover` no-op corrigé (DSL typé, S-020)
-- P2/P3 review S-019 traités (S-021)
-- `conventions-plugin` **0.0.8** — signature en CI release (S-023)
-- **CNV-13.0/13.1/13.2** : `publishing` paramétrable + **0.0.9** + pin BOM
-  test 0.0.124 + adoption **payment-scaffold** (16 modules) + CI JDK 25 (S-024)
-- **CNV-13.3** : rollout 0.0.9 — **67 refs dans 19 dépôts** ; `workspace-bom`
-  (catalogue + garde réalignée) ; racine dogfood (S-025)
-- **CNV-13.6** : **Gradle 9.8.2** centralisé (`[versions].gradle` →
-  ressource → `GradleWrapperVersion` → `verifyGradleWrapper` câblée à `check`
-  par `gradle-plugin` **et** `lint`) ; action composite câblée dans **35
-  workflows / 26 dépôts** ; **101/101 wrappers** alignés ; release **0.0.10**
-  (Central bundle `6a3b7052`, Portal soumis) (S-025)
-- **CNV-13.4** : privés MVP0 sur **0.0.10** — `training` (`gradle-plugin` +
-  `publishing` + `functional-test`), `workspace/pilot`, `workspace/provision`
-  (+ `functional-test` + `cucumber`), `waiter` (+ `functional-test`), `quizz` ;
-  effets révélés/corrigés : JDK 24→25 (4 workflows),
-  `codebase-plugin 0.0.11→0.0.18` (quizz/waiter), `validatePlugins` Gradle 9.8
-  (4 tâches) → **CI quizz verte** (S-026)
-- ADR-001 réécrit (plugin binaire publié) + ADR-003 (adoption par lots) (S-024)
+- **EPIC CNV-13 « Adoption complète » — TERMINÉ 13.0→13.6** (S-024→S-027) :
+  * 13.0/13.1/13.2 — `publishing` paramétrable (`PublishingIdentity`) +
+    `0.0.9` + pin BOM test 0.0.124 + adoption `payment-scaffold` (16 modules)
+    + CI JDK 25 (S-024) ;
+  * 13.3 — rollout 0.0.9 (19 dépôts, 67 refs) ; `workspace-bom` (catalogue +
+    garde réalignée) (S-025) ;
+  * 13.6 — **Gradle 9.8.2** centralisé (`[versions].gradle` →
+    `GradleWrapperVersion` → `verifyGradleWrapper` câblée à `check` par
+    `gradle-plugin` et `lint`) ; action composite dans **35 workflows /
+    26 dépôts** ; **101/101 wrappers** ; `0.0.10` (S-025) ;
+  * 13.4 — privés MVP0 (training, workspace pilot/provision, waiter, quizz)
+    sur `0.0.10` ; JDK 24→25 (4 workflows), `codebase-plugin 0.0.11→0.0.18`,
+    `validatePlugins` Gradle 9.8 → **CI quizz ressuscitée** (S-026) ;
+  * 13.5 — **Kover options** (capsule/codex/plantuml migrés) + **garde
+    cross-borough** `AdoptionAudit`/`auditConventionsAdoption` ; **0.0.11** ;
+    rollout **28 dépôts** ; **audit strict `OK: 133 build file(s) at 0.0.11`**
+    (S-027).
+- ADR-001 réécrit (plugin binaire publié) + ADR-003 (adoption par lots).
 
-== Restant
+== Veille (hors EPIC)
 
-- **CNV-13.3 résiduel** : `bakery` (4 refs `0.0.7`) et `document` (1 `0.0.7`
-  + 4 `0.0.8`) — attendre la fin de leurs sessions parallèles.
-- **CNV-13.5** — garde cross-borough d'adoption (pin consommateur ≤ version
-  publiée + compilation matrice) ; arbitrage `kover` / `logback-exclusion`
-  (1 consommateur chacun).
-- Vérifier la propagation Plugin Portal `0.0.9`/`0.0.10` (soumis, en revue).
+- **Plugin Portal** : propagation `0.0.9`/`0.0.10`/`0.0.11` soumise, en revue.
+- **Catalogue MEMPHIS** : pin `conventions-plugin = "0.0.11"` posé ; publication
+  de la release `0.0.125` par la session MEMPHIS.
+- **CI dépôts privés** (`payment`, `quizz`) : job non démarré (limite de
+  facturation GitHub Actions) → re-déclencher après rétablissement. Derniers
+  verts : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).
+- Optionnel : aligner `training` sur `codebase-plugin 0.0.18` (0.0.17 compile
+  VERT aujourd'hui).

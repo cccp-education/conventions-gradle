@@ -1,0 +1,84 @@
+= Session 027 — 2026-11-03
+:toc: left
+:icons: font
+
+== Métadonnées
+
+[cols="1,4"]
+|===
+| Type | outillage / arbitrage cross-borough
+| Code | CNV-13.5 (+ clôture de l'EPIC CNV-13)
+| Titre | Options Kover + audit d'adoption cross-borough — **EPIC CNV-13 TERMINÉ**
+| Score | 10/10
+|===
+
+== 1. Kover : knobs au lieu de duplication (CNV-13.5)
+
+`KoverConventionsExtension` gagne des options **backward-compatible** :
+`includedSourceSets` (défaut `main` + `functionalTest`), `htmlOnCheck`,
+`xmlOnCheck`, `xmlFile`, `htmlDir`. Les 3 consommateurs divergents migrent
+sans dupliquer le bloc :
+
+|===
+| Dépôt | Configuration | Avant
+| bakery | `enabled` + `threshold = 85.0` | déjà la convention
+| capsule | `enabled = true` (défauts) | `alias(kover)` + bloc `kover {}`
+| codex | `enabled`, `htmlOnCheck = false`, `xmlOnCheck = false` (TestKit non instrumentable) | bloc `kover {}` local
+| plantuml | `enabled`, `includedSourceSets = ["main"]`, `htmlDir`, `xmlFile`, `threshold = 75.0` | bloc `kover {}` + `koverThresholdCheck` maison
+|===
+
+`assemble` + `validatePlugins` VERT sur les 4 dépôts.
+
+**Arbitrage `logback-exclusion`** : conservé. Un seul consommateur (slider)
+est légitime — c'est un contournement ciblé du conflit JRuby/asciidoctor dans
+les classpaths de test, pas une redondance. Décision documentée dans le
+BACKLOG.
+
+== 2. Garde cross-borough d'adoption
+
+* **Domaine pur** `AdoptionAudit` : parse les pins
+  `education.cccp.build.<plugin>") version "<v>"` (Kotlin DSL) et la forme
+  Groovy, compare numériquement à la version publiée, classe `Ahead`,
+  `Obsolete`, `Snapshot`, `Invalid`.
+* **Tâche** `auditConventionsAdoption` (root only, enregistrée par
+  `gradle-plugin` et `lint`) : scanne les `build.gradle.kts` sous
+  `-PworkspaceRoot=<path>`, imprime un rapport, `-Pstrict=true` rend les
+  findings bloquants. La version attendue est **matérialisée depuis le
+  plugin** (`build/conventions-version.properties`), jamais lue dans un autre
+  working tree (leçon D5-RACE).
+* Preuves : **8 UT** `AdoptionAuditTest`, **3 FT** TestKit (aligné, obsolète,
+  strict), **1 scénario BDD** Kover options ; 182 → **182+ PASSED** en CI.
+
+**Résultat sur le workspace** :
+`CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.11` (audit strict) —
+**zéro pin résiduel** : `bakery` et `document` ont été alignés `0.0.7`/`0.0.8`
+→ `0.0.11` (document : commit `--only` pour ne pas embarquer la session 291).
+
+== 3. Release 0.0.11 + rollout
+
+* `conventions-plugin 0.0.11` — CI verte `41742651109`, **Maven Central**
+  bundle `19e4ee75-fb3f-4bbf-bb7a-6bead571cd62` (AUTOMATIC), propagation repo1
+  HTTP 200 vérifiée avant rollout, Plugin Portal soumis.
+* Rollout `0.0.10 → 0.0.11` : **28 dépôts** (publics + privés + payment
+  `0.0.9 → 0.0.11` + workspace-bom catalogue/garde).
+* Catégorie BOM : le catalogue MEMPHIS pointe `conventions-plugin = "0.0.11"`
+  (release 0.0.125 en cours côté MEMPHIS, non publiée par cette session).
+
+== 4. CI — résultats et incident infra
+
+* Vertes : `capsule` et `codex` (Test) avec la convention kover ; `bakery`,
+  `plantuml`, `document`, `workspace-bom` en cours de run à la clôture.
+* **Incident infra (non imputable au code)** : `payment-scaffold` et
+  `quizz-benchmark` (dépôts privés) — le job **n'a pas démarré** :
+  « recent account payments have failed or your spending limit needs to be
+  increased ». Leur dernière CI verte connue (`payment` 110/110,
+  `quizz` `41741295431`) reste la référence ; à re-déclencher quand la
+  facturation Actions sera rétablie.
+
+== 5. Clôture EPIC CNV-13
+
+`CNV-13.0 → 13.6` tous TERMINÉS : adoption 100 % des builds Gradle du
+workspace (publics + privés), version Gradle unique 9.8.2 gardée en CI,
+audit cross-borough au vert, ADR réécrits. Reste hors EPIC : propagation
+Plugin Portal (revue), publication catalogue MEMPHIS 0.0.125 (session
+MEMPHIS), reprises CI des dépôts privés (facturation).

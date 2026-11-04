@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-03 — S-026 ✅ privés MVP0 sur 0.0.10 + CI quizz ressuscitée
+_Derniere mise a jour_ : 2026-11-03 — S-027 ✅ **EPIC CNV-13 TERMINÉ** (0.0.11, audit strict OK sur 133 builds)
 
 '''
 
@@ -503,7 +503,7 @@ Bump `0.0.6 → 0.0.7` local (publication Central = décision pilote séparée).
 |===
 
 '''
-== 🟡 EN COURS — CNV-13 : Adoption complète des conventions
+== ✅ TERMINÉ — CNV-13 : Adoption complète des conventions
 
 _Vision : 1 source de vérité de build pour **tous** les builds Gradle du
 workspace (publics **et** privés). Cadrage complet :
@@ -545,9 +545,9 @@ workspace (publics **et** privés). Cadrage complet :
 | ✅ S-026
 
 | CNV-13.5
-| **Outillage & dette** — garde cross-borough d'adoption (pin ≤ version publiée + compilation matrice), arbitrage `kover` (1 consommateur) / `logback-exclusion` (1 consommateur). ~~ADR-001~~ ✅ réécrit S-024
+| **Outillage & dette** — **Kover options** (`includedSourceSets`, `htmlOnCheck`, `xmlOnCheck`, `xmlFile`, `htmlDir`) : capsule/codex/plantuml migrés ; **garde cross-borough** `AdoptionAudit` + tâche `auditConventionsAdoption` (`-PworkspaceRoot`, `-Pstrict`) — 8 UT + 3 FT + 1 BDD, **audit strict OK: 133 builds at 0.0.11** ; **`logback-exclusion` conservé** (1 consommateur légitime — contournement JRuby/asciidoctor). Release **0.0.11**, rollout 28 dépôts
 | 4
-| 🟡 À FAIRE
+| ✅ S-027
 
 | CNV-13.6
 | **Version Gradle 9.8.2 centralisée** — source unique `[versions].gradle`, ressource plugin, `GradleWrapperVersion` (8 UT), `verifyGradleWrapper` câblée à `check` (gradle-plugin + lint ; 3 FT + 2 BDD), action composite `.github/actions/verify-gradle-wrapper`, **101/101 wrappers** alignés, release **0.0.10**
@@ -630,6 +630,17 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 | CNV-13.3 | Rollout public 0.0.9 (19 dépôts) | 5 | ✅ S-025
 | CNV-13.6 | Gradle 9.8.2 centralisé + garde CI + 101/101 wrappers (0.0.10) | 6 | ✅ S-025
 | CNV-13.4 | Privés MVP0 (training, workspace, waiter, quizz) | 8 | ✅ S-026
-| CNV-13.5 | Garde cross-borough + arbitrage kover/logback | 4 | 🟡 À FAIRE
+| CNV-13.5 | Kover options + garde cross-borough + arbitrage kover/logback | 4 | ✅ S-027
 | *Total* | | *148* |
 |===
+
+=== Suivi hors EPIC (S-027)
+
+* **Propagation Plugin Portal** `0.0.9`/`0.0.10`/`0.0.11` : soumise, en revue.
+* **Catalogue MEMPHIS 0.0.125** : pin `conventions-plugin = "0.0.11"` posé
+  dans le dépôt ; publication par la session MEMPHIS.
+* **CI dépôts privés** (`payment`, `quizz`) : job non démarré — limite de
+  facturation GitHub Actions ; re-déclencher après rétablissement. Dernier
+  vert connu : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).
+* `training` : `codebase-plugin 0.0.17` (compile VERT) — alignement 0.0.18
+  optionnel.

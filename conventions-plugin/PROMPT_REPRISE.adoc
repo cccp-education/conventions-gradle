@@ -1,65 +1,70 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 027
+:session: 028
 :date: 2026-11-03
-:epic: CNV-13 — Adoption complète (dernier lot : outillage CNV-13.5)
+:epic: Veille post-CNV-13 (EPIC clos)
 :max-lines: 70
 
 == Contexte hérité
 
-Session 026 (2026-11-03) — **CNV-13.4 livré** : conventions **0.0.10** dans les
-**4 builds privés MVP0** — `training` (`gradle-plugin` + `publishing` +
-`functional-test`), `workspace/pilot`, `workspace/provision` (+
-`functional-test` + `cucumber`, `featuresDir = src/test/features`), `waiter`
-(+ `functional-test`), `quizz` (`gradle-plugin`). `assemble` +
-`compileTestKotlin` VERT partout. L'adoption a révélé **3 verrous préexistants**
-corrigés : **JDK 24 → 25** (4 workflows), **`codebase-plugin 0.0.11 → 0.0.18`**
-(quizz + waiter), **`validatePlugins` Gradle 9.8** (4 tâches :
-`@DisableCachingByDefault`, `@PathSensitive`, `codingameOutputFile` → `@InputFile
-@Optional`). **CI quizz verte pour la première fois depuis septembre**
-(`41741295431`, 1m06s). Rapport `.agents/sessions/026-cnv-13-4-prives-mvp0.adoc`.
+**EPIC CNV-13 « Adoption complète » TERMINÉ** (S-024→S-027). Dernière session
+(S-027) : **CNV-13.5** — `KoverConventionsExtension` gagne `includedSourceSets`,
+`htmlOnCheck`, `xmlOnCheck`, `xmlFile`, `htmlDir` (défauts inchangés) ; capsule
+(défauts), codex (rapports hors `check`), plantuml (`main` only + chemins +
+seuil 75) migrés ; **`logback-exclusion` conservé** (1 consommateur légitime,
+contournement JRuby/asciidoctor). **Garde cross-borough** : domaine pur
+`AdoptionAudit` (Ahead/Obsolete/Snapshot/Invalid) + tâche
+`auditConventionsAdoption` (`-PworkspaceRoot`, `-Pstrict`), version attendue
+matérialisée depuis le plugin — 8 UT + 3 FT + 1 BDD ; **audit strict
+`OK: 133 build file(s) at 0.0.11`** (zéro pin résiduel). Release **0.0.11**
+(CI `41742651109` verte, Central bundle `19e4ee75`, Portal soumis), rollout
+**28 dépôts**. Incident infra : CI privées `payment`/`quizz` non démarrées
+(limite de facturation GitHub Actions) — derniers verts connus conservés.
+Rapport `.agents/sessions/027-cnv-13-5-kover-audit.adoc`.
 
-Sessions antérieures : 025 (rollout 0.0.9 + Gradle 9.8.2 centralisé/0.0.10),
-024 (0.0.9 + payment-scaffold 16 modules), 023 (0.0.8 signature CI release).
+Historique : 026 (privés MVP0 + quizz CI verte), 025 (rollout 0.0.9 +
+Gradle 9.8.2/0.0.10), 024 (0.0.9 + payment-scaffold 16 modules),
+023 (0.0.8 signature CI release).
 
-== Mission session 027 — CNV-13.5 : outillage & dette
+== Mission session 028 — veille (aucun EPIC actif)
 
-. **Garde cross-borough d'adoption** (inspirée de `verifyCrossBoroughPins`
-   MEMPHIS) :
-   * vérifier que chaque pin consommateur `education.cccp.build.*` **≤
-     version publiée** (Central) et non-`SNAPSHOT` ;
-   * vérifier la **matrice d'adoption** (liste des dépôts attendus vs
-     effectifs) et compiler les consommateurs touchés ;
-   * l'implémenter en **domaine pur testable** (parser `build.gradle.kts`,
-     verdict) + garde CI, avec RED prouvé. Ne pas lire le working tree d'un
-     autre dépôt en test (patron D5-RACE graphify : injecter les valeurs par
-     Gradle).
-. **Arbitrage des plugins à 1 consommateur** :
-   * `kover` : 1 usage (bakery) alors que capsule/codex/plantuml configurent
-     Kover à la main → soit migrer ces 3, soit documenter le statu quo ;
-   * `logback-exclusion` : 1 usage (slider) → fusion/absorption ou
-     justification écrite.
-3. **Résiduels CNV-13.3** si leurs sessions ont terminé : `bakery`
-   (4 refs `0.0.7`) et `document` (1 `0.0.7` + 4 `0.0.8`) → `0.0.10`.
-4. Vérifier la propagation Plugin Portal `0.0.9`/`0.0.10` (soumis).
+1. **Plugin Portal** : vérifier la propagation des versions `0.0.9`,
+   `0.0.10`, `0.0.11`
+   (`plugins.gradle.org/m2/education/cccp/build/<plugin>/…`). Si une
+   version reste absente après revue, documenter.
+2. **Catalogue/BOM MEMPHIS `0.0.125`** : le dépôt pointe
+   `conventions-plugin = "0.0.11"` (garde `PlatformCatalogAlignmentTest`
+   réalignée). La publication effective relève de la session MEMPHIS — ne
+   pas squatter le borough ; vérifier simplement la cohérence.
+3. **CI dépôts privés** (`payment`, `quizz`) : re-déclencher dès que la
+   facturation GitHub Actions est rétablie ; le code est identique aux
+   derniers verts connus (`payment` 110/110, `quizz` `41741295431`).
+4. Vérifier que les CI publiques de la session S-027 sont toutes vertes
+   (`bakery`, `plantuml`, `document`, `workspace-bom` — en cours à la
+   clôture) ; corriger si un échec réel apparaît (pas de flake présumé).
+5. **Optionnel** : aligner `training` sur `codebase-plugin 0.0.18`
+   (aujourd'hui 0.0.17, compile VERT).
+6. **Prochain EPIC** : à cadrer avec le pilote (aucun n'est ouvert). Candidats
+   documentés : rien de bloquant ; la vision « 1 source de vérité » est
+   atteinte et gardée.
 
 == Workflow
 
 - Baby-step DDD/TDD/BDD : RED → GREEN → REFACTOR.
 - Compilation locale autorisée (`compileKotlin`/`compileTestKotlin`/
-  `compileFunctionalTestKotlin`, `assemble`, `validatePlugins`) ; publication
-  autorisée (Règle 2 — accord toujours granted).
+  `compileFunctionalTestKotlin`, `assemble`, `validatePlugins`,
+  `auditConventionsAdoption`) ; publication autorisée (Règle 2).
 - **Tests = CI** : aucun `test`/`check`/`cucumberTest`/`functionalTest` en
-  local, aucune sonde dans un projet jetable. Preuve = run CI vert du commit.
-- Un **seul sessionneur par borough** (leçon S-020/S-022/S-025).
+  local. Preuve = run CI vert du commit.
+- Un **seul sessionneur par borough**.
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **7 plugins**, version courante **0.0.10** (Central bundle `6a3b7052` ;
-  Portal soumis), Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique
-  `[versions].gradle`)
-- CI : `.github/workflows/test.yml` (JDK 25, vérifie le wrapper, `check`)
+- **7 plugins**, version **0.0.11** (Central bundle `19e4ee75` ; Portal
+  soumis), Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique)
+- Audit d'adoption : `./gradlew auditConventionsAdoption
+  -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true`
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
 - Anti-drift : BOM test `0.0.124` (`WorkspaceBom`) ; Gradle `9.8.2`
-  (`GradleWrapperVersion`) ; wrapper vérifié aussi par l'action composite
-  dans 35 workflows
+  (`GradleWrapperVersion`) ; wrapper vérifié par l'action composite dans
+  35 workflows ; adoption auditée (`AdoptionAudit`)
