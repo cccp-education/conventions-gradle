@@ -63,3 +63,13 @@ kover/logback.
 * `logback-exclusion` conservé (1 consommateur, contournement légitime).
 * Release **0.0.11** (CI `41742651109`, Central `19e4ee75`), rollout 28 dépôts.
 * Incident infra : CI privées non démarrées (facturation Actions).
+
+== Session 028 (2026-11-04) — Veille post-CNV-13
+
+*Tâche* : vérifier la propagation Plugin Portal et clôturer.
+*Statut* : ✅ TERMINÉ.
+
+* Plugin Portal : `0.0.9`, `0.0.10`, `0.0.11` propagés (200 après redirection).
+* Catalogue MEMPHIS pinné `0.0.11` (publication 0.0.125 côté MEMPHIS).
+* Audit d'adoption strict : 0 finding.
+* Reste hors borough : facturation GitHub Actions (CI privées).

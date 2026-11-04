@@ -5,10 +5,10 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-11-03
-_session terminee_ : 027 — **CNV-13.5 TERMINÉ** : options Kover + audit d'adoption cross-borough → **EPIC CNV-13 CLOS**
-_session en cours_ : 027 — 0.0.11 Central (bundle `19e4ee75`), audit strict `OK: 133 build files at 0.0.11`
-_Prochaine session_ : 028 — veille : propagation Plugin Portal, reprise CI des dépôts privés (facturation Actions), catalogue MEMPHIS 0.0.125
+_Derniere mise a jour_ : 2026-11-04
+_session terminee_ : 028 — **veille post-CNV-13** : Plugin Portal propagé (`0.0.9`/`0.0.10`/`0.0.11`), audit strict OK, EPIC CNV-13 clos
+_session en cours_ : 028 — clôture de session (boroughs altérés commités/poussés)
+_Prochaine session_ : 029 — veille : catalogue MEMPHIS `0.0.125`, CI privées (facturation Actions), puis cadrage `CB-I18N-SAFETY` (codebase) / `DOC-OUT-3/4` (document)
 
 _Note 2026-11-03 (S-027)_ : **CNV-13.5 + clôture de l'EPIC CNV-13**.
 (1) **Kover** : `KoverConventionsExtension` gagne `includedSourceSets`,

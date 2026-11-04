@@ -1,49 +1,47 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 028
-:date: 2026-11-03
-:epic: Veille post-CNV-13 (EPIC clos)
+:session: 029
+:date: 2026-11-04
+:epic: Veille post-CNV-13 (EPIC clos) + cadrage du prochain EPIC
 :max-lines: 70
 
 == Contexte hérité
 
-**EPIC CNV-13 « Adoption complète » TERMINÉ** (S-024→S-027). Dernière session
-(S-027) : **CNV-13.5** — `KoverConventionsExtension` gagne `includedSourceSets`,
-`htmlOnCheck`, `xmlOnCheck`, `xmlFile`, `htmlDir` (défauts inchangés) ; capsule
-(défauts), codex (rapports hors `check`), plantuml (`main` only + chemins +
-seuil 75) migrés ; **`logback-exclusion` conservé** (1 consommateur légitime,
-contournement JRuby/asciidoctor). **Garde cross-borough** : domaine pur
-`AdoptionAudit` (Ahead/Obsolete/Snapshot/Invalid) + tâche
-`auditConventionsAdoption` (`-PworkspaceRoot`, `-Pstrict`), version attendue
-matérialisée depuis le plugin — 8 UT + 3 FT + 1 BDD ; **audit strict
-`OK: 133 build file(s) at 0.0.11`** (zéro pin résiduel). Release **0.0.11**
-(CI `41742651109` verte, Central bundle `19e4ee75`, Portal soumis), rollout
-**28 dépôts**. Incident infra : CI privées `payment`/`quizz` non démarrées
-(limite de facturation GitHub Actions) — derniers verts connus conservés.
-Rapport `.agents/sessions/027-cnv-13-5-kover-audit.adoc`.
+**EPIC CNV-13 « Adoption complète » TERMINÉ** (S-024→S-027) : conventions
+**0.0.11** (Central bundle `19e4ee75`, **Plugin Portal propagé** — vérifié
+S-028), adoption **100 %** des builds du workspace, Gradle **9.8.2** unique et
+gardé en CI (action composite dans 35 workflows / 26 dépôts), audit
+`auditConventionsAdoption` **strict OK** (0 finding).
+Sessions 024→028 : `publishing` paramétrable + payment-scaffold ; rollout 0.0.9 ;
+Gradle 9.8.2/0.0.10 ; privés MVP0 + quizz CI ressuscitée ; kover options +
+adoption audit + 0.0.11 + rollout 28 dépôts ; clôture/veille.
+Rapports : `.agents/sessions/024-*.adoc` → `028-*`.
 
-Historique : 026 (privés MVP0 + quizz CI verte), 025 (rollout 0.0.9 +
-Gradle 9.8.2/0.0.10), 024 (0.0.9 + payment-scaffold 16 modules),
-023 (0.0.8 signature CI release).
+Dernière session de travail document (hors ABIDJAN) : **DOC-TEST-PERF**
+(US-1→6 : 29m26s → ~5-7 min, 73 scénarios orphelins restaurés) et
+**DOC-I18N-OUTPUT DOC-OUT-2** (garde structurelle anti-duplication). Voir
+`foundry/public/document-gradle/document-plugin/.agents/`.
 
-== Mission session 028 — veille (aucun EPIC actif)
+== Mission session 029
 
-1. ~~**Plugin Portal**~~ ✅ vérifié S-028 : `0.0.9`, `0.0.10` et `0.0.11`
-   sont propagées (`plugins.gradle.org/m2` → 200 après redirection).
-2. **Catalogue/BOM MEMPHIS `0.0.125`** : le dépôt pointe
+1. **Catalogue/BOM MEMPHIS `0.0.125`** : le dépôt pointe déjà
    `conventions-plugin = "0.0.11"` (garde `PlatformCatalogAlignmentTest`
-   réalignée). La publication effective relève de la session MEMPHIS — ne
-   pas squatter le borough ; vérifier simplement la cohérence.
-3. **CI dépôts privés** (`payment`, `quizz`) : re-déclencher dès que la
-   facturation GitHub Actions est rétablie ; le code est identique aux
-   derniers verts connus (`payment` 110/110, `quizz` `41741295431`).
-4. Vérifier que les CI publiques de la session S-027 sont toutes vertes
-   (`bakery`, `plantuml`, `document`, `workspace-bom` — en cours à la
-   clôture) ; corriger si un échec réel apparaît (pas de flake présumé).
-5. **Optionnel** : aligner `training` sur `codebase-plugin 0.0.18`
-   (aujourd'hui 0.0.17, compile VERT).
-6. **Prochain EPIC** : à cadrer avec le pilote (aucun n'est ouvert). Candidats
-   documentés : rien de bloquant ; la vision « 1 source de vérité » est
-   atteinte et gardée.
+   réalignée, CI `runAllTests` verte après isolation du registre daemon N0).
+   La **publication effective** relève de la session MEMPHIS — ne pas squatter
+   le borough ; vérifier la cohérence et la propagation repo1.
+2. **CI dépôts privés** (`payment-scaffold`, `quizz-benchmark`) : le job n'a
+   pas démarré (limite de facturation GitHub Actions). Re-déclencher dès
+   rétablissement ; derniers verts connus : `payment` 110/110 (S-024),
+   `quizz` `41741295431` (S-026).
+3. **Prochain EPIC transverse à cadrer** (aucun ouvert) :
+   * `CB-I18N-SAFETY` (codebase N1, cadré S-077) — verdict de sortie LLM
+     partagé ; **débloque `DOC-OUT-3`** (statut réel de sortie, document).
+   * `DOC-OUT-4` (document) — BDD `@translation-output` + dogfooding corpus
+     cheroliv.com (0 défaut non documenté sur la branche Data).
+   * `MEM-CI-CONSISTENCY` reliquats éventuels (voir MEMPHIS).
+4. **Veille** : relancer
+   `./gradlew auditConventionsAdoption -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true`
+   après tout bump cross-borough ; maintenir `0.0.11` partout (ou bumper en
+   bloc si une nouvelle version est publiée).
 
 == Workflow
 
@@ -53,16 +51,16 @@ Gradle 9.8.2/0.0.10), 024 (0.0.9 + payment-scaffold 16 modules),
   `auditConventionsAdoption`) ; publication autorisée (Règle 2).
 - **Tests = CI** : aucun `test`/`check`/`cucumberTest`/`functionalTest` en
   local. Preuve = run CI vert du commit.
-- Un **seul sessionneur par borough**.
+- Un **seul sessionneur par borough** ; commits `--only` sur les dépôts dont
+  une session parallèle a des fichiers stagés (document S-291).
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **7 plugins**, version **0.0.11** (Central bundle `19e4ee75` ; Portal
-  **propagé**), Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique)
-- Audit d'adoption : `./gradlew auditConventionsAdoption
-  -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true`
+- **7 plugins**, version **0.0.11** (Central `19e4ee75` ; Portal propagé),
+  Java 25, Kotlin 2.4.10, **Gradle 9.8.2** (source unique `[versions].gradle`)
+- CI : `.github/workflows/test.yml` (JDK 25, wrapper vérifié, `check`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
 - Anti-drift : BOM test `0.0.124` (`WorkspaceBom`) ; Gradle `9.8.2`
-  (`GradleWrapperVersion`) ; wrapper vérifié par l'action composite dans
-  35 workflows ; adoption auditée (`AdoptionAudit`)
+  (`GradleWrapperVersion`) ; wrapper vérifié par l'action composite ;
+  adoption auditée (`AdoptionAudit`)

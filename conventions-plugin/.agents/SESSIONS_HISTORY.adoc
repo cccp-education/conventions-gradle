@@ -636,3 +636,27 @@ facturation GitHub Actions). Derniers verts connus : `payment` 110/110,
 `quizz` `41741295431`.
 
 **EPIC CNV-13 CLOS** (13.0→13.6).
+
+'''
+
+== Session 028 — 2026-11-04
+Type:: veille / clôture
+Code:: Veille post-CNV-13
+Titre:: Propagation Plugin Portal confirmée + clôture de session
+Score:: 10/10
+Duree:: clôture
+
+**Vérifié** : les 7 plugins `0.0.9`, `0.0.10` et `0.0.11` sont **propagés sur
+le Plugin Portal** (`plugins.gradle.org/m2` → 200 après redirection). Le
+catalogue MEMPHIS pointe `conventions-plugin = "0.0.11"` (garde
+`PlatformCatalogAlignmentTest` réalignée) ; sa publication `0.0.125` relève de
+la session MEMPHIS.
+
+**Audit d'adoption** : `auditConventionsAdoption -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true`
+reste **OK** (0 finding) après les changements document de la session.
+
+**Reste (hors borough)** : facturation GitHub Actions (CI privées
+`payment`/`quizz` non démarrées — derniers verts connus), publication catalogue
+MEMPHIS `0.0.125`.
+
+**EPIC CNV-13 définitivement clos.**
