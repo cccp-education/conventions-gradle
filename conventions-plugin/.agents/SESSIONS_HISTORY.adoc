@@ -763,3 +763,26 @@ bundle `964c3bf7-c3ba-4271-b63b-201254e1b480` (AUTOMATIC), catalogue
 **EPIC CNV-14 TERMINÉ** (US-0→US-5).
 
 Rapport `.agents/sessions/031-cnv-14-5-rollout.adoc`.
+
+'''
+
+== Session 032 — 2026-11-04
+Type:: veille / cadrage
+Code:: Veille post-CNV-14 + CNV-15 (cadré)
+Titre:: Audit vert confirmé + cadrage durcissement
+Score:: 10/10
+Duree:: session courte
+
+**Veille** : audit strict `CONVENTIONS ADOPTION OK: 133 build file(s) at
+0.0.12` ; BOM/catalog `0.0.126` propagé (repo1 200 ×2, constraint
+`conventions-plugin:0.0.12`) ; CI publiques rolloutées vertes ; privés
+`training`/`payment`/`quizz`/`waiter`/`workspace` non démarrés (facturation
+Actions, préexistant).
+
+**CNV-15 cadré** (`.agents/CADRAGE_EPIC_CNV_15_POLISH.adoc`) : auto-publication
+`publishing` (9 blocs N0), `DetektCompatibility` (fin du `startsWith("25")`),
+alignement BOM de test `0.0.126`, maintenance CI. US-1→US-3 imposent une
+release `0.0.13` + rollout → **non exécutées sans feu vert**.
+
+Aucun code modifié, aucune release, aucun rollout.
+Rapport `.agents/sessions/032-cnv-15-cadrage.adoc`.

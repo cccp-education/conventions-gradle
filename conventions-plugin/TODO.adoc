@@ -43,6 +43,17 @@
 - [x] **BOM/catalog MEMPHIS `0.0.126`** publié Central (bundle `964c3bf7`,
   catalogue `conventions-plugin = "0.0.12"`).
 
+== 🟡 CADRÉ — CNV-15 « durcissement » (S-032, sur feu vert)
+
+- [x] **CNV-15.0** cadrage
+  (`.agents/CADRAGE_EPIC_CNV_15_POLISH.adoc`).
+- [ ] **CNV-15.1** `publishingConventions { createMavenPublication = true }` +
+  migration des 9 contrats N0 (FT + BDD).
+- [ ] **CNV-15.2** `DetektCompatibility` (majeur ≤ 22) + 6 UT.
+- [ ] **CNV-15.3** BOM de test `0.0.126` + release `0.0.13` + rollout 133
+  builds + audit strict 0 + catalogue/BOM `0.0.127`.
+- [ ] **CNV-15.4** maintenance des actions CI (indépendante de la release).
+
 == Veille (hors EPIC)
 
 - **Plugin Portal ✅** / **Central ✅** : `0.0.12` publié et propagé

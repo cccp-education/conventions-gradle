@@ -1,51 +1,44 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 032
+:session: 033
 :date: 2026-11-04
-:epic: CNV-14 TERMINÉ — veille post-rollout
+:epic: CNV-15 « durcissement » — sur feu vert pilote
 :max-lines: 70
 
 == Contexte hérité
 
-**EPIC CNV-14 « convention `library` » TERMINÉ** (S-029→S-031) :
-* US-1 : `education.cccp.build.library` (`java-library` + kotlin, sans
-  `java-gradle-plugin` ni publishing) + `JvmProjectConventions` factorisé +
-  `TestTaskOptions` lazy ; 4 UT + 5 FT + 5 BDD ;
-* US-4 : `publishingConventions { pomName; pomDescription }` ;
-* US-2 : **release `0.0.12`** — Central bundle
-  `b1623b20-e3fb-42a8-9f06-3d3746f46b29`, Portal publié, 8 markers repo1 200 ;
-* US-3 : **9 contrats N0** sur `library` + `publishing` + `lint` `0.0.12`
-  (MEMPHIS 343, −596/+142 l., 3 tests fantômes Cucumber câblés) ;
-* US-5 : **rollout `0.0.12`** — 113 pins / 44 fichiers / 26 dépôts,
-  28/28 builds `assemble` VERTES, **audit strict
-  `OK: 133 build file(s) at 0.0.12`**.
+**EPIC CNV-14 TERMINÉ** (S-029→S-031) : convention `library`, release
+`0.0.12` (Central `b1623b20` + Portal), 9 contrats N0 adoptés, rollout
+**133 builds**, **audit strict `OK: 133 build file(s) at 0.0.12`**,
+BOM/catalog MEMPHIS **`0.0.126`** propagé (repo1 200, constraint
+`conventions-plugin:0.0.12`).
 
-BOM de test injecté : `0.0.125` (une release de retard, non bloquant).
-BOM/catalog MEMPHIS **`0.0.126`** publié Central bundle
-`964c3bf7-c3ba-4271-b63b-201254e1b480` (catalogue `conventions-plugin =
-"0.0.12"`) — propagation repo1 à confirmer.
+**S-032 (veille + cadrage)** : audit revérifié vert ; BOM `0.0.126` propagé ;
+CI publiques rolloutées vertes ; privés `training`/`payment`/`quizz`/
+`waiter`/`workspace` bloqués par la facturation Actions (préexistant).
+**CNV-15 cadré** : `.agents/CADRAGE_EPIC_CNV_15_POLISH.adoc`.
+Aucun code modifié en S-032.
 
-Rapports : `.agents/sessions/029-*.adoc` → `031-cnv-14-5-rollout.adoc` ;
-`workspace-bom/.agents/sessions/343-cnv-14-n0-adoption.adoc`.
+Rapports : `.agents/sessions/029-*.adoc` → `032-cnv-15-cadrage.adoc`.
 
-== Mission session 032
+== Mission session 033 — CNV-15 (sur feu vert pilote)
 
-1. **Vérifier la propagation** `workspace-bom` / `workspace-catalog`
-   `0.0.126` sur repo1 (HTTP 200) et le POM (`conventions-plugin:0.0.12`
-   dans les constraints). Rien à publier si déjà propagé.
-2. **Veille** :
-   * relancer `auditConventionsAdoption -PworkspaceRoot=… -Pstrict=true`
-     après tout bump cross-borough (attendu : `OK: 133 builds at 0.0.12`) ;
-   * `detekt 1.23.8` reste incompatible JVM 25 (max 22), aucune release 2.x
-     sur Central → ktlint seul linter actif ; réévaluer à la sortie de
-     detekt 2.x ;
-   * CI privées (`payment`, `quizz`) dépendantes de la facturation GitHub
-     Actions — re-déclencher après rétablissement.
-3. **Optionnel (décision pilote)** : aligner `WorkspaceBom.FALLBACK_VERSION`
-   / `[versions].workspace-bom` sur `0.0.126` → release `0.0.13` + rollout
-   des 133 builds. Non bloquant (0.0.125 est une release valide). À ne faire
-   que sur demande explicite.
-4. **Aucun EPIC ouvert.** Proposer au pilote le prochain cadrage (le
-   borough n'a plus de dette actionnable connue).
+1. **CNV-15.1** — `publishingConventions { createMavenPublication = true }`
+   (défaut `false`, backward compatible) : crée la publication `maven` depuis
+   `components["java"]` si aucune `MavenPublication` n'existe. Migrer les
+   9 contrats N0 (supprimer leur bloc `publishing { }` manuel).
+   Preuves : FT + BDD.
+2. **CNV-15.2** — `DetektCompatibility` (objet pur, `supports(javaVersion)` =
+   majeur ≤ 22) ; `LintConventionsPlugin` ne code plus `startsWith("25")`.
+   6 UT + scénario BDD.
+3. **CNV-15.3** — aligner `[versions].workspace-bom` et
+   `WorkspaceBom.FALLBACK_VERSION` sur `0.0.126` ; bump **`0.0.13`** ;
+   release Central + Portal ; rollout **133 builds** ; audit strict 0 ;
+   catalogue MEMPHIS `0.0.13` + BOM/catalog **`0.0.127`**.
+4. **CNV-15.4** (indépendante) — maintenance des actions CI
+   (`checkout`/`setup-java`/`setup-gradle`), CI verte.
+
+**Si le pilote ne donne pas le feu vert** : ne rien publier, ne pas bumper ;
+rester en veille (l'état `0.0.12` / audit vert est sain).
 
 == Workflow
 
@@ -70,3 +63,5 @@ Rapports : `.agents/sessions/029-*.adoc` → `031-cnv-14-5-rollout.adoc` ;
 - Anti-drift : BOM test `0.0.125` (`WorkspaceBom`) ; Gradle `9.8.2`
   (`GradleWrapperVersion`) ; version du plugin injectée dans le FT d'audit
   (`conventions.version`) ; adoption auditée (`AdoptionAudit`)
+- Limitation connue : `detekt 1.23.8` incompatible JVM 25 (max 22) → ktlint
+  seul linter actif ; CNV-15.2 future-proofe la garde.

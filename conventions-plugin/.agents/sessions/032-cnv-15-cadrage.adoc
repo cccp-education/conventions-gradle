@@ -1,0 +1,61 @@
+= Session 032 — Veille post-CNV-14 + cadrage CNV-15
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 032
+:date: 2026-11-04
+:type: veille / cadrage
+:epic: Veille + CNV-15 (cadré)
+
+== Mission
+
+Suite du `PROMPT_REPRISE` S-032 : vérifier la propagation finale, veille, et
+proposer le prochain cadrage (aucun EPIC ouvert).
+
+== 1. Veille — état vérifié
+
+[cols="3,2,5"]
+|===
+| Point | Verdict | Preuve
+
+| Audit d'adoption | ✅ | `CONVENTIONS ADOPTION OK: 133 build file(s) at 0.0.12` (strict)
+| BOM/catalog `0.0.126` | ✅ propagé | repo1 `workspace-bom` + `workspace-catalog` **200** ; POM contraint `conventions-plugin:0.0.12`
+| Release `0.0.12` | ✅ | Central `b1623b20` + Portal + 8 markers repo1 200
+| Rollout | ✅ | 133 builds `0.0.12` ; CI publiques spot-checkées **vertes**
+| CI privées | ⏸ | `training`/`payment`/`quizz`/`waiter`/`workspace` : jobs non démarrés (facturation Actions, préexistant)
+| `detekt` | ⚠ | `1.23.8` incompatible JVM 25 (max 22), aucune 2.x sur Central → ktlint seul linter actif
+|===
+
+== 2. Cadrage CNV-15 « Durcissement »
+
+`.agents/CADRAGE_EPIC_CNV_15_POLISH.adoc` — trois dettes mesurées + une
+maintenance CI :
+
+* **CNV-15.1** auto-publication `publishingConventions
+  { createMavenPublication = true }` (défaut false) → supprime les 9 blocs
+  `publishing { }` des contrats N0 (FT + BDD) ;
+* **CNV-15.2** `DetektCompatibility` (objet pur, majeur ≤ 22) remplace le
+  `startsWith("25")` codé en dur de `LintConventionsPlugin` (6 UT) ;
+* **CNV-15.3** alignement du BOM de test `0.0.125 → 0.0.126` ;
+* **CNV-15.4** maintenance des actions CI (indépendante de la release).
+
+**Décision de séquencement** : US-1→US-3 imposent une release unique
+`0.0.13` + rollout des 133 builds + catalogue/BOM `0.0.127` ; elles ne sont
+**pas exécutées dans cette session** (pas de churn pour un gain marginal) —
+elles attendent le feu vert pilote. L'alignement BOM optionnel de la mission
+S-032 est donc reporté dans CNV-15.3.
+
+== 3. Livrable
+
+* Cadrage CNV-15 (document + BACKLOG + INDEX + TODO + PROMPT_REPRISE S-033).
+* Aucune modification de code, aucune release, aucun rollout : l'état
+  `0.0.12` / audit vert est préservé.
+* Rapport `.agents/sessions/032-cnv-15-cadrage.adoc`.
+
+== 4. Suivant (S-033)
+
+Sur feu vert pilote : implémenter **CNV-15.1 + CNV-15.2 + CNV-15.3** en
+baby-step DDD/TDD/BDD (unit + functional + cucumber), release `0.0.13`
+(Central + Portal), rollout 133 builds, audit strict 0, puis catalogue/BOM
+`0.0.127`. **CNV-15.4** peut être livrée séparément sans release.

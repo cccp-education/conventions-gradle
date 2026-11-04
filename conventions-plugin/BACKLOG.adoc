@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-031 ✅ **EPIC CNV-14 TERMINÉ** (release `0.0.12`, 9 N0 adoptés, rollout 113 pins / 26 dépôts, audit strict `OK: 133 builds at 0.0.12`, BOM `0.0.126`)
+_Derniere mise a jour_ : 2026-11-04 — S-032 🟡 **CNV-15 cadré** (durcissement : auto-publication N0, garde detekt, alignement BOM, CI actions) — en attente de feu vert (release `0.0.13` + rollout)
 
 '''
 
@@ -694,6 +694,53 @@ contrats N0 ne sont pas adoptants).
 
 '''
 
+== 🟡 CADRÉ — CNV-15 : durcissement des conventions
+
+_Vision : solder les trois petites dettes restantes (duplication publication N0,
+garde detekt Java 25, BOM de test) + maintenance CI. Cadrage :
+`.agents/CADRAGE_EPIC_CNV_15_POLISH.adoc`._
+
+*Priorité* : P2 (aucune dette bloquante ; l'état `0.0.12` / audit vert est sain).
+*Charge estimée* : ~12 pts.
+*Dépend de* : CNV-14 (terminé).
+*Séquencement* : US-1→US-3 = une release `0.0.13` + rollout 133 builds +
+catalogue/BOM `0.0.127` ; US-4 indépendante.
+
+[cols="1,5,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| CNV-15.0 | Cadrage + mesure | 1 | ✅ S-032
+
+| CNV-15.1
+| **Auto-publication `publishing`** — `createMavenPublication` (défaut false)
+  crée la `maven` publication depuis `components["java"]` si aucune n'existe ;
+  les 9 contrats N0 l'activent et suppriment leur bloc. FT + BDD.
+| 3
+| 🟡 À FAIRE (sur feu vert)
+
+| CNV-15.2
+| **`DetektCompatibility`** — objet pur `supports(javaVersion)` (majeur ≤ 22) ;
+  `LintConventionsPlugin` ne code plus `startsWith("25")`. 6 UT.
+| 2
+| 🟡 À FAIRE (sur feu vert)
+
+| CNV-15.3
+| **Alignement BOM de test `0.0.126`** — toml + fallback + `WorkspaceBomTest` ;
+  release `0.0.13` (Central + Portal), rollout 133 builds, audit strict 0,
+  catalogue/BOM `0.0.127`.
+| 4
+| 🟡 À FAIRE (sur feu vert)
+
+| CNV-15.4
+| **Maintenance CI actions** — `checkout` / `setup-java` / `setup-gradle` à
+  jour ; indépendante de la release.
+| 2
+| 🟡 À FAIRE
+|===
+
+'''
+
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]
@@ -724,7 +771,12 @@ contrats N0 ne sont pas adoptants).
 | CNV-14.3 | Adoption des 9 contrats N0 | 5 | ✅ S-030 (MEMPHIS 343)
 | CNV-14.4 | POM `publishing` nom/description paramétrable | 2 | ✅ S-030
 | CNV-14.5 | Rollout public 0.0.12 (113 pins) + audit strict | 4 | ✅ S-031
-| *Total* | | *167* |
+| CNV-15.0 | Cadrage durcissement | 1 | ✅ S-032
+| CNV-15.1 | Auto-publication `publishing` (9 N0) | 3 | 🟡 sur feu vert
+| CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | 2 | 🟡 sur feu vert
+| CNV-15.3 | Alignement BOM de test + release 0.0.13 | 4 | 🟡 sur feu vert
+| CNV-15.4 | Maintenance CI actions | 2 | 🟡 à faire
+| *Total* | | *179* |
 |===
 
 === Suivi hors EPIC (S-027)

@@ -123,3 +123,14 @@ pour les contrats N0.
   `conventions-plugin = "0.0.12"`), CI `41904522564` verte.
 * Reste (veille) : propagation repo1 `0.0.126` ; alignement optionnel du BOM
   de test `0.0.125` ; detekt JVM 25 ; CI privées (facturation Actions).
+
+== Session 032 (2026-11-04) — Veille + cadrage CNV-15
+
+*Tâche* : vérifier l'état post-CNV-14 et cadrer le prochain EPIC.
+*Statut* : ✅ veille + CNV-15.0 (cadrage) TERMINÉS.
+
+* Audit strict `OK: 133 builds at 0.0.12` ; BOM/catalog `0.0.126` propagé.
+* CI publiques rolloutées vertes ; privés bloqués facturation (préexistant).
+* CNV-15 cadré : auto-publication, `DetektCompatibility`, alignement BOM,
+  maintenance CI — implémentation conditionnée au feu vert (release 0.0.13).
+* Aucun code modifié, aucune release.
