@@ -59,7 +59,7 @@ garde detekt future-proof et l'alignement BOM, puis release `0.0.13` + rollout.
 
 `.github/workflows/test.yml` : `actions/checkout@v4` → **`v5`**,
 `actions/setup-java@v4` → **`v5`** ; `gradle/actions/setup-gradle@v4`
-conservé. Aucun impact sur le code du plugin ; preuve = CI du commit.
+conservé. Aucun impact sur le code du plugin ; **CI `41930286354` ✅**.
 
 == 4. Preuves
 
@@ -72,6 +72,7 @@ conservé. Aucun impact sur le code du plugin ; preuve = CI du commit.
 | Central `0.0.13` | bundle `f2ad3ce0` PUBLISHED
 | Central `0.0.127` | bundle `d07a994f` PUBLISHED (repo1 200 ×2)
 | Rollout | 113 pins / 26 dépôts, 28/28 `assemble` VERTES
+| CI actions (US-4) | `41930286354` ✅ (checkout/setup-java v5)
 |===
 
 == 5. Reste
