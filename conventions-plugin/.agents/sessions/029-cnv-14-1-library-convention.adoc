@@ -101,7 +101,8 @@ le fixture épinglait **en dur `0.0.11`** (l'ancienne version publiée) alors qu
 le plugin sous test est désormais `0.0.12`. Correctif anti-drift : la version
 est **injectée par Gradle** (`systemProperty("conventions.version",
 version.toString())`, patron D5-RACE) et le fixture pin la version courante —
-plus de littéral à bumper. Commit correctif séparé (CI à re-prouver).
+plus de littéral à bumper. Commit correctif `eca8028` ; **CI verte
+`41882555660`** (`BUILD SUCCESSFUL`, FT 5/5 + BDD `@library` 5/5).
 
 == 4. Fichiers
 

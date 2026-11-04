@@ -25,9 +25,11 @@ borough).
 
 == Mission session 030
 
-1. **Preuve CI du commit S-029** — le run doit être vert (UT + FT TestKit +
-   BDD `@library`). Si rouge, corriger par compilation locale puis re-push
-   (jamais de test local).
+1. **Preuve CI S-029 : VERTE** — run `41882555660` (commit `eca8028`),
+   `BUILD SUCCESSFUL` : UT + FT TestKit (`LibraryConventionsFunctionalTest`
+   5/5) + BDD `@library` 5/5. Le run initial `41881374011` était rouge sur
+   `AdoptionAuditFunctionalTest` (fixture pinné `0.0.11`) ; correctif
+   anti-drift : version injectée par Gradle (`conventions.version`).
 2. **CNV-14.2 — release `0.0.12`** (Règle 2, accord toujours granted) :
    ordre DAG `CI verte → publishAggregationToCentralPortal → Plugin Portal →
    catalogue MEMPHIS `conventions-plugin = "0.0.12"`.

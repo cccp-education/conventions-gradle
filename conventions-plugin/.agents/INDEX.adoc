@@ -25,8 +25,10 @@ Preuves : 4 UT `TestDependenciesTest` + 5 FT TestKit
 `LibraryConventionsFunctionalTest` + 5 scénarios BDD `@library` ; gates
 locales `compileKotlin`/`compileTestKotlin`/`compileFunctionalTestKotlin`,
 `validatePlugins`, `assemble`, `publishToMavenLocal` VERTS (0.0.12, 8 plugins,
-signé). Publication Central/Portal **reportée** S-030 (sinon audit strict
-`Obsolete` sur 133 builds). Découverte : `detekt 1.23.8` incompatible JVM 25
+signé). **CI verte `41882555660`** (run initial `41881374011` rouge sur un
+fixture d'audit pinné `0.0.11`, corrigé par injection de version `eca8028`).
+Publication Central/Portal **reportée** S-030 (sinon audit strict `Obsolete`
+sur 133 builds). Découverte : `detekt 1.23.8` incompatible JVM 25
 (max 22), aucune 2.x sur Central → ktlint seul linter actif.
 Cadrage `.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc` ; rapport
 `.agents/sessions/029-cnv-14-1-library-convention.adoc`.

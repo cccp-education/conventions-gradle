@@ -693,6 +693,12 @@ BOM de test **0.0.125** ; version locale **0.0.12**. Preuves : 4 UT
 `compileFunctionalTestKotlin`, `validatePlugins`, `assemble`,
 `publishToMavenLocal` VERTS (8 plugins, signé GPG). Zéro test local.
 
-**Reste** : CI du commit, release `0.0.12` + catalogue MEMPHIS (CNV-14.2),
-adoption des 9 contrats N0 (CNV-14.3), POM nom/description (CNV-14.4).
+**CI** : le run initial `41881374011` est rouge sur
+`AdoptionAuditFunctionalTest` (fixture pinné `0.0.11` alors que le plugin est
+`0.0.12`) ; correctif anti-drift `eca8028` — version injectée par Gradle
+(`conventions.version`) — puis **CI verte `41882555660`** (UT + FT 5/5 +
+BDD `@library` 5/5, `BUILD SUCCESSFUL`).
+
+**Reste** : release `0.0.12` + catalogue MEMPHIS (CNV-14.2), adoption des
+9 contrats N0 (CNV-14.3), POM nom/description (CNV-14.4).
 Rapport `.agents/sessions/029-cnv-14-1-library-convention.adoc`.

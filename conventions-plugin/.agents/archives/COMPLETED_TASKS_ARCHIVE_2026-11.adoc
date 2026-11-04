@@ -90,5 +90,7 @@ pour les contrats N0.
 * BOM test `0.0.124 → 0.0.125` ; version locale `0.0.12`.
 * Preuves : 4 UT + 5 FT TestKit + 5 BDD `@library` ; gates locales VERTES
   (compiles, `validatePlugins`, `assemble`, `publishToMavenLocal`).
+* **CI verte `41882555660`** (run initial rouge `41881374011` sur un fixture
+  d'audit pinné `0.0.11`, corrigé par injection de version `eca8028`).
 * Reste : release `0.0.12` + catalogue (CNV-14.2), adoption N0 (CNV-14.3),
   POM nom/description (CNV-14.4).
