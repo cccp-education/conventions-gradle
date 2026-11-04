@@ -142,4 +142,47 @@ class PublishingConventionsFunctionalTest {
         assertTrue(pomContent.contains("<id>cheroliv</id>"), "POM should carry the cheroliv developer\n$pomContent")
         assertTrue(!pomContent.contains("cccp-education"), "POM should not carry the cccp developer\n$pomContent")
     }
+
+    // CNV-14.4 — the POM name/description are overridable from the DSL so the
+    // N0 contract modules can drop their duplicated `publishing { pom { ... } }`.
+    @Test
+    fun `plugin applies the pom name and description overrides`() {
+        settingsFile.writeText("rootProject.name = \"test-project-pom-metadata\"")
+        buildFile.writeText("""
+            plugins {
+                id("java-library")
+                id("education.cccp.build.publishing")
+            }
+
+            group = "com.example"
+            version = "1.0.0"
+
+            publishingConventions {
+                publicationType = "LIBRARY"
+                pomName = "Sample Contracts"
+                pomDescription = "N0 shared library — sample contracts"
+            }
+
+            publishing {
+                publications {
+                    register("maven", org.gradle.api.publish.maven.MavenPublication::class.java) {
+                        from(components["java"])
+                    }
+                }
+            }
+        """)
+
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("generatePomFileForMavenPublication")
+            .withPluginClasspath()
+            .build()
+
+        val pomContent = testProjectDir.resolve("build/publications/maven/pom-default.xml").readText()
+        assertTrue(pomContent.contains("<name>Sample Contracts</name>"), "POM should carry the project name\n$pomContent")
+        assertTrue(
+            pomContent.contains("<description>N0 shared library — sample contracts</description>"),
+            "POM should carry the project description\n$pomContent"
+        )
+    }
 }

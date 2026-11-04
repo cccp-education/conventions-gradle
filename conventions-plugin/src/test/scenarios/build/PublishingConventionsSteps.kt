@@ -233,6 +233,42 @@ class PublishingConventionsSteps : En {
             """)
         }
 
+        // ── CNV-14.4 — POM name/description overrides ────────────────────────
+        Given("a project applies the publishing plugin with POM name {string} and description {string}") { name: String, description: String ->
+            testProjectDir = createTempDir("publishing-pom-metadata-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project-pom-metadata\"")
+            testProjectDir.resolve("build.gradle.kts").writeText("""
+                plugins {
+                    id("java-library")
+                    id("education.cccp.build.publishing")
+                }
+                group = "com.example"
+                version = "1.0.0"
+
+                publishingConventions {
+                    publicationType = "LIBRARY"
+                    pomName = "$name"
+                    pomDescription = "$description"
+                }
+
+                $publicationBlock
+            """)
+        }
+
+        Then("the generated POM has project name {string}") { expected: String ->
+            generatePom()
+            assert(pomContent.contains("<name>$expected</name>")) {
+                "Expected project name <name>$expected</name> in POM\n$pomContent"
+            }
+        }
+
+        Then("the generated POM has project description {string}") { expected: String ->
+            generatePom()
+            assert(pomContent.contains("<description>$expected</description>")) {
+                "Expected project description <description>$expected</description> in POM\n$pomContent"
+            }
+        }
+
         // ── CNV-12.3 — publicationType default PLUGIN ────────────────────────
         Given("a project applies the publishing plugin with default publicationType") {
             testProjectDir = createTempDir("publishing-default-")

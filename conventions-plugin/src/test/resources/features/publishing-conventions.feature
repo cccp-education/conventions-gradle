@@ -55,3 +55,9 @@ Feature: Publishing Conventions
     And the generated POM has developer name "cheroliv"
     And the generated POM has license "Proprietary"
     And the generated POM has url "https://cheroliv.com"
+
+  # CNV-14.4 — POM name/description overrides (N0 contract modules)
+  Scenario: Publishing plugin applies POM name and description overrides
+    Given a project applies the publishing plugin with POM name "Sample Contracts" and description "N0 shared library — sample contracts"
+    Then the generated POM has project name "Sample Contracts"
+    And the generated POM has project description "N0 shared library — sample contracts"

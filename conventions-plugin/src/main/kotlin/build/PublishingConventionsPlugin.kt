@@ -37,6 +37,17 @@ open class PublishingConventionsExtension @Inject constructor() {
 
     /** Explicit SCM url override (highest precedence over gradlePlugin.vcsUrl). */
     var vcsUrl: String? = null
+
+    /**
+     * POM project name. `null` (default) preserves the historic behaviour:
+     * the consumer keeps its own `pom.name` (or Gradle's default). Set it to
+     * remove the per-module `publishing { pom { name.set(...) } }` block
+     * (CNV-14.4).
+     */
+    var pomName: String? = null
+
+    /** POM project description, same additive policy as [pomName]. */
+    var pomDescription: String? = null
 }
 
 class PublishingConventionsPlugin : Plugin<Project> {
@@ -78,6 +89,12 @@ class PublishingConventionsPlugin : Plugin<Project> {
         publication.pom(
             Action { pom: MavenPom ->
                 pom.url.set(website)
+                extension.pomName?.takeIf { it.isNotBlank() }?.let { name ->
+                    pom.name.set(name.trim())
+                }
+                extension.pomDescription?.takeIf { it.isNotBlank() }?.let { description ->
+                    pom.description.set(description.trim())
+                }
 
                 pom.developers(
                     Action { devs: MavenPomDeveloperSpec ->
