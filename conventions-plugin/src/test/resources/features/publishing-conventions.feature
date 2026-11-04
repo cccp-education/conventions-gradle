@@ -61,3 +61,8 @@ Feature: Publishing Conventions
     Given a project applies the publishing plugin with POM name "Sample Contracts" and description "N0 shared library — sample contracts"
     Then the generated POM has project name "Sample Contracts"
     And the generated POM has project description "N0 shared library — sample contracts"
+
+  # CNV-15.1 — opt-in auto-publication for the N0 contract modules
+  Scenario: Publishing plugin creates the maven publication when opted in
+    Given a project applies the publishing plugin with auto publication
+    Then the generated POM has project name "Auto Published Contracts"

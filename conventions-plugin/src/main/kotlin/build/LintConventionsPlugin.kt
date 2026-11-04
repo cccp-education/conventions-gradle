@@ -18,9 +18,9 @@ class LintConventionsPlugin : Plugin<Project> {
         val ktlint = project.extensions.getByType(KtlintExtension::class.java)
         ktlint.version.set("1.5.0")
 
-        val javaVersion = System.getProperty("java.version")
-        if (javaVersion != null && javaVersion.startsWith("25")) {
-            project.logger.warn("detekt 1.23.8 is incompatible with Java 25 — skipped. Upgrade to detekt 2.0+ when available.")
+        val javaVersion = System.getProperty("java.version") ?: ""
+        if (!DetektCompatibility.supports(javaVersion)) {
+            project.logger.warn(DetektCompatibility.diagnostic(javaVersion))
         } else {
             project.pluginManager.apply("io.gitlab.arturbosch.detekt")
             val detekt = project.extensions.getByType(io.gitlab.arturbosch.detekt.extensions.DetektExtension::class.java)

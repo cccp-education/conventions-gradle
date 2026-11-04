@@ -22,7 +22,7 @@ object WorkspaceBom {
     const val RESOURCE_PATH = "build/workspace-bom.properties"
 
     /** Last-resort fallback if the generated resource is missing. */
-    const val FALLBACK_VERSION = "0.0.125"
+    const val FALLBACK_VERSION = "0.0.126"
 
     /** The Maven coordinates `group:artifact:version` for a given [version]. */
     fun coordinates(version: String): String = "$GROUP:$ARTIFACT:$version"

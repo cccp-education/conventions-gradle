@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.12"
+version = "0.0.13"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25

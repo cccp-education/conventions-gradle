@@ -185,4 +185,60 @@ class PublishingConventionsFunctionalTest {
             "POM should carry the project description\n$pomContent"
         )
     }
+
+    // CNV-15.1 — opt-in auto-publication for the N0 contract modules.
+    @Test
+    fun `plugin creates the maven publication when opted in`() {
+        settingsFile.writeText("rootProject.name = \"test-project-auto-publish\"")
+        buildFile.writeText("""
+            plugins {
+                id("java-library")
+                id("education.cccp.build.publishing")
+            }
+
+            group = "com.example"
+            version = "1.0.0"
+
+            publishingConventions {
+                publicationType = "LIBRARY"
+                createMavenPublication = true
+                pomName = "Auto Published Contracts"
+            }
+        """)
+
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("generatePomFileForMavenPublication")
+            .withPluginClasspath()
+            .build()
+
+        val pomFile = testProjectDir.resolve("build/publications/maven/pom-default.xml")
+        assertTrue(pomFile.exists(), "The maven publication should be created at ${pomFile.absolutePath}")
+        assertTrue(pomFile.readText().contains("<name>Auto Published Contracts</name>"), pomFile.readText())
+    }
+
+    @Test
+    fun `plugin does not create a publication by default`() {
+        settingsFile.writeText("rootProject.name = \"test-project-no-auto-publish\"")
+        buildFile.writeText("""
+            plugins {
+                id("java-library")
+                id("education.cccp.build.publishing")
+            }
+
+            group = "com.example"
+            version = "1.0.0"
+        """)
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("tasks", "--all")
+            .withPluginClasspath()
+            .build()
+
+        assertTrue(
+            !result.output.contains("generatePomFileForMavenPublication"),
+            "No publication should be created by default\n${result.output}"
+        )
+    }
 }

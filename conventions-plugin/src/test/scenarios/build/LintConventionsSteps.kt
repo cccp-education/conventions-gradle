@@ -8,6 +8,7 @@ import java.io.File
 class LintConventionsSteps : En {
     private lateinit var testProjectDir: File
     private lateinit var taskListResult: BuildResult
+    private var detektJavaVersion: String = ""
 
     init {
         Given("a project applies the lint plugin") {
@@ -42,6 +43,18 @@ class LintConventionsSteps : En {
         }
 
         // ── CNV-10.5 — detekt branch coverage ────────────────────────────────
+        // ── CNV-15.2 — detekt JVM compatibility policy ──────────────────────
+        Given("the detekt Java version {string}") { version: String ->
+            detektJavaVersion = version
+        }
+
+        Then("detekt compatibility is {string}") { expected: String ->
+            val actual = DetektCompatibility.supports(detektJavaVersion).toString()
+            assert(actual == expected) {
+                "Expected detekt compatibility '$expected' for Java $detektJavaVersion but got '$actual'"
+            }
+        }
+
         Then("the plugin does not fail when detekt is conditionally applied") {
             testProjectDir.resolve("build.gradle.kts").writeText("""
                 plugins {

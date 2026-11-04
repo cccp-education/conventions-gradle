@@ -269,6 +269,28 @@ class PublishingConventionsSteps : En {
             }
         }
 
+        // ── CNV-15.1 — opt-in auto-publication ──────────────────────────────
+        Given("a project applies the publishing plugin with auto publication") {
+            testProjectDir = createTempDir("publishing-auto-")
+            testProjectDir.resolve("settings.gradle.kts").writeText("rootProject.name = \"test-project-auto\"")
+            testProjectDir.resolve("build.gradle.kts").writeText(
+                """
+                plugins {
+                    id("java-library")
+                    id("education.cccp.build.publishing")
+                }
+                group = "com.example"
+                version = "1.0.0"
+
+                publishingConventions {
+                    publicationType = "LIBRARY"
+                    createMavenPublication = true
+                    pomName = "Auto Published Contracts"
+                }
+                """.trimIndent()
+            )
+        }
+
         // ── CNV-12.3 — publicationType default PLUGIN ────────────────────────
         Given("a project applies the publishing plugin with default publicationType") {
             testProjectDir = createTempDir("publishing-default-")

@@ -48,6 +48,16 @@ open class PublishingConventionsExtension @Inject constructor() {
 
     /** POM project description, same additive policy as [pomName]. */
     var pomDescription: String? = null
+
+    /**
+     * When `true`, creates a `maven` publication from the `java` component if
+     * the consumer declared none. Default `false` (backward compatible).
+     *
+     * CNV-15.1 — this removes the last duplicated block of the N0 contract
+     * modules (`publishing { publications { create<MavenPublication>("maven") {
+     * from(components["java"]) } } }`).
+     */
+    var createMavenPublication: Boolean = false
 }
 
 class PublishingConventionsPlugin : Plugin<Project> {
@@ -68,6 +78,19 @@ class PublishingConventionsPlugin : Plugin<Project> {
 
     private fun configurePublishing(project: Project, extension: PublishingConventionsExtension) {
         val publishing = project.extensions.getByType(PublishingExtension::class.java)
+
+        if (extension.createMavenPublication) {
+            val existing = publishing.publications.withType(MavenPublication::class.java)
+            if (existing.isEmpty()) {
+                val javaComponent = project.components.findByName("java")
+                if (javaComponent != null) {
+                    publishing.publications.create("maven", MavenPublication::class.java) { publication ->
+                        publication.from(javaComponent)
+                    }
+                }
+            }
+        }
+
         publishing.publications.withType(MavenPublication::class.java).configureEach(
             Action { publication ->
                 configurePom(project, extension, publication)
