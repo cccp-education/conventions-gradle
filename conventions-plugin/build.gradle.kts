@@ -126,6 +126,9 @@ val functionalTestTask = tasks.register<Test>("functionalTest") {
     // truth = the version catalog) so the functional tests assert against the
     // resolved version instead of a hardcoded literal that can drift.
     systemProperty("conventions.workspaceBom.version", libs.versions.workspace.bom.get())
+    // The plugin version is injected too, so the adoption-audit fixture can pin
+    // the *current* version instead of a literal that drifts on every bump.
+    systemProperty("conventions.version", version.toString())
 }
 
 gradlePlugin.testSourceSets.add(functionalTest)

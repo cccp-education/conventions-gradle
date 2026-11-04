@@ -8,8 +8,9 @@ import kotlin.test.assertTrue
 
 /**
  * Functional tests for the cross-borough adoption audit. The expected
- * conventions version is the plugin under test (0.0.11); the literal here
- * tracks the release, like the other publication guards.
+ * conventions version is **injected by Gradle**
+ * (`conventions.version` system property, from the build's `version`), so the
+ * fixture can never drift from the plugin under test.
  */
 class AdoptionAuditFunctionalTest {
 
@@ -19,6 +20,10 @@ class AdoptionAuditFunctionalTest {
     private val buildFile: File get() = testProjectDir.resolve("build.gradle.kts")
     private val settingsFile: File get() = testProjectDir.resolve("settings.gradle.kts")
     private val workspace: File get() = testProjectDir.resolve("ws")
+
+    private val conventionsVersion: String
+        get() = System.getProperty("conventions.version")
+            ?: error("conventions.version system property is missing")
 
     private fun writeProject() {
         settingsFile.writeText("rootProject.name = \"test-project\"")
@@ -50,7 +55,7 @@ class AdoptionAuditFunctionalTest {
     @Test
     fun `audit reports an aligned workspace`() {
         writeProject()
-        writeWorkspacePin("0.0.11")
+        writeWorkspacePin(conventionsVersion)
 
         val result = runner("auditConventionsAdoption", "-PworkspaceRoot=${workspace.absolutePath}").build()
 

@@ -381,3 +381,8 @@ fallback) ; le garde anti-drift ressource ↔ fallback reste actif.
 **Preuve** : compilation locale uniquement (Local = Build, Tests = CI) ;
 `validatePlugins` + `assemble` + `publishToMavenLocal` VERT. Les 14 nouveaux
 tests sont prouvés par le run CI du commit poussé.
+
+**Correctif CI S-029** : `AdoptionAuditFunctionalTest` épinglait `0.0.11` en
+dur ; la version du plugin est désormais injectée par Gradle
+(`conventions.version`, build.gradle.kts → FT) et le fixture pin la version
+courante (anti-drift, patron D5-RACE).

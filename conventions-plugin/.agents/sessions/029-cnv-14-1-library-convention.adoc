@@ -93,6 +93,16 @@ Gates locales (Local = Build) :
 `validatePlugins` ✅, `assemble` ✅, `publishToMavenLocal` ✅ (0.0.12, 8 plugins,
 signé GPG). **Aucun test exécuté en local** — preuve = CI du commit poussé.
 
+=== CI run `41881374011` — 1 échec révélé, corrigé
+
+Les 5 FT `library` et les 5 scénarios BDD `@library` sont **PASSED**. Le seul
+échec est `AdoptionAuditFunctionalTest > audit reports an aligned workspace` :
+le fixture épinglait **en dur `0.0.11`** (l'ancienne version publiée) alors que
+le plugin sous test est désormais `0.0.12`. Correctif anti-drift : la version
+est **injectée par Gradle** (`systemProperty("conventions.version",
+version.toString())`, patron D5-RACE) et le fixture pin la version courante —
+plus de littéral à bumper. Commit correctif séparé (CI à re-prouver).
+
 == 4. Fichiers
 
 Créés :
