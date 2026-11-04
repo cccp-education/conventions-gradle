@@ -6,9 +6,30 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-04
-_session terminee_ : 028 — **veille post-CNV-13** : Plugin Portal propagé (`0.0.9`/`0.0.10`/`0.0.11`), audit strict OK, EPIC CNV-13 clos
-_session en cours_ : 028 — clôture de session (boroughs altérés commités/poussés)
-_Prochaine session_ : 029 — veille : catalogue MEMPHIS `0.0.125`, CI privées (facturation Actions), puis cadrage `CB-I18N-SAFETY` (codebase) / `DOC-OUT-3/4` (document)
+_session terminee_ : 029 — **CNV-14.1** : convention `library` (contrats N0) + cadrage CNV-14 ; BOM test `0.0.125` ; `JvmProjectConventions` factorisé ; 4 UT + 5 FT + 5 BDD ; version locale `0.0.12`
+_session en cours_ : 029 — clôture de session (commit/push)
+_Prochaine session_ : 030 — preuve CI, release `0.0.12` (Central + Portal), catalogue MEMPHIS, puis adoption des 9 contrats N0 (CNV-14.2/14.3/14.4)
+
+_Note 2026-11-04 (S-029)_ : **CNV-14 cadré + US-14.1 livrée**. La veille a
+montré que la duplication restante est celle des **9 contrats N0** de
+`workspace-bom` (≈ 1 047 lignes, `lint` seul). Nouveau plugin
+`education.cccp.build.library` (`java-library` + `maven-publish` +
+`org.jetbrains.kotlin.jvm`, **sans** `java-gradle-plugin` ni publishing) :
+Java 25, jars sources/javadoc, toolchain, repositories, cache, tâches `Test`,
+deps JUnit + BOM et gardes `verifyGradleWrapper`/`auditConventionsAdoption`.
+La configuration JVM commune à `gradle-plugin` et `library` est factorisée
+dans `JvmProjectConventions` (seuil « à 2 », S-195) — `gradle-plugin` délègue
+à comportement constant. `TestDependencies.targetConfiguration` extrait (pure,
+gap CNV-10.7). BOM de test bumpé **0.0.125** (dernière release MEMPHIS).
+Preuves : 4 UT `TestDependenciesTest` + 5 FT TestKit
+`LibraryConventionsFunctionalTest` + 5 scénarios BDD `@library` ; gates
+locales `compileKotlin`/`compileTestKotlin`/`compileFunctionalTestKotlin`,
+`validatePlugins`, `assemble`, `publishToMavenLocal` VERTS (0.0.12, 8 plugins,
+signé). Publication Central/Portal **reportée** S-030 (sinon audit strict
+`Obsolete` sur 133 builds). Découverte : `detekt 1.23.8` incompatible JVM 25
+(max 22), aucune 2.x sur Central → ktlint seul linter actif.
+Cadrage `.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc` ; rapport
+`.agents/sessions/029-cnv-14-1-library-convention.adoc`.
 
 _Note 2026-11-03 (S-027)_ : **CNV-13.5 + clôture de l'EPIC CNV-13**.
 (1) **Kover** : `KoverConventionsExtension` gagne `includedSourceSets`,
@@ -213,6 +234,8 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 025 | 2026-11-03 | release/CI | Rollout 0.0.9 (19 dépôts, 67 refs) + **Gradle 9.8.2 centralisé** : source unique, `verifyGradleWrapper` câblée à `check` (gradle-plugin + lint), action composite, 101/101 wrappers ; **0.0.10** Central (bundle 6a3b7052). | 10/10
   | 026 | 2026-11-03 | adoption | Privés MVP0 (training, workspace pilot/provision, waiter, quizz) sur 0.0.10 ; JDK 24→25 (4 workflows), codebase 0.0.11→0.0.18 (quizz/waiter), validatePlugins Gradle 9.8 corrigé → **CI quizz verte**. | 10/10
   | 027 | 2026-11-03 | outillage | CNV-13.5 — kover options (capsule/codex/plantuml) + `AdoptionAudit`/`auditConventionsAdoption` ; **0.0.11** Central (bundle 19e4ee75) ; rollout 28 dépôts ; **audit strict OK (133 builds)**. **EPIC CNV-13 TERMINÉ.** | 10/10
+  | 028 | 2026-11-04 | veille | Propagation Plugin Portal `0.0.9`/`0.0.10`/`0.0.11` confirmée, catalogue MEMPHIS `0.0.11`, audit strict OK — EPIC CNV-13 définitivement clos. | 10/10
+  | 029 | 2026-11-04 | dev/cadrage | **CNV-14 cadré + US-14.1** — convention `library` (contrats N0) + `JvmProjectConventions` factorisé + BOM test 0.0.125 ; 4 UT + 5 FT + 5 BDD `@library` ; version locale 0.0.12 (publication reportée). | 10/10
   |===
 
 '''
@@ -242,6 +265,11 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-13.4 | Privés MVP0 : training → workspace → waiter → quizz | ✅ TERMINE (S-026) | P1
 | CNV-13.5 | Kover options + garde cross-borough d'adoption + arbitrage kover/logback | ✅ TERMINE (S-027) | P1
 | CNV-13.6 | Gradle 9.8.2 centralisé + `verifyGradleWrapper` (check) + action CI + 101/101 wrappers | ✅ TERMINE (S-025) | P0
+| CNV-14.0 | Cadrage convention `library` + mesure de la duplication des contrats N0 | ✅ TERMINE (S-029) | P0
+| CNV-14.1 | Convention `library` (`java-library` + kotlin + JUnit + gardes) + `JvmProjectConventions` | ✅ TERMINE (S-029) | P0
+| CNV-14.2 | Release `0.0.12` (Central + Portal) + catalogue MEMPHIS | 🟡 À FAIRE (S-030) | P0
+| CNV-14.3 | Adoption des 9 contrats N0 (`workspace-bom`) | 🟡 À FAIRE (session MEMPHIS) | P1
+| CNV-14.4 | `publishingConventions { pomName; pomDescription }` | 🟡 À FAIRE (S-031) | P2
 |===
 
 '''

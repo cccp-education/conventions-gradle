@@ -1,0 +1,127 @@
+= Session 029 — CNV-14.1 Convention `library` + veille post-CNV-13
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 029
+:date: 2026-11-04
+:type: dev / cadrage
+:epic: CNV-14 (US-1)
+
+== Mission
+
+`PROMPT_REPRISE` S-029 : veille post-CNV-13 (catalogue MEMPHIS `0.0.125`,
+CI privées, propagation) + **cadrage du prochain EPIC**. L'audit d'ouverture a
+montré que la seule duplication structurante restante est celle des **contrats
+N0** de `workspace-bom` (9 modules, `lint` seul, ≈ 1 047 lignes). L'EPIC
+**CNV-14 « convention `library` »** est cadré et sa première US est livrée.
+
+== 1. Veille
+
+[cols="3,2,5"]
+|===
+| Point | Verdict | Preuve
+
+| `workspace-bom 0.0.125` | ✅ publié | `repo1` HTTP 200 ; `<latest>0.0.125</latest>`
+| `conventions-plugin 0.0.11` | ✅ publié | `repo1` HTTP 200
+| Plugin Portal `0.0.9/0.0.10/0.0.11` | ✅ propagé | vérifié S-028 (200 après redirection)
+| Audit d'adoption (baseline) | ✅ `OK: 133 build file(s) at 0.0.11` | `./gradlew auditConventionsAdoption` depuis `training-plugin`
+| CI dépôts privés | ⏸ non démarrée | limite de facturation GitHub Actions (hors borough)
+|===
+
+**Découverte** : `detekt 1.23.8` (dernière release, 2025-02) refuse de tourner
+sous JVM 25 (`Invalid value (25) passed to --jvm-target`, max `22`) ; sur les
+9 modules N0 il est **réellement désactivé** par la garde `LintConventionsPlugin`
+(ktlint reste actif). Aucune release detekt 2.x n'existe sur Maven Central —
+limitation documentée, pas de correctif possible côté conventions aujourd'hui.
+
+== 2. Cadrage CNV-14
+
+`.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc` — mesure des 9 contrats N0
+(`agent-contracts` 211 l. → `ocr-contracts` 78 l.), décisions :
+
+. nouveau plugin `education.cccp.build.library` (`java-library` +
+  `maven-publish` + `org.jetbrains.kotlin.jvm`, **pas** `java-gradle-plugin`) ;
+. factorisation `JvmProjectConventions` à **2 consommateurs** (S-195) ;
+. frontière `publishing` conservée (POM/signing hors `library`) ;
+. adoption des 9 modules = session MEMPHIS (un seul sessionneur par borough) ;
+. `Local = Build, Tests = CI`.
+
+US : 14.0 cadrage ✅, 14.1 plugin ✅ (cette session), 14.2 release 0.0.12 🟡,
+14.3 adoption N0 🟡, 14.4 POM nom/description paramétrable 🟡.
+
+== 3. US-14.1 — implémentation (baby-step DDD/TDD/BDD)
+
+=== RED
+
+* `WorkspaceBomTest` : l'assertion de fallback passe `0.0.124` → `0.0.125`
+  (échec attendu tant que la constante et le catalogue ne sont pas alignés) ;
+* `LibraryConventionsFunctionalTest` / `library-conventions.feature` écrits
+  **avant** le plugin (compilation/runtime rouges : plugin id inconnu) ;
+* `TestDependenciesTest` : routage `junit-platform-launcher` →
+  `testRuntimeOnly`, autres → `testImplementation` (référence absente).
+
+=== GREEN
+
+* `gradle/libs.versions.toml` + `WorkspaceBom.FALLBACK_VERSION` → `0.0.125` ;
+* `TestDependencies.targetConfiguration(...)` extrait (pure, CNV-10.7) ;
+* `JvmProjectConventions` (objet interne) : Java 25, Kotlin toolchain 25,
+  repositories, build cache, tâches `Test`, deps JUnit + BOM, gardes wrapper +
+  audit — **comportement de `gradle-plugin` inchangé** (délégation) ;
+* `TestTaskOptions` : snapshot **lazy** des options, évalué à la réalisation de
+  chaque tâche `Test` — une lecture eager au moment de `apply()` ignorerait
+  silencieusement les overrides DSL (régression gardée par le scénario BDD
+  `maxHeapSize`) ;
+* `LibraryConventionsPlugin` + `LibraryConventionsExtension`
+  (`enableDynamicAgentLoading`, `maxHeapSize`, `parallelExecution`) ;
+* enregistrement `gradlePlugin { register("library") }` ;
+* version locale **0.0.12** (publication Central/Portal reportée S-030).
+
+=== REFACTOR / preuves
+
+[cols="2,1,4"]
+|===
+| Niveau | Nombre | Couverture
+
+| Unit | 4 | `TestDependenciesTest` (routage + fallbacks = coordonnées valides)
+| Functional (TestKit) | 5 | `LibraryConventionsFunctionalTest` (plugins, jars, deps, gardes, `check` vert sans wrapper)
+| Cucumber BDD | 5 | `library-conventions.feature` `@library` (plugins, Java 25 + jars, deps test, gardes sans `java-gradle-plugin`, override `maxHeapSize`)
+|===
+
+Gates locales (Local = Build) :
+`compileKotlin` ✅, `compileTestKotlin` ✅, `compileFunctionalTestKotlin` ✅,
+`validatePlugins` ✅, `assemble` ✅, `publishToMavenLocal` ✅ (0.0.12, 8 plugins,
+signé GPG). **Aucun test exécuté en local** — preuve = CI du commit poussé.
+
+== 4. Fichiers
+
+Créés :
+* `src/main/kotlin/build/JvmProjectConventions.kt`
+* `src/main/kotlin/build/TestTaskOptions.kt`
+* `src/main/kotlin/build/LibraryConventionsPlugin.kt`
+* `src/main/kotlin/build/LibraryConventionsExtension.kt`
+* `src/test/kotlin/build/TestDependenciesTest.kt`
+* `src/functionalTest/kotlin/build/LibraryConventionsFunctionalTest.kt`
+* `src/test/resources/features/library-conventions.feature`
+* `src/test/scenarios/build/LibraryConventionsSteps.kt`
+* `.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc`
+
+Modifiés :
+* `GradlePluginConventionsPlugin.kt` (délègue à `JvmProjectConventions`)
+* `TestDependencies.kt` (routage pur)
+* `WorkspaceBom.kt`, `gradle/libs.versions.toml` (BOM 0.0.125)
+* `WorkspaceBomTest.kt`
+* `build.gradle.kts` (plugin `library`, version 0.0.12)
+* gouvernance : `AGENT.adoc`, `BACKLOG.adoc`, `TODO.adoc`, `INDEX.adoc`,
+  `PROMPT_REPRISE.adoc`, `SESSIONS_HISTORY.adoc`, archive 2026-11,
+  `TEST_COVERAGE_ANALYSIS.adoc`
+
+== 5. Suivant (S-030)
+
+1. Push + **CI verte** (preuve TestKit/BDD du nouveau plugin).
+2. **CNV-14.2** release `0.0.12` (Central + Portal) puis catalogue MEMPHIS.
+3. **CNV-14.3** adoption des 9 contrats N0 (session MEMPHIS) — `library` +
+   `publishing` + `lint` (+ `cucumber`), puis `auditConventionsAdoption -Pstrict`
+   doit repasser au vert.
+4. **CNV-14.4** `publishingConventions { pomName; pomDescription }` pour
+   supprimer les 9 blocs `publishing { pom { name/description } }`.

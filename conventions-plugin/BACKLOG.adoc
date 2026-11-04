@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-03 — S-027 ✅ **EPIC CNV-13 TERMINÉ** (0.0.11, audit strict OK sur 133 builds)
+_Derniere mise a jour_ : 2026-11-04 — S-029 🟡 **CNV-14 ouvert** (convention `library` pour les contrats N0 ; US-14.1 ✅, release/adoption à venir)
 
 '''
 
@@ -607,6 +607,85 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 
 '''
 
+== 🟡 EN COURS — CNV-14 : convention `library` pour les contrats N0
+
+_Vision : supprimer la dernière duplication structurante du workspace — les
+9 contrats N0 de `workspace-bom` (≈ 1 047 lignes, `lint` seul) — via une
+convention de **bibliothèque** distincte de `gradle-plugin`._
+
+*Priorité* : P0 (suite naturelle de CNV-13 : l'adoption est mesurée mais les
+contrats N0 ne sont pas adoptants).
+*Charge estimée* : ~15 pts.
+*Dépend de* : CNV-13 (terminé).
+*Cadrage* : `.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc`.
+
+=== Contexte mesuré (S-029)
+
+[cols="2,1,1,5"]
+|===
+| Module N0 | Lignes | Conventions | Duplication
+
+| `agent-contracts` | 211 | `lint` | plugins, toolchain, repositories, deps JUnit, `cucumberTest`, test logging, POM, signing
+| `codebase-contracts` | 86 | `lint` | idem (sans cucumber)
+| `i18n-contracts` | 130 | `lint` | idem + `cucumberTest` + relocation XML
+| `llm-pool-contracts` | 85 | `lint` | idem
+| `ocr-contracts` | 78 | `lint` | idem
+| `opencode-session-contracts` | 125 | `lint` | idem + cucumber
+| `pipeline-contracts` | 125 | `lint` | idem + cucumber
+| `plantuml-contracts` | 80 | `lint` | idem
+| `runtime-contracts` | 127 | `lint` | idem + cucumber
+|===
+
+=== User Stories
+
+[cols="1,5,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| CNV-14.0
+| Cadrage + mesure + décisions (plugin séparé, factorisation à 2, frontière publishing)
+| 1
+| ✅ S-029
+
+| CNV-14.1
+| **Convention `library`** — `LibraryConventionsPlugin` + extension
+  (`enableDynamicAgentLoading`, `maxHeapSize`, `parallelExecution`) +
+  `JvmProjectConventions` factorisé (2 consommateurs) + enregistrement
+  `gradlePlugin { register("library") }`. Preuves : 4 UT + 5 FT TestKit +
+  5 BDD `@library`. Bump local **0.0.12** + BOM test **0.0.125**.
+| 5
+| ✅ S-029
+
+| CNV-14.2
+| **Release `0.0.12`** — CI verte → Central (nmcp) → Plugin Portal →
+  catalogue MEMPHIS `conventions-plugin = "0.0.12"`
+| 2
+| 🟡 À FAIRE (S-030)
+
+| CNV-14.3
+| **Adoption des 9 contrats N0** (`workspace-bom`) — `library` + `publishing`
+  + `lint` (+ `cucumber` là où une suite BDD existe) ; `check` N0 vert
+| 5
+| 🟡 À FAIRE (session MEMPHIS)
+
+| CNV-14.4
+| **POM `publishing` paramétrable** — `publishingConventions { pomName;
+  pomDescription }` (additif) pour supprimer les 9 blocs `publishing { pom { } }`
+| 2
+| 🟡 À FAIRE (S-031)
+|===
+
+=== Definition of Done
+
+* Les 9 contrats N0 appliquent `library` ; zéro bloc `java {}`, `kotlin {
+  jvmToolchain }`, `repositories {}` ni configuration `Test` dupliqué.
+* `conventions-plugin 0.0.12` publié (Central + Portal) et piné par le
+  catalogue MEMPHIS.
+* `auditConventionsAdoption -Pstrict=true` vert après rollout.
+* CI verte sur `conventions-gradle` et `workspace-bom`.
+
+'''
+
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]
@@ -631,7 +710,12 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
 | CNV-13.6 | Gradle 9.8.2 centralisé + garde CI + 101/101 wrappers (0.0.10) | 6 | ✅ S-025
 | CNV-13.4 | Privés MVP0 (training, workspace, waiter, quizz) | 8 | ✅ S-026
 | CNV-13.5 | Kover options + garde cross-borough + arbitrage kover/logback | 4 | ✅ S-027
-| *Total* | | *148* |
+| CNV-14.0 | Cadrage convention `library` + mesure des contrats N0 | 1 | ✅ S-029
+| CNV-14.1 | Convention `library` + `JvmProjectConventions` | 5 | ✅ S-029
+| CNV-14.2 | Release 0.0.12 (Central + Portal) + catalogue MEMPHIS | 2 | 🟡 S-030
+| CNV-14.3 | Adoption des 9 contrats N0 | 5 | 🟡 MEMPHIS
+| CNV-14.4 | POM `publishing` nom/description paramétrable | 2 | 🟡 S-031
+| *Total* | | *163* |
 |===
 
 === Suivi hors EPIC (S-027)
@@ -644,3 +728,14 @@ Gates : `check` VERT (test **53/0**, functionalTest **26/0**, cucumberTest **47/
   vert connu : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).
 * `training` : `codebase-plugin 0.0.17` (compile VERT) — alignement 0.0.18
   optionnel.
+
+=== Suivi hors EPIC (S-029)
+
+* **`workspace-bom 0.0.125`** : publié (repo1 HTTP 200, `<latest>0.0.125</latest>`)
+  — le BOM de test injecté par `TestDependencies` est bumpé `0.0.124 → 0.0.125`.
+* **CI dépôts privés** (`payment`, `quizz`) : toujours non démarrées
+  (facturation GitHub Actions, hors borough).
+* **`detekt`** : `1.23.8` est la dernière release (2025-02) et refuse JVM 25
+  (`--jvm-target` max `22`) ; la branche detekt est donc désactivée sur tout le
+  workspace, ktlint reste le linter actif. Aucune release 2.x sur Central —
+  limitation documentée, pas de correctif possible côté conventions.

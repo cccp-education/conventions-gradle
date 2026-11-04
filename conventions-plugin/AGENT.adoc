@@ -143,16 +143,23 @@ conventions-gradle/                # RACINE GIT
 
 === Contrats de Build (Precompiled Script Plugins)
 
-Le plugin expose 4 convention plugins sous le group `education.cccp.build` :
+Le plugin expose 8 convention plugins sous le group `education.cccp.build` :
 
 [cols="2,5"]
 |===
 | Plugin ID | Role
 | `education.cccp.build.gradle-plugin` | `java-gradle-plugin` + `kotlin-jvm` + test JUnit + `withSourcesJar` + `withJavadocJar`
+| `education.cccp.build.library` | **N0 contracts** — `java-library` + `kotlin-jvm` + test JUnit + jars sources/javadoc + gardes (pas de `java-gradle-plugin`, pas de publishing)
 | `education.cccp.build.publishing` | POM Maven Central (developers, scm, licenses) + signing conditionnel + relocation
 | `education.cccp.build.functional-test` | Source set `functionalTest` + GradleTestKit + task registration
 | `education.cccp.build.cucumber` | Source set features/scenarios + cucumberTask + exclusion jupiter
+| `education.cccp.build.kover` | Kover coverage (seuil, source sets, rapports HTML/XML)
+| `education.cccp.build.lint` | ktlint + detekt conditionnel (detekt inactif sous JVM 25)
+| `education.cccp.build.logback-exclusion` | Exclusion logback-classic (contournement JRuby/asciidoctor)
 |===
+
+La configuration JVM commune à `gradle-plugin` et `library` vit dans
+`JvmProjectConventions` (factorisation à 2 consommateurs, S-195).
 
 === Ordre de Surcharge Configuration (extension API)
 

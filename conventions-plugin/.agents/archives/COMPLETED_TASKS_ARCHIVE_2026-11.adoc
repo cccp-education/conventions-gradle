@@ -73,3 +73,22 @@ kover/logback.
 * Catalogue MEMPHIS pinné `0.0.11` (publication 0.0.125 côté MEMPHIS).
 * Audit d'adoption strict : 0 finding.
 * Reste hors borough : facturation GitHub Actions (CI privées).
+
+== Session 029 (2026-11-04) — CNV-14.0 + CNV-14.1
+
+*Tâche* : veille post-CNV-13, cadrage du prochain EPIC et convention `library`
+pour les contrats N0.
+*Statut* : ✅ US-14.0 + US-14.1 TERMINÉES (EPIC CNV-14 🟡).
+
+* Veille : `workspace-bom 0.0.125` publié, `conventions-plugin 0.0.11` publié,
+  Portal propagé, audit `OK: 133 builds @ 0.0.11` ; CI privées bloquées
+  (facturation Actions) ; `detekt` incompatible JVM 25 (max 22).
+* Cadrage CNV-14 : 9 contrats N0 ≈ 1 047 lignes, plugin `library` séparé,
+  factorisation `JvmProjectConventions` (2 consommateurs), adoption MEMPHIS.
+* `LibraryConventionsPlugin` + extension + enregistrement ; `gradle-plugin`
+  délègue (iso-comportement) ; `TestDependencies.targetConfiguration` pur.
+* BOM test `0.0.124 → 0.0.125` ; version locale `0.0.12`.
+* Preuves : 4 UT + 5 FT TestKit + 5 BDD `@library` ; gates locales VERTES
+  (compiles, `validatePlugins`, `assemble`, `publishToMavenLocal`).
+* Reste : release `0.0.12` + catalogue (CNV-14.2), adoption N0 (CNV-14.3),
+  POM nom/description (CNV-14.4).

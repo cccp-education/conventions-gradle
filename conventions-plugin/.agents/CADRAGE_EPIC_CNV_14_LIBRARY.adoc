@@ -1,0 +1,114 @@
+= Cadrage — EPIC CNV-14 « Convention `library` pour les contrats N0 »
+:toc: left
+:toclevels: 3
+:icons: font
+:sectnums:
+
+_Créé_ : 2026-11-04 (session 029) — mission « cadrage du prochain EPIC » du
+`PROMPT_REPRISE` S-029.
+_Statut_ : 🟡 EN COURS (US-1 livrée S-029 ; release + adoption à planifier).
+
+== 1. Contexte — ce que CNV-13 n'a pas couvert
+
+L'EPIC CNV-13 a rendu l'adoption **mesurable** (`auditConventionsAdoption`) et
+a migré les builds **consommateurs** (publics et privés MVP0). Il reste un
+angle mort : les **contrats N0** de `workspace-bom` (MEMPHIS) n'appliquent que
+la convention `lint`. Mesure S-029 :
+
+[cols="2,1,1,4"]
+|===
+| Module N0 | Lignes | Conventions | Duplication restante
+
+| `agent-contracts` | 211 | `lint` | plugins java-library/kotlin/maven-publish, toolchain 25, repositories, deps JUnit, `cucumberTest`, test logging, POM, signing
+| `codebase-contracts` | 86 | `lint` | idem (sans cucumber)
+| `i18n-contracts` | 130 | `lint` | idem + `cucumberTest` + relocation XML
+| `llm-pool-contracts` | 85 | `lint` | idem
+| `ocr-contracts` | 78 | `lint` | idem
+| `opencode-session-contracts` | 125 | `lint` | idem + cucumber
+| `pipeline-contracts` | 125 | `lint` | idem + cucumber
+| `plantuml-contracts` | 80 | `lint` | idem
+| `runtime-contracts` | 127 | `lint` | idem + cucumber
+|===
+
+Total ≈ **1 047 lignes** dont une grande partie est structurellement identique
+(bloc `plugins`, `group`/`version`, `jvmToolchain(25)`, `repositories`,
+configuration `Test`, `java { withSourcesJab/withJavadocJar }`, POM, signing).
+La convention `gradle-plugin` ne convient pas : elle applique
+`java-gradle-plugin` (métadonnées de plugin) alors qu'un contrat N0 est une
+**bibliothèque** consommée par `implementation(...)`.
+
+== 2. Décisions d'architecture
+
+. **Nouveau plugin `education.cccp.build.library`** — applique `java-library`,
+   `maven-publish` et `org.jetbrains.kotlin.jvm` ; configure Java 25,
+   `withSourcesJar`/`withJavadocJar`, toolchain 25, repositories, cache de
+   build, tâches `Test` (JUnit Platform + logging), dépendances de test
+   (`workspace-bom` + JUnit) et les gardes (`verifyGradleWrapper`,
+   `auditConventionsAdoption`).
+. **Factorisation à 2 consommateurs** (amendement S-195) — la configuration
+   JVM commune à `gradle-plugin` et `library` est extraite dans
+   `JvmProjectConventions` (objet interne, non contractuel). Aucun changement
+   de comportement pour `gradle-plugin`.
+. **Frontière publishing** — `library` **n'inclut pas** le POM/signing : le
+   consommateur applique `education.cccp.build.publishing` (identité
+   paramétrable CNV-13.1). Un contrat N0 peut ainsi publier sous Apache-2.0
+   sans dupliquer le bloc `publishing { }` / `signing { }`.
+. **Aucun contrat N0 n'est modifié dans cette session** — l'adoption appartient
+   à la session MEMPHIS (un seul sessionneur par borough). CNV-14 est donc
+   découpée : US-1 (plugin + preuves) ici, US-2 (release 0.0.12) et US-3
+   (adoption des 9 modules N0) ensuite.
+. **Local = Build, Tests = CI** — compilation + `validatePlugins` + `assemble`
+   en local ; `test`/`functionalTest`/`cucumberTest` exclusivement en CI après
+   push.
+
+== 3. User Stories
+
+[cols="1,5,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| CNV-14.0
+| Cadrage EPIC + mesure de la duplication des contrats N0
+| 1
+| ✅ S-029
+
+| CNV-14.1
+| **Convention `library`** — `LibraryConventionsPlugin` + extension
+  (`enableDynamicAgentLoading`, `maxHeapSize`, `parallelExecution`) +
+  factorisation `JvmProjectConventions` (2 consommateurs) + enregistrement
+  `gradlePlugin { register("library") }`. Preuves : UT (routage des deps JUnit),
+  FT TestKit (plugins appliqués, Java 25, jars, deps test, gardes),
+  BDD `@library`. Bump local **0.0.12** (publication reportée).
+| 5
+| ✅ S-029
+
+| CNV-14.2
+| **Release 0.0.12** — ordre DAG : CI verte → Central (nmcp) → Plugin Portal →
+  catalogue MEMPHIS `conventions-plugin = "0.0.12"`
+| 2
+| 🟡 À FAIRE (S-030)
+
+| CNV-14.3
+| **Adoption des 9 contrats N0** — `workspace-bom` : remplacer les blocs
+  java/kotlin/test/POM dupliqués par `library` + `publishing` + `lint`
+  (+ `cucumber` là où une suite BDD existe) ; `check` N0 vert en CI
+| 5
+| 🟡 À FAIRE (S-030/S-031, session MEMPHIS)
+
+| CNV-14.4
+| **POM `publishing` paramétrable (nom/description)** — `publishingConventions
+  { pomName; pomDescription }` pour supprimer les 9 blocs `publishing { pom { } }`
+  (additif, backward compatible)
+| 2
+| 🟡 À FAIRE (S-031)
+|===
+
+== 4. Definition of Done (EPIC)
+
+* Les 9 contrats N0 appliquent `library` (+ `publishing`/`lint`/`cucumber`) ;
+  zéro bloc `java { }`, `kotlin { jvmToolchain }`, `repositories { }`,
+  configuration `Test` dupliqué.
+* `conventions-plugin 0.0.12` publié (Central + Portal) et piné par le
+  catalogue MEMPHIS.
+* `auditConventionsAdoption -Pstrict=true` reste vert après le rollout.
+* Aucune régression : CI verte sur `conventions-gradle` et `workspace-bom`.

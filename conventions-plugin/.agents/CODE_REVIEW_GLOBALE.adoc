@@ -356,7 +356,8 @@ via son BOM, ou documenter les versions recommandees dans un `libs.versions.toml
 | `publishing` | ~40 | ~15 | ~600
 | `functional-test` | ~25 | ~12 | ~300
 | `cucumber` | ~20 | ~8 | ~160
-| *Total* | *~120* | | *~1760*
+| `library` (CNV-14) | ~45 | 9 | ~405 |
+| *Total* | *~120* | | *~1760* |
 |===
 
 == Architecture Decision Records

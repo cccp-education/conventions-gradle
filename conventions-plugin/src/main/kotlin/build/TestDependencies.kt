@@ -79,13 +79,26 @@ object TestDependencies {
         }
     }
 
+    /** The only JUnit dependency that must live in `testRuntimeOnly`. */
+    const val RUNTIME_ONLY_KEY = "junit-platform-launcher"
+
+    /**
+     * Pure routing policy of the JUnit test dependencies: the launcher is a
+     * runtime concern, every other dependency is an implementation concern.
+     * Extracted so the policy is unit-testable without a Gradle build
+     * (CNV-10.7 gap).
+     */
+    fun targetConfiguration(
+        key: String,
+        implementationConfig: String,
+        runtimeOnlyConfig: String,
+    ): String = if (key == RUNTIME_ONLY_KEY) runtimeOnlyConfig else implementationConfig
+
     fun addJunitDeps(project: Project, implementationConfig: String, runtimeOnlyConfig: String) {
         val libs = libs(project)
         JUNIT_FALLBACKS.forEach { (key, fallback) ->
-            when (key) {
-                "junit-platform-launcher" -> addFromCatalog(project, libs, runtimeOnlyConfig, key, fallback)
-                else -> addFromCatalog(project, libs, implementationConfig, key, fallback)
-            }
+            val config = targetConfiguration(key, implementationConfig, runtimeOnlyConfig)
+            addFromCatalog(project, libs, config, key, fallback)
         }
     }
 }

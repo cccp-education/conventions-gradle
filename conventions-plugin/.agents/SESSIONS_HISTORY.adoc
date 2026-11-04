@@ -660,3 +660,39 @@ reste **OK** (0 finding) après les changements document de la session.
 MEMPHIS `0.0.125`.
 
 **EPIC CNV-13 définitivement clos.**
+
+'''
+
+== Session 029 — 2026-11-04
+Type:: dev / cadrage
+Code:: CNV-14.0 + CNV-14.1
+Titre:: Convention `library` pour les contrats N0 + cadrage CNV-14
+Score:: 10/10
+Duree:: 1 session
+
+**Veille** : `workspace-bom 0.0.125` publié (repo1 200), `conventions-plugin
+0.0.11` publié, Plugin Portal propagé, audit baseline `OK: 133 builds @ 0.0.11`.
+CI privées toujours bloquées par la facturation Actions. Découverte :
+`detekt 1.23.8` (dernière release) refuse JVM 25 (max 22) → ktlint seul linter
+actif.
+
+**Cadrage CNV-14** : la duplication restante est celle des **9 contrats N0** de
+`workspace-bom` (≈ 1 047 lignes, `lint` seul). Décisions : plugin séparé
+`education.cccp.build.library` (`java-library` + `maven-publish` + kotlin,
+**sans** `java-gradle-plugin` ni publishing), factorisation à 2 consommateurs
+(`JvmProjectConventions`), adoption N0 par la session MEMPHIS, Local = Build /
+Tests = CI. Doc `.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc`.
+
+**US-14.1** : `LibraryConventionsPlugin` + `LibraryConventionsExtension`
+(`enableDynamicAgentLoading`, `maxHeapSize`, `parallelExecution`) ;
+`JvmProjectConventions` extrait de `GradlePluginConventionsPlugin` (délégation
+iso-comportement) ; `TestDependencies.targetConfiguration` pur (gap CNV-10.7) ;
+BOM de test **0.0.125** ; version locale **0.0.12**. Preuves : 4 UT
+`TestDependenciesTest` + 5 FT TestKit `LibraryConventionsFunctionalTest` +
+5 BDD `@library`. Gates locales : `compileKotlin`/`compileTestKotlin`/
+`compileFunctionalTestKotlin`, `validatePlugins`, `assemble`,
+`publishToMavenLocal` VERTS (8 plugins, signé GPG). Zéro test local.
+
+**Reste** : CI du commit, release `0.0.12` + catalogue MEMPHIS (CNV-14.2),
+adoption des 9 contrats N0 (CNV-14.3), POM nom/description (CNV-14.4).
+Rapport `.agents/sessions/029-cnv-14-1-library-convention.adoc`.

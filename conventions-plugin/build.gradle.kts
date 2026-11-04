@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "education.cccp.build"
-version = "0.0.11"
+version = "0.0.12"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -186,6 +186,13 @@ gradlePlugin {
             description = "Configures Cucumber BDD test source sets (features/scenarios), cucumberTest task with JUnit Platform exclusion, test filter, check.dependsOn, and optional multi-task CucumberTaskSpec support"
             implementationClass = "build.CucumberConventionsPlugin"
             tags = listOf("cccp", "conventions", "cucumber", "bdd")
+        }
+        register("library") {
+            id = "education.cccp.build.library"
+            displayName = "Library Conventions"
+            description = "Configures N0 contract libraries: java-library, kotlin-jvm, Java 25, sources/javadoc jars, JUnit test config, workspace guards (no java-gradle-plugin, no publishing)"
+            implementationClass = "build.LibraryConventionsPlugin"
+            tags = listOf("cccp", "conventions", "library", "contracts", "n0")
         }
         register("logbackExclusion") {
             id = "education.cccp.build.logback-exclusion"

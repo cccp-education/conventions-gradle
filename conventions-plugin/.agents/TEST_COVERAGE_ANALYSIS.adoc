@@ -1,6 +1,6 @@
 = Test Coverage Analysis — Conventions Gradle Plugin
 :description: Suivi de la couverture de tests
-:session: 000
+:session: 029
 
 == Session 000
 
@@ -351,3 +351,33 @@ aucun test ni sonde jetable en local. Baseline **CI verte** (run `36354012604`) 
 `WorkspaceBomTest` 7 UT, `WorkspaceBomFunctionalTest` 2 FT,
 `CucumberConventionsFunctionalTest` 2 FT (opt-in `check`), scénarios BDD
 `additionalTasks`.
+
+== Session 029 — CNV-14.1 convention `library`
+
+**Unit (4)** — `TestDependenciesTest` (gap CNV-10.7) :
+- `launcher routes to the runtime only configuration`
+- `every other junit dependency routes to the implementation configuration`
+- `cucumber fallbacks are valid maven coordinates`
+- `junit fallbacks are valid maven coordinates`
+
+**Functional GradleTestKit (5)** — `LibraryConventionsFunctionalTest` :
+- `plugin applies without error` (compileJava + compileKotlin)
+- `plugin registers sources and javadoc jars`
+- `plugin injects the workspace bom and junit test dependencies`
+- `plugin registers the workspace guards` (`verifyGradleWrapper`,
+  `auditConventionsAdoption`)
+- `plugin does not require a Gradle wrapper to keep check green`
+
+**Cucumber BDD (5 scénarios)** — `library-conventions.feature` `@library` :
+- JVM library plugins (java-library + kotlin-jvm)
+- Java 25 source/target + sources/javadoc jars
+- deps test (`workspace-bom` + junit-jupiter)
+- gardes + absence de `java-gradle-plugin` (`validatePlugins` absent)
+- override `maxHeapSize` via DSL
+
+**Non tests** : `WorkspaceBomTest` aligné `0.0.124 → 0.0.125` (assertion de
+fallback) ; le garde anti-drift ressource ↔ fallback reste actif.
+
+**Preuve** : compilation locale uniquement (Local = Build, Tests = CI) ;
+`validatePlugins` + `assemble` + `publishToMavenLocal` VERT. Les 14 nouveaux
+tests sont prouvés par le run CI du commit poussé.
