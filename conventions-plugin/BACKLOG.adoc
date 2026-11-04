@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-029 🟡 **CNV-14 ouvert** (convention `library` pour les contrats N0 ; US-14.1 ✅, release/adoption à venir)
+_Derniere mise a jour_ : 2026-11-04 — S-030 ✅ **CNV-14.2/14.3/14.4** (release `0.0.12` Central+Portal, POM nom/description, 9 contrats N0 adoptés) ; reste **CNV-14.5 rollout `0.0.12`**
 
 '''
 
@@ -660,18 +660,25 @@ contrats N0 ne sont pas adoptants).
 | **Release `0.0.12`** — CI verte → Central (nmcp) → Plugin Portal →
   catalogue MEMPHIS `conventions-plugin = "0.0.12"`
 | 2
-| 🟡 À FAIRE (S-030)
+| ✅ S-030 (`b1623b20`, Portal publié, 8 markers repo1 200)
 
 | CNV-14.3
 | **Adoption des 9 contrats N0** (`workspace-bom`) — `library` + `publishing`
-  + `lint` (+ `cucumber` là où une suite BDD existe) ; `check` N0 vert
+  + `lint` ; `−596/+142` lignes ; 3 tests fantômes Cucumber câblés ; CI
+  workspace-bom `41888846264` ✅
 | 5
-| 🟡 À FAIRE (session MEMPHIS)
+| ✅ S-030 (session MEMPHIS 343)
 
 | CNV-14.4
 | **POM `publishing` paramétrable** — `publishingConventions { pomName;
   pomDescription }` (additif) pour supprimer les 9 blocs `publishing { pom { } }`
 | 2
+| ✅ S-030
+
+| CNV-14.5
+| **Rollout public `0.0.12`** — 113 pins `0.0.11` sur ~28 dépôts, compiles par
+  dépôt, puis `auditConventionsAdoption -Pstrict=true` → 0 finding
+| 4
 | 🟡 À FAIRE (S-031)
 |===
 
@@ -712,10 +719,11 @@ contrats N0 ne sont pas adoptants).
 | CNV-13.5 | Kover options + garde cross-borough + arbitrage kover/logback | 4 | ✅ S-027
 | CNV-14.0 | Cadrage convention `library` + mesure des contrats N0 | 1 | ✅ S-029
 | CNV-14.1 | Convention `library` + `JvmProjectConventions` | 5 | ✅ S-029
-| CNV-14.2 | Release 0.0.12 (Central + Portal) + catalogue MEMPHIS | 2 | 🟡 S-030
-| CNV-14.3 | Adoption des 9 contrats N0 | 5 | 🟡 MEMPHIS
-| CNV-14.4 | POM `publishing` nom/description paramétrable | 2 | 🟡 S-031
-| *Total* | | *163* |
+| CNV-14.2 | Release 0.0.12 (Central + Portal) + catalogue MEMPHIS | 2 | ✅ S-030
+| CNV-14.3 | Adoption des 9 contrats N0 | 5 | ✅ S-030 (MEMPHIS 343)
+| CNV-14.4 | POM `publishing` nom/description paramétrable | 2 | ✅ S-030
+| CNV-14.5 | Rollout public 0.0.12 (113 pins) + audit strict | 4 | 🟡 S-031
+| *Total* | | *167* |
 |===
 
 === Suivi hors EPIC (S-027)

@@ -94,3 +94,19 @@ pour les contrats N0.
   d'audit pinné `0.0.11`, corrigé par injection de version `eca8028`).
 * Reste : release `0.0.12` + catalogue (CNV-14.2), adoption N0 (CNV-14.3),
   POM nom/description (CNV-14.4).
+
+== Session 030 (2026-11-04) — CNV-14.2/14.3/14.4
+
+*Tâche* : release `0.0.12`, POM nom/description, adoption des 9 contrats N0.
+*Statut* : ✅ US-14.2/14.3/14.4 TERMINÉES (reste CNV-14.5 rollout).
+
+* **US-14.4** : `publishingConventions { pomName; pomDescription }` (additif) ;
+  FT + BDD ; CI `41884922934` verte.
+* **US-14.2** : Central bundle `b1623b20` (AUTOMATIC) + Plugin Portal ;
+  propagation repo1 200 (`conventions-plugin` + 8 markers).
+* **US-14.3** (MEMPHIS 343) : 9 contrats N0 sur `library` + `publishing` +
+  `lint` 0.0.12, **−596/+142 l.**, 3 tests fantômes Cucumber câblés ;
+  CI workspace-bom `41888846264` ✅.
+* **Audit** : 113 pins `0.0.11 < 0.0.12` (rollout attendu), 0 sur les 9 N0.
+* Reste : CNV-14.5 rollout public `0.0.12` + audit strict ; BOM/catalog
+  MEMPHIS `0.0.126`.

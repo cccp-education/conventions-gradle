@@ -1,51 +1,47 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 030
+:session: 031
 :date: 2026-11-04
-:epic: CNV-14 « convention `library` pour les contrats N0 » — release + adoption
+:epic: CNV-14 — rollout public 0.0.12 (CNV-14.5) + catalogue BOM 0.0.126
 :max-lines: 70
 
 == Contexte hérité
 
-**CNV-14 cadré + US-14.1 livrée** (S-029) : nouveau plugin
-`education.cccp.build.library` (`java-library` + `maven-publish` +
-`org.jetbrains.kotlin.jvm`, Java 25, jars sources/javadoc, toolchain, deps
-JUnit + `workspace-bom`, gardes `verifyGradleWrapper` /
-`auditConventionsAdoption`), **sans** `java-gradle-plugin` ni publishing.
-Config JVM factorisée dans `JvmProjectConventions` (2 consommateurs, S-195) ;
-`gradle-plugin` délègue à comportement constant. BOM de test bumpé
-`0.0.124 → 0.0.125`. Version locale **0.0.12** (publiee seulement en
-`mavenLocal`). 4 UT + 5 FT + 5 BDD `@library`.
-Rapport : `.agents/sessions/029-cnv-14-1-library-convention.adoc`.
-Cadrage : `.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc`.
+**CNV-14 US-1→US-4 TERMINÉES** (S-029/S-030) :
+* convention `education.cccp.build.library` (`java-library` + kotlin,
+  sans `java-gradle-plugin` ni publishing) ; `JvmProjectConventions`
+  factorisé ; `TestTaskOptions` lazy ;
+* `publishingConventions { pomName; pomDescription; … }` (US-14.4) ;
+* **release `0.0.12` publiée** : Central bundle
+  `b1623b20-e3fb-42a8-9f06-3d3746f46b29`, Portal publié, propagation repo1
+  200 pour `conventions-plugin` + les **8 markers** ;
+* **adoption des 9 contrats N0** (session MEMPHIS 343) : `library` +
+  `publishing` + `lint` `0.0.12`, **−596/+142 lignes**, 3 tests fantômes
+  Cucumber câblés ; CI workspace-bom `41888846264` ✅ ;
+* BOM de test bumpé `0.0.125` ; catalogue source MEMPHIS
+  `conventions-plugin = "0.0.12"` (garde réalignée).
 
-**EPIC CNV-13 TERMINÉ** (0.0.11, Central `19e4ee75`, Portal propagé, audit
-strict `OK: 133 builds`). Veille S-029 : `workspace-bom 0.0.125` publié
-(repo1 200) ; CI privées toujours bloquées par la facturation Actions (hors
-borough).
+Rapports : `.agents/sessions/029-cnv-14-1-library-convention.adoc`,
+`.agents/sessions/030-cnv-14-release-adoption.adoc`,
+`workspace-bom/.agents/sessions/343-cnv-14-n0-adoption.adoc`.
 
-== Mission session 030
+== Mission session 031
 
-1. **Preuve CI S-029 : VERTE** — run `41882555660` (commit `eca8028`),
-   `BUILD SUCCESSFUL` : UT + FT TestKit (`LibraryConventionsFunctionalTest`
-   5/5) + BDD `@library` 5/5. Le run initial `41881374011` était rouge sur
-   `AdoptionAuditFunctionalTest` (fixture pinné `0.0.11`) ; correctif
-   anti-drift : version injectée par Gradle (`conventions.version`).
-2. **CNV-14.2 — release `0.0.12`** (Règle 2, accord toujours granted) :
-   ordre DAG `CI verte → publishAggregationToCentralPortal → Plugin Portal →
-   catalogue MEMPHIS `conventions-plugin = "0.0.12"`.
-   Vérifier repo1 POM + markers des **8** plugins, puis propagation Portal.
-3. **CNV-14.3 — adoption des 9 contrats N0** (`workspace-bom`, session MEMPHIS,
-   un seul sessionneur) : remplacer les blocs `plugins` java-library/
-   kotlin/maven-publish, `jvmToolchain`, `repositories`, `Test`, `java {}`,
-   POM/signing par `library` + `publishing` + `lint` (+ `cucumber` là où une
-   suite BDD existe). `check` N0 vert dans la matrice CI `n0-contracts`.
-4. **CNV-14.4** — `publishingConventions { pomName; pomDescription }`
-   (additif) pour supprimer les 9 blocs `publishing { pom { name/description } }`.
-5. **Veille** : après release + adoption, relancer
-   `./gradlew auditConventionsAdoption -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true`
-   depuis un build consommateur (ex. `training-plugin`). Tant que 0.0.12 n'est
-   pas publié **et** rollouté, l'audit attend `0.0.11` (ne pas le lancer en
-   strict avec la version locale 0.0.12).
+1. **CNV-14.5 — rollout public `0.0.12`** (seul travail restant de l'EPIC).
+   Audit mesuré S-030 : **113 pins `0.0.11 < 0.0.12`** sur ~28 dépôts
+   (payment-scaffold, publics, video-kernel/youtube-auth, etc.).
+   Procédure : motif vérifié `education.cccp.build.*` version `0.0.11` →
+   `0.0.12` (zéro faux positif), `compileKotlin`/`compileTestKotlin` ou
+   `assemble` par dépôt, commit + push **par dépôt** ; exclure les fichiers
+   d'une session parallèle (`git status`, `--only`).
+2. **Vérification finale** : `./gradlew auditConventionsAdoption
+   -PworkspaceRoot=/home/cheroliv/workspace -Pstrict=true` depuis un
+   consommateur 0.0.12 (ex. `codebase-contracts`) → **0 finding attendu**.
+3. **MEMPHIS** : release **BOM/catalog `0.0.126`** (le catalogue source
+   porte déjà `conventions-plugin = "0.0.12"` ; la publication relève de la
+   session MEMPHIS) ; puis optionnellement aligner le BOM de test injecté
+   (`0.0.125`) sur cette release.
+4. **Veille** : Portal + repo1 `0.0.12` déjà vérifiés ; re-vérifier après tout
+   nouveau bump cross-borough.
 
 == Workflow
 
@@ -57,18 +53,18 @@ borough).
 - **Tests = CI** : aucun `test`/`check`/`cucumberTest`/`functionalTest` en
   local. Preuve = run CI vert du commit.
 - Un seul sessionneur par borough ; `git commit --only` si une session
-  parallèle a des fichiers stagés. Ne pas modifier `workspace-bom` depuis
-  conventions (session MEMPHIS).
+  parallèle a des fichiers stagés.
 
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **8 plugins**, version locale **0.0.12**, Java 25, Kotlin 2.4.10,
-  Gradle **9.8.2** (source unique `[versions].gradle`)
+- **8 plugins**, version **0.0.12** (Central `b1623b20` ; Portal publié),
+  Java 25, Kotlin 2.4.10, Gradle **9.8.2** (source unique `[versions].gradle`)
 - CI : `.github/workflows/test.yml` (JDK 25, wrapper vérifié, `check`)
-- Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp AUTOMATIC)
+- Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp
+  AUTOMATIC) + `publishPlugins` (Portal)
 - Anti-drift : BOM test `0.0.125` (`WorkspaceBom`) ; Gradle `9.8.2`
-  (`GradleWrapperVersion`) ; wrapper vérifié par l'action composite ;
-  adoption auditée (`AdoptionAudit`)
-- Limitation connue : `detekt 1.23.8` incompatible JVM 25 (max 22) → ktlint est
-  le seul linter actif ; pas de release detekt 2.x sur Central (veille S-029).
+  (`GradleWrapperVersion`) ; version du plugin injectée dans le FT d'audit
+  (`conventions.version`) ; adoption auditée (`AdoptionAudit`)
+- Limitation connue : `detekt 1.23.8` incompatible JVM 25 (max 22) → ktlint
+  seul linter actif ; pas de release detekt 2.x sur Central.

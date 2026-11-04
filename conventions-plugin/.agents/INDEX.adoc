@@ -6,9 +6,24 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-04
-_session terminee_ : 029 — **CNV-14.1** : convention `library` (contrats N0) + cadrage CNV-14 ; BOM test `0.0.125` ; `JvmProjectConventions` factorisé ; 4 UT + 5 FT + 5 BDD ; version locale `0.0.12`
-_session en cours_ : 029 — clôture de session (commit/push)
-_Prochaine session_ : 030 — preuve CI, release `0.0.12` (Central + Portal), catalogue MEMPHIS, puis adoption des 9 contrats N0 (CNV-14.2/14.3/14.4)
+_session terminee_ : 030 — **CNV-14.2/14.3/14.4** : release `0.0.12` (Central `b1623b20` + Portal), POM nom/description, adoption des 9 contrats N0 (−596/+142 l., 3 tests fantômes câblés, CI `41888846264` verte)
+_session en cours_ : 030 — clôture de session (commit/push)
+_Prochaine session_ : 031 — **CNV-14.5 rollout public `0.0.12`** (113 pins, ~28 dépôts) puis audit strict à 0 finding ; release BOM/catalog MEMPHIS `0.0.126`
+
+_Note 2026-11-04 (S-030)_ : **release `0.0.12` + adoption N0**. (1) **US-14.4** :
+`publishingConventions { pomName; pomDescription }` (additif) — FT + BDD,
+CI `41884922934` verte. (2) **Release** : `publishToMavenLocal`, Central
+bundle `b1623b20-e3fb-42a8-9f06-3d3746f46b29` (AUTOMATIC), `publishPlugins`
+(Portal) ; propagation repo1 **200** pour `conventions-plugin` + les **8
+markers**. (3) **CNV-14.3** (session MEMPHIS 343) : les 9 contrats N0 adoptent
+`library` + `publishing` + `lint` `0.0.12` — **−596/+142 lignes**, POM via
+`pomName`/`pomDescription`, catalogue source `conventions-plugin = "0.0.12"`,
+garde réalignée ; **3 tests fantômes** (`opencode-session`, `pipeline`,
+`runtime` : `cucumberTest` non câblé à `check`) corrigés et exécutés ;
+CI workspace-bom `41888846264` ✅. (4) **Audit** non strict : **113 pins
+`0.0.11 < 0.0.12`** sur les autres consommateurs (rollout attendu), 0 finding
+sur les 9 N0. Rapport `.agents/sessions/030-cnv-14-release-adoption.adoc` +
+`workspace-bom/.agents/sessions/343-cnv-14-n0-adoption.adoc`.
 
 _Note 2026-11-04 (S-029)_ : **CNV-14 cadré + US-14.1 livrée**. La veille a
 montré que la duplication restante est celle des **9 contrats N0** de
@@ -238,6 +253,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 027 | 2026-11-03 | outillage | CNV-13.5 — kover options (capsule/codex/plantuml) + `AdoptionAudit`/`auditConventionsAdoption` ; **0.0.11** Central (bundle 19e4ee75) ; rollout 28 dépôts ; **audit strict OK (133 builds)**. **EPIC CNV-13 TERMINÉ.** | 10/10
   | 028 | 2026-11-04 | veille | Propagation Plugin Portal `0.0.9`/`0.0.10`/`0.0.11` confirmée, catalogue MEMPHIS `0.0.11`, audit strict OK — EPIC CNV-13 définitivement clos. | 10/10
   | 029 | 2026-11-04 | dev/cadrage | **CNV-14 cadré + US-14.1** — convention `library` (contrats N0) + `JvmProjectConventions` factorisé + BOM test 0.0.125 ; 4 UT + 5 FT + 5 BDD `@library` ; version locale 0.0.12 (publication reportée). | 10/10
+  | 030 | 2026-11-04 | release/adoption | **CNV-14.2/14.3/14.4** — `0.0.12` Central (`b1623b20`) + Portal ; POM `pomName`/`pomDescription` ; 9 contrats N0 adoptés (−596/+142 l., 3 tests fantômes câblés) ; CI `41888846264` verte ; audit 113 pins à rollouter. | 10/10
   |===
 
 '''
@@ -269,9 +285,10 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-13.6 | Gradle 9.8.2 centralisé + `verifyGradleWrapper` (check) + action CI + 101/101 wrappers | ✅ TERMINE (S-025) | P0
 | CNV-14.0 | Cadrage convention `library` + mesure de la duplication des contrats N0 | ✅ TERMINE (S-029) | P0
 | CNV-14.1 | Convention `library` (`java-library` + kotlin + JUnit + gardes) + `JvmProjectConventions` | ✅ TERMINE (S-029) | P0
-| CNV-14.2 | Release `0.0.12` (Central + Portal) + catalogue MEMPHIS | 🟡 À FAIRE (S-030) | P0
-| CNV-14.3 | Adoption des 9 contrats N0 (`workspace-bom`) | 🟡 À FAIRE (session MEMPHIS) | P1
-| CNV-14.4 | `publishingConventions { pomName; pomDescription }` | 🟡 À FAIRE (S-031) | P2
+| CNV-14.2 | Release `0.0.12` (Central + Portal) + catalogue MEMPHIS | ✅ TERMINE (S-030) | P0
+| CNV-14.3 | Adoption des 9 contrats N0 (`workspace-bom`) | ✅ TERMINE (S-030 / MEMPHIS 343) | P1
+| CNV-14.4 | `publishingConventions { pomName; pomDescription }` | ✅ TERMINE (S-030) | P2
+| CNV-14.5 | Rollout public `0.0.12` (113 pins, ~28 dépôts) + audit strict | 🟡 À FAIRE (S-031) | P0
 |===
 
 '''

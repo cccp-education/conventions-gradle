@@ -6,7 +6,8 @@
 
 _Créé_ : 2026-11-04 (session 029) — mission « cadrage du prochain EPIC » du
 `PROMPT_REPRISE` S-029.
-_Statut_ : 🟡 EN COURS (US-1 livrée S-029 ; release + adoption à planifier).
+_Statut_ : 🟡 EN COURS — US-1→US-4 livrées (S-029/S-030) ; reste le rollout
+public `0.0.12` (CNV-14.5).
 
 == 1. Contexte — ce que CNV-13 n'a pas couvert
 
@@ -86,20 +87,26 @@ La convention `gradle-plugin` ne convient pas : elle applique
 | **Release 0.0.12** — ordre DAG : CI verte → Central (nmcp) → Plugin Portal →
   catalogue MEMPHIS `conventions-plugin = "0.0.12"`
 | 2
-| 🟡 À FAIRE (S-030)
+| ✅ S-030 (bundle `b1623b20`, Portal publié, 8 markers repo1 200)
 
 | CNV-14.3
 | **Adoption des 9 contrats N0** — `workspace-bom` : remplacer les blocs
-  java/kotlin/test/POM dupliqués par `library` + `publishing` + `lint`
-  (+ `cucumber` là où une suite BDD existe) ; `check` N0 vert en CI
+  java/kotlin/test/POM dupliqués par `library` + `publishing` + `lint` ;
+  `check` N0 vert en CI
 | 5
-| 🟡 À FAIRE (S-030/S-031, session MEMPHIS)
+| ✅ S-030 (MEMPHIS 343, −596/+142 l., CI `41888846264`)
 
 | CNV-14.4
 | **POM `publishing` paramétrable (nom/description)** — `publishingConventions
   { pomName; pomDescription }` pour supprimer les 9 blocs `publishing { pom { } }`
   (additif, backward compatible)
 | 2
+| ✅ S-030
+
+| CNV-14.5
+| **Rollout public 0.0.12** — 113 pins `0.0.11` sur ~28 dépôts, compiles par
+  dépôt, puis audit strict à 0 finding
+| 4
 | 🟡 À FAIRE (S-031)
 |===
 

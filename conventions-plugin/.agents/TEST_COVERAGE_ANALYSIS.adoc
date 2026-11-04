@@ -386,3 +386,18 @@ tests sont prouvés par le run CI du commit poussé.
 dur ; la version du plugin est désormais injectée par Gradle
 (`conventions.version`, build.gradle.kts → FT) et le fixture pin la version
 courante (anti-drift, patron D5-RACE).
+
+== Session 030 — CNV-14.2/14.3/14.4
+
+**US-14.4 (POM nom/description)** :
+- FT `PublishingConventionsFunctionalTest > plugin applies the pom name and
+  description overrides` ;
+- BDD `publishing-conventions.feature` : scénario « applies POM name and
+  description overrides » + 2 steps uniques ;
+- gates locales : `compileKotlin`/`compileTestKotlin`/
+  `compileFunctionalTestKotlin`/`validatePlugins`/`assemble` VERTES ;
+  preuve CI `41884922934` ✅.
+
+**US-14.3 (adoption N0, côté workspace-bom)** : pas de test modifié ; 3 tests
+fantômes **câblés** (`opencode-session`, `pipeline`, `runtime` :
+`check.dependsOn(cucumberTest)`) et exécutés en CI (`41888846264` ✅).

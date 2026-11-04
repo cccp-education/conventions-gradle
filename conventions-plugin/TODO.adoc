@@ -22,30 +22,35 @@
     (S-027).
 - ADR-001 réécrit (plugin binaire publié) + ADR-003 (adoption par lots).
 
-== En cours — CNV-14 « convention `library` » (S-029)
+== En cours — CNV-14 « convention `library` » (S-029→S-030)
 
 - [x] **CNV-14.0** cadrage + mesure des 9 contrats N0
   (`.agents/CADRAGE_EPIC_CNV_14_LIBRARY.adoc`).
 - [x] **CNV-14.1** `LibraryConventionsPlugin` + `LibraryConventionsExtension`
-  + `JvmProjectConventions` factorisé (2 consommateurs) ; `gradlePlugin {
-  register("library") }` ; **4 UT + 5 FT + 5 BDD `@library`** ; BOM test
-  `0.0.125` ; version locale `0.0.12` (`publishToMavenLocal` OK, Central/Portal
-  reportés).
-- [ ] **CNV-14.2** release `0.0.12` (Central + Portal) + catalogue MEMPHIS.
-- [ ] **CNV-14.3** adoption des 9 contrats N0 (`workspace-bom`, session MEMPHIS).
-- [ ] **CNV-14.4** `publishingConventions { pomName; pomDescription }`.
+  + `JvmProjectConventions` factorisé (2 consommateurs) ; `TestTaskOptions`
+  lazy ; **4 UT + 5 FT + 5 BDD `@library`** ; BOM test `0.0.125`.
+- [x] **CNV-14.4** `publishingConventions { pomName; pomDescription }`
+  (additif) ; FT + BDD ; CI `41884922934` verte.
+- [x] **CNV-14.2** release **`0.0.12`** (Central bundle `b1623b20`, Portal
+  publié, 8 markers repo1 200) ; catalogue source MEMPHIS aligné.
+- [x] **CNV-14.3** adoption des 9 contrats N0 (session MEMPHIS 343) :
+  **−596/+142 lignes**, POM via `pomName`/`pomDescription`, 3 tests fantômes
+  Cucumber câblés ; CI workspace-bom `41888846264` ✅.
+- [ ] **CNV-14.5** rollout public `0.0.12` : **113 pins** `0.0.11` sur ~28
+  dépôts, compiles par dépôt, puis `auditConventionsAdoption -Pstrict=true`
+  → 0 finding.
 
 == Veille (hors EPIC)
 
-- **Plugin Portal ✅** : propagation `0.0.9`/`0.0.10`/`0.0.11` **confirmée**
-  (`plugins.gradle.org/m2` → 200 après redirection, vérifié S-028).
-- **Catalogue MEMPHIS** : pin `conventions-plugin = "0.0.11"` posé ; release
-  `0.0.125` publiée. Après release `0.0.12`, aligner le catalogue.
+- **Plugin Portal ✅** / **Central ✅** : `0.0.12` publié et propagé
+  (`conventions-plugin` + 8 markers repo1 200).
+- **Catalogue MEMPHIS** : source `conventions-plugin = "0.0.12"` ; release
+  **BOM/catalog `0.0.126`** à publier par la session MEMPHIS.
 - **CI dépôts privés** (`payment`, `quizz`) : job non démarré (limite de
   facturation GitHub Actions) → re-déclencher après rétablissement. Derniers
   verts : `payment` 110/110 (S-024), `quizz` `41741295431` (S-026).
 - **`detekt` sous JVM 25** : `1.23.8` refuse `--jvm-target 25` (max `22`),
   aucune release 2.x sur Central → branche detekt désactivée, ktlint seul
   linter actif. À réévaluer à la sortie de detekt 2.x.
-- Optionnel : aligner `training` sur `codebase-plugin 0.0.18` (0.0.17 compile
-  VERT aujourd'hui).
+- Optionnel : aligner le BOM de test injecté (`0.0.125`) sur la prochaine
+  release BOM.

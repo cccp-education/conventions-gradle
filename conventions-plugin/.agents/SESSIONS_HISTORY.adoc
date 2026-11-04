@@ -702,3 +702,35 @@ BDD `@library` 5/5, `BUILD SUCCESSFUL`).
 **Reste** : release `0.0.12` + catalogue MEMPHIS (CNV-14.2), adoption des
 9 contrats N0 (CNV-14.3), POM nom/description (CNV-14.4).
 Rapport `.agents/sessions/029-cnv-14-1-library-convention.adoc`.
+
+'''
+
+== Session 030 — 2026-11-04
+Type:: release / adoption cross-borough
+Code:: CNV-14.2 + CNV-14.3 + CNV-14.4
+Titre:: Release `0.0.12` + adoption des 9 contrats N0 + POM nom/description
+Score:: 10/10
+Duree:: 1 session (+ session MEMPHIS 343)
+
+**US-14.4** : `publishingConventions { pomName; pomDescription }` (additif),
+FT + BDD, CI `41884922934` verte.
+
+**US-14.2** : `publishToMavenLocal`, **Central** bundle
+`b1623b20-e3fb-42a8-9f06-3d3746f46b29` (AUTOMATIC), **Plugin Portal** publié ;
+propagation repo1 **200** pour `conventions-plugin` + les **8 markers**
+(`gradle-plugin`, `library`, `publishing`, `functional-test`, `cucumber`,
+`kover`, `lint`, `logback-exclusion`).
+
+**US-14.3** (session MEMPHIS 343) : les 9 contrats N0 adoptent `library` +
+`publishing` + `lint` `0.0.12` — **−596/+142 lignes** ; POM via
+`pomName`/`pomDescription` ; catalogue source `conventions-plugin = "0.0.12"` ;
+**3 tests fantômes** Cucumber (`opencode-session`, `pipeline`, `runtime`)
+câblés à `check` et désormais exécutés. CI workspace-bom `41888846264` ✅.
+
+**Audit** non strict : **113 pins `0.0.11 < 0.0.12`** sur les autres
+consommateurs (rollout attendu), 0 finding sur les 9 N0.
+
+**Reste** : **CNV-14.5 rollout public `0.0.12`** (113 pins / ~28 dépôts) +
+audit strict à 0 ; release BOM/catalog MEMPHIS `0.0.126`.
+Rapports `.agents/sessions/030-cnv-14-release-adoption.adoc` +
+`workspace-bom/.agents/sessions/343-cnv-14-n0-adoption.adoc`.

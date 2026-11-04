@@ -1,0 +1,92 @@
+= Session 030 — CNV-14.2/14.3/14.4 : release 0.0.12 + adoption N0
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 030
+:date: 2026-11-04
+:type: release / cross-borough adoption
+:epic: CNV-14 (US-2, US-3, US-4)
+
+== Mission
+
+Suite du `PROMPT_REPRISE` S-030, continuation autorisée par le pilote
+(« enchaine, permissions pilote/clôture/commit/push/bump ») :
+release `0.0.12`, catalogue MEMPHIS, adoption des 9 contrats N0, POM
+nom/description.
+
+== 1. US-14.4 — POM nom/description paramétrable
+
+`PublishingConventionsExtension` gagne `pomName` / `pomDescription`
+(`null` = comportement historique, additif). `configurePom` les pose quand
+ils sont non-blancs, ce qui supprime les 9 blocs
+`publishing { pom { name.set(...); description.set(...) } }` des contrats N0.
+
+Preuves :
+* FT `PublishingConventionsFunctionalTest > plugin applies the pom name and
+  description overrides` ;
+* BDD `publishing-conventions.feature` scénario « applies POM name and
+  description overrides » (+ 2 steps uniques) ;
+* gates locales `compileKotlin`/`compileTestKotlin`/
+  `compileFunctionalTestKotlin`/`validatePlugins`/`assemble` VERTES ;
+* CI `41884922934` ✅ (commit `209bcd0`).
+
+== 2. CNV-14.2 — release `0.0.12`
+
+Ordre DAG respecté (code identique au run CI vert `41884922934`) :
+
+* `publishToMavenLocal` ✅ (8 plugins signés GPG).
+* **Maven Central** : `publishAggregationToCentralPortal --no-daemon` →
+  bundle **`b1623b20-e3fb-42a8-9f06-3d3746f46b29`** (AUTOMATIC).
+* **Plugin Portal** : `publishPlugins` ✅.
+* Propagation repo1 vérifiée : `conventions-plugin/0.0.12` **200**, les
+  **8 markers** `education.cccp.build.*.gradle.plugin/0.0.12` **200**
+  (gradle-plugin, library, publishing, functional-test, cucumber, kover,
+  lint, logback-exclusion).
+
+== 3. CNV-14.3 — adoption des 9 contrats N0 (cross-borough)
+
+Session MEMPHIS 343 (autorisée par le pilote). Les 9 builds N0 passent à
+`library` + `publishing` + `lint` `0.0.12` :
+
+`agent-`, `codebase-`, `i18n-`, `llm-pool-`, `ocr-`,
+`opencode-session-`, `pipeline-`, `plantuml-`, `runtime-contracts`.
+
+* **−596 / +142 lignes** (blocs `plugins`, `kotlin.jvmToolchain`,
+  `repositories`, `tasks.withType<Test>`, `java { }`, POM, `signing`
+  supprimés) ;
+* POM via `publishingConventions { pomName; pomDescription; website;
+  vcsUrl; developerEmail }` — noms/descriptions préservés, SCM standardisé ;
+* catalogue source `conventions-plugin = "0.0.12"` + garde
+  `PlatformCatalogAlignmentTest` réalignée ;
+* **bug latent corrigé** : `opencode-session`, `pipeline` et `runtime`
+  déclaraient `cucumberTest` **sans le câbler à `check`** (test fantôme,
+  leçon S-269) → 3 suites BDD désormais exécutées en CI.
+
+Preuves :
+* local (Local = Build) : `assemble ktlintCheck compileTestKotlin` **9/9** ;
+  9 POM générés et vérifiés (name/description/email/SCM) ;
+* **CI workspace-bom `41888846264` ✅** (job `N0 · contracts` vert,
+  opencode Cucumber vert).
+
+== 4. Audit et rollout
+
+Audit non strict depuis `codebase-contracts` (plugin 0.0.12) :
+**113 findings `pinned 0.0.11 < published 0.0.12`** sur les autres
+consommateurs, **0 finding sur les 9 contrats N0**. C'est l'état attendu
+avant rollout : la release est publiée, le catalogue source est à jour, mais
+les 28 dépôts consommateurs n'ont pas encore été repinnés. Le rollout est
+l'US **CNV-14.5** (session dédiée, 113 pins).
+
+== 5. Commits
+
+* `conventions-gradle` : `209bcd0` (US-14.4), puis clôture docs.
+* `workspace-bom` : `ad3cc77` (adoption 9 N0), `61c5d89` (gouvernance S-343).
+
+== 6. Suivant (S-031)
+
+1. **CNV-14.5 — rollout public `0.0.12`** (113 pins, ~28 dépôts) + compiles,
+   puis `auditConventionsAdoption -Pstrict=true` doit repasser au vert.
+2. **MEMPHIS** : release **BOM/catalog `0.0.126`** (catalogue `0.0.12`).
+3. Optionnel : aligner le BOM de test injecté par conventions (`0.0.125`) sur
+   la nouvelle release BOM.
