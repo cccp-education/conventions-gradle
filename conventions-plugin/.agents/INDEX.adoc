@@ -328,7 +328,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-15.1 | Auto-publication `publishing` (9 N0) | ✅ TERMINE (S-033) | P2
 | CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | ✅ TERMINE (S-033) | P2
 | CNV-15.3 | Alignement BOM de test + release 0.0.13 + rollout | ✅ TERMINE (S-033 — `OK: 133 builds at 0.0.13`) | P2
-| CNV-15.4 | Maintenance CI actions | 🟡 À FAIRE (S-034) | P3
+| CNV-15.4 | Maintenance CI actions | ✅ TERMINE (S-033 — checkout/setup-java v5) | P3
 |===
 
 '''

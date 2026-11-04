@@ -75,10 +75,10 @@ sain. Restent trois petites dettes, mesurées :
 | ✅ S-033
 
 | CNV-15.4
-| **Maintenance CI actions** — `checkout`/`setup-java`/`setup-gradle` à jour,
-  sans régression (CI verte). Indépendante de la release.
+| **Maintenance CI actions** — `actions/checkout@v5` + `actions/setup-java@v5`
+  (`setup-gradle@v4` conservé), sans régression. Indépendante de la release.
 | 2
-| 🟡 À FAIRE (S-034)
+| ✅ S-033
 |===
 
 == 4. Definition of Done

@@ -55,6 +55,12 @@ garde detekt future-proof et l'alignement BOM, puis release `0.0.13` + rollout.
   confirmée** (`workspace-bom` + `workspace-catalog` 200 ; POM contraint
   `conventions-plugin:0.0.13`).
 
+== 3bis. CNV-15.4 — maintenance CI actions
+
+`.github/workflows/test.yml` : `actions/checkout@v4` → **`v5`**,
+`actions/setup-java@v4` → **`v5`** ; `gradle/actions/setup-gradle@v4`
+conservé. Aucun impact sur le code du plugin ; preuve = CI du commit.
+
 == 4. Preuves
 
 [cols="2,3"]

@@ -734,10 +734,10 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | ✅ S-033
 
 | CNV-15.4
-| **Maintenance CI actions** — `checkout` / `setup-java` / `setup-gradle` à
-  jour ; indépendante de la release.
+| **Maintenance CI actions** — `actions/checkout@v5` + `actions/setup-java@v5`
+  (`setup-gradle@v4` conservé) ; indépendante de la release.
 | 2
-| 🟡 À FAIRE (S-034)
+| ✅ S-033
 |===
 
 '''
@@ -776,7 +776,7 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | CNV-15.1 | Auto-publication `publishing` (9 N0) | 3 | ✅ S-033
 | CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | 2 | ✅ S-033
 | CNV-15.3 | Alignement BOM de test + release 0.0.13 + rollout | 4 | ✅ S-033
-| CNV-15.4 | Maintenance CI actions | 2 | 🟡 S-034
+| CNV-15.4 | Maintenance CI actions | 2 | ✅ S-033
 | *Total* | | *179* |
 |===
 

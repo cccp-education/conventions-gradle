@@ -1,7 +1,7 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
 :session: 034
 :date: 2026-11-04
-:epic: CNV-15 TERMINÉ (US-1→US-3) — veille + US-4 optionnelle
+:epic: CNV-15 TERMINÉ (US-1→US-4) — veille post-release
 :max-lines: 70
 
 == Contexte hérité
@@ -30,9 +30,8 @@ Rapports : `.agents/sessions/033-cnv-15-implementation.adoc` ;
 1. **Propagation `0.0.127` : ✅ confirmée** (`workspace-bom` +
    `workspace-catalog` repo1 200 ×2 ; POM contraint `conventions-plugin:0.0.13`).
    Rien à publier.
-2. **CNV-15.4 (optionnelle, indépendante)** — maintenance des actions CI
-   (`actions/checkout`, `actions/setup-java`, `gradle/actions/setup-gradle`),
-   CI verte. Ne pas toucher au code du plugin.
+2. **CNV-15.4 ✅** — `actions/checkout@v5` + `actions/setup-java@v5`
+   (`setup-gradle@v4` conservé), livrée S-033 ; preuve = CI du commit.
 3. **Veille** : audit strict (attendu `OK: 133 builds at 0.0.13`) ; detekt
    JVM > 22 (limitation) ; CI privées (facturation Actions).
 4. **Aucun EPIC ouvert.** Proposer au pilote le prochain cadrage si besoin.
