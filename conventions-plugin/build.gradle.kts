@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     kotlin("jvm") version libs.versions.kotlin
     `java-gradle-plugin`
@@ -104,6 +106,11 @@ dependencies {
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
     implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.9.8")
     implementation(libs.kotlin.gradle.plugin)
+    // Gradle Plugin Portal compatibility metadata (ACADEMY-16 / S-027):
+    // the API classes are needed to configure `PluginDeclaration.compatibility`
+    // from the convention plugin (the consumer's plugin-publish 2.1+ applies
+    // the plugin itself; this dependency only provides the compile/runtime types).
+    implementation("org.gradle.plugin:compatibility-plugin:1.1.0")
 
     testImplementation(platform("education.cccp:workspace-bom:${libs.versions.workspace.bom.get()}"))
     testImplementation(libs.kotlin.test.junit5)
@@ -217,6 +224,17 @@ gradlePlugin {
             description = "Applies Kover code coverage with configurable threshold, includedSourceSets (main, functionalTest), and HTML/XML reports on check"
             implementationClass = "build.KoverConventionsPlugin"
             tags = listOf("cccp", "conventions", "kover", "coverage")
+        }
+        all {
+            // Gradle Plugin Portal compatibility metadata (ACADEMY-16 / S-027).
+            // Honest default: false until each convention plugin's consumer
+            // build is proven with the feature enabled.
+            compatibility {
+                features {
+                    configurationCache.set(false)
+                    isolatedProjects.set(false)
+                }
+            }
         }
     }
 }

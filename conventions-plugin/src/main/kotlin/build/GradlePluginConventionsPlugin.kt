@@ -2,6 +2,8 @@ package build
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.plugin.compatibility.compatibility
+import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 
 class GradlePluginConventionsPlugin : Plugin<Project> {
 
@@ -28,7 +30,40 @@ class GradlePluginConventionsPlugin : Plugin<Project> {
         }
         JvmProjectConventions.configureTestDependencies(project)
         configureAnnotationsConflict(project, extension)
+        configurePluginCompatibility(project)
         JvmProjectConventions.registerGuards(project)
+    }
+
+    /**
+     * Gradle Plugin Portal compatibility metadata (ACADEMY-16 / S-027).
+     *
+     * The compatibility extension is only present when the consumer applies
+     * the Plugin Publish plugin 2.1.0+ (which auto-applies
+     * `org.gradle.plugin-compatibility`). The `withPlugin` hook makes the
+     * default independent of the order of the consumer's `plugins {}` block.
+     *
+     * The default is **false**: declaring an unsupported feature is honest and
+     * recommended by the Portal, while a false positive can have the badge
+     * revoked. A consumer that has proven the feature can override it in its
+     * own plugin declaration.
+     *
+     * Only `configurationCache` is set here: it exists since the compatibility
+     * plugin 1.0.0, whereas `isolatedProjects` requires 1.1.0 (Plugin Publish
+     * 2.2.1). A consumer on Plugin Publish 2.1.0 would otherwise hit a
+     * `NoSuchMethodError` at runtime.
+     */
+    private fun configurePluginCompatibility(project: Project) {
+        project.pluginManager.withPlugin("org.gradle.plugin-compatibility") {
+            project.extensions.configure(GradlePluginDevelopmentExtension::class.java) { gradlePlugin ->
+                gradlePlugin.plugins.all { declaration ->
+                    declaration.compatibility { compatibility ->
+                        compatibility.features { features ->
+                            features.configurationCache.set(false)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // CNV-12.2 — fixAnnotationsConflict (Famille 6 CODE_REVIEW_GLOBALE)

@@ -1,0 +1,90 @@
+= Session 036 — Compatibilité Gradle Plugin Portal (déclaration de compatibilité)
+:date: 2026-11-05
+:session: 036
+:type: build / publication (cross-borough)
+:statut: EN COURS (socle livré, adoption à poursuivre)
+
+== Mission
+
+Aligner les plugins sur
+https://plugins.gradle.org/docs/publish-plugin#declaring-compatibility :
+déclarer la compatibilité avec les fonctionnalités Gradle (Configuration
+Cache, Isolated Projects), en utilisant Plugin Publish **2.2.1** (v2.1.0+
+requis pour `compatibility`, v1.1.0 de `plugin-compatibility` pour
+`isolatedProjects`).
+
+== Ce qui a été livré
+
+=== Academy (`academy-plugin`)
+
+* catalogue `plugin-publish` `1.3.0` → **`2.2.1`** ;
+* `import org.gradle.plugin.compatibility.compatibility` ;
+* `compatibility { features { configurationCache.set(false); isolatedProjects.set(false) } }`
+  sur le plugin `academy` (déclaration honnête : les tâches ne sont pas encore
+  prouvées avec les fonctionnalités) ;
+* `compileKotlin` + `validatePlugins` VERTS.
+
+=== Conventions (`conventions-plugin`)
+
+* catalogue `plugin-publish` `1.3.0` → **`2.2.1`** ;
+* ses **9 plugins** reçoivent `all { compatibility { ... } }`
+  (`configurationCache=false`, `isolatedProjects=false`) ;
+* **défaut pour les consommateurs** dans `GradlePluginConventionsPlugin` :
+  `withPlugin("org.gradle.plugin-compatibility")` → `plugins.all { ... }`
+  pose `configurationCache=false` (uniquement, pour rester compatible avec
+  Plugin Publish 2.1.0 dont `plugin-compatibility` 1.0.0 n'a pas
+  `isolatedProjects`) ;
+* dépendance `implementation("org.gradle.plugin:compatibility-plugin:1.1.0")`
+  pour compiler/résoudre l'API dans le code du plugin ;
+* `compileKotlin` + `validatePlugins` VERTS.
+
+=== Autres dépôts
+
+* `workspace-bom` : catalogue `plugin-publish` `2.1.0` → **`2.2.1`** ;
+* `bureau-plugin` : catalogue `1.3.0` → `2.2.1`, bloc `compatibility`
+  (`false`/`false`), `./gradlew help` VERT ;
+* `dashboard-plugin` : catalogues racine + plugin `2.1.0` → `2.2.1`, bloc
+  `compatibility` (`false`/`false`), `./gradlew help` VERT.
+
+== Pourquoi `false` ?
+
+Le portail recommande de déclarer **toute** fonctionnalité, y compris
+non supportée : un faux positif peut faire retirer le badge. Les plugins de
+cette session ne sont pas encore prouvés avec la Configuration Cache ; la
+valeur `false` est donc honnête et conforme. Un plugin prouvé peut passer à
+`true` dans sa déclaration (elle gagne alors le badge).
+
+== Reste — rollout
+
+[cols="2,3,2", options="header"]
+|===
+| Catégorie | Dépôts | Action
+
+| Déjà en 2.1.x, sans bloc | `bakery`, `hyperframes`, `planner`, `readme`,
+  `youtube-auth`, `capsule`, `document`, `codebase`, `flow`, `review`
+| Ajouter `import` + `compatibility` (ou adopter le défaut conventions après
+  release `0.0.15`). `plantuml` a déjà `configurationCache=true` ; `slider` a
+  `false` ; ajouter `isolatedProjects` après bump 2.2.1.
+| Encore en 1.3.x | `codex`, `graphify`, `jhipster`
+| Bump catalogue `plugin-publish` → 2.2.1, puis bloc `compatibility`.
+| Vestiges / hors convention | `newpipe` (déjà `false`), `notebook`
+| Ajouter `isolatedProjects=false` (newpipe) ; bloc complet (notebook).
+| Consommateurs conventions | tous les builds `education.cccp.build.gradle-plugin`
+| Publier **conventions `0.0.15`** (défaut `configurationCache=false`), puis
+  bump BOM/catalogue et adoption — le défaut s'applique automatiquement aux
+  plugins du build.
+|===
+
+*Attention version* : `isolatedProjects` exige `plugin-compatibility` 1.1.0,
+  donc Plugin Publish **2.2.1**. Le défaut partagé ne pose que
+  `configurationCache` pour ne pas casser les consommateurs encore en 2.1.0.
+*Preuve* : la compatibilité n'est déclarée `true` qu'après un run réel avec la
+  fonctionnalité activée (aucune revendication non prouvée).
+
+== Validation
+
+* `compileKotlin`/`validatePlugins` VERTS : academy, conventions.
+* `./gradlew help` VERTS : bureau, dashboard.
+* Aucun test exécuté localement (Local = Build, Tests = CI).
+* Aucune publication ; la métadonnée de compatibilité entrera dans la
+  **prochaine version** (academy `0.0.4`).
