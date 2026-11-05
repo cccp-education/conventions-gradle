@@ -6,9 +6,9 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-05
-_session terminee_ : 036 — **Compatibilité Gradle Plugin Portal** : Plugin Publish `2.2.1` (conventions + academy + bureau + dashboard + catalogue workspace-bom), déclaration `compatibility` (`configurationCache=false`, `isolatedProjects=false`) sur les plugins conventions et les builds traités ; **défaut partagé** dans `GradlePluginConventionsPlugin` (`configurationCache=false`, gardé par `withPlugin("org.gradle.plugin-compatibility")`) ; dépendance `org.gradle.plugin:compatibility-plugin:1.1.0` ; compiles/help VERTS, rollout restant listé dans `sessions/036-plugin-portal-compatibility.adoc`.
-_session en cours_ : 036 — adoption du rollout (conventions `0.0.15` + bumps catalogues) à planifier.
-_Prochaine session_ : 037 — publier conventions `0.0.15` (défaut compatibilité) puis bump BOM/catalogue et adopter chez les consommateurs ; compléter les builds hors convention (`jhipster`, `notebook`, `newpipe`).
+_session terminee_ : 036 — **Compatibilité Gradle Plugin Portal** : Plugin Publish `2.2.1` et déclaration `compatibility` (`configurationCache=false`, `isolatedProjects=false`) sur **16 dépôts** (conventions + academy + bureau + dashboard + planner + slider + plantuml + readme + bakery + hyperframes + youtube-auth + codebase + codex + graphify + newpipe + catalogue workspace-bom) ; **défaut partagé** dans `GradlePluginConventionsPlugin` (`configurationCache=false`, gardé par `withPlugin("org.gradle.plugin-compatibility")`) ; dépendance `org.gradle.plugin:compatibility-plugin:1.1.0` ; compiles/help VERTS, commits/push effectués.
+_session en cours_ : 036 — adoption du rollout conventions (`0.0.15` + bumps catalogues) à planifier.
+_Prochaine session_ : 037 — publier conventions `0.0.15` (défaut compatibilité) puis bump BOM/catalogue et adopter chez les consommateurs ; traiter `jhipster`/`notebook` si publication Portal, et `document`/`capsule`/`flow`/`review` si activation du canal Portal.
 
 _Note 2026-11-04 (S-035)_ : **items 3 et 4 du backlog soldés**. (1) Alignement
 du BOM de test injecté `0.0.126 → 0.0.127` + release **`0.0.14`** (Central

@@ -2,7 +2,7 @@
 :date: 2026-11-05
 :session: 036
 :type: build / publication (cross-borough)
-:statut: EN COURS (socle livré, adoption à poursuivre)
+:statut: TERMINÉ (rollout des plugins publiés sur le Portal)
 
 == Mission
 
@@ -54,25 +54,31 @@ cette session ne sont pas encore prouvés avec la Configuration Cache ; la
 valeur `false` est donc honnête et conforme. Un plugin prouvé peut passer à
 `true` dans sa déclaration (elle gagne alors le badge).
 
+== Rollout effectué (commits poussés)
+
+`academy`, `conventions`, `workspace-bom`, `bureau`, `dashboard`, `planner`,
+`slider`, `plantuml`, `readme`, `bakery`, `hyperframes`, `youtube-auth`,
+`codebase`, `codex`, `graphify`, `newpipe`.
+
+Chaque dépôt a été validé (`compileKotlin`/`validatePlugins` ou
+`./gradlew help` selon le wrapper) avant commit/push.
+
 == Reste — rollout
 
 [cols="2,3,2", options="header"]
 |===
 | Catégorie | Dépôts | Action
 
-| Déjà en 2.1.x, sans bloc | `bakery`, `hyperframes`, `planner`, `readme`,
-  `youtube-auth`, `capsule`, `document`, `codebase`, `flow`, `review`
-| Ajouter `import` + `compatibility` (ou adopter le défaut conventions après
-  release `0.0.15`). `plantuml` a déjà `configurationCache=true` ; `slider` a
-  `false` ; ajouter `isolatedProjects` après bump 2.2.1.
-| Encore en 1.3.x | `codex`, `graphify`, `jhipster`
-| Bump catalogue `plugin-publish` → 2.2.1, puis bloc `compatibility`.
-| Vestiges / hors convention | `newpipe` (déjà `false`), `notebook`
-| Ajouter `isolatedProjects=false` (newpipe) ; bloc complet (notebook).
-| Consommateurs conventions | tous les builds `education.cccp.build.gradle-plugin`
+| Publication Central uniquement | `document`, `capsule`, `flow`, `review`
+| N'appliquent pas `com.gradle.plugin-publish` → la métadonnée Portal ne
+  s'applique pas. À activer seulement si ces plugins sont publiés sur le
+  Portal (décision de canal).
+| Legacy / vestige | `jhipster`, `notebook`
+| Bump `plugin-publish` → 2.2.1 + bloc `compatibility` si publication Portal.
+| Consommateurs conventions | builds `education.cccp.build.gradle-plugin`
 | Publier **conventions `0.0.15`** (défaut `configurationCache=false`), puis
   bump BOM/catalogue et adoption — le défaut s'applique automatiquement aux
-  plugins du build.
+  plugins du build (les builds déjà traités gardent leur bloc explicite).
 |===
 
 *Attention version* : `isolatedProjects` exige `plugin-compatibility` 1.1.0,
