@@ -35,6 +35,15 @@ de build Gradle. TOUT le reste (code, tests, gouvernance, documentation agent) v
   des 26 boroughs : test config, functionalTest source set, Cucumber setup, signing/publishing,
   extension class conventions, resolution strategy, Kover coverage config.
 
+[NOTE]
+====
+**Publication (politique temporaire, jusqu'au 2026-12-01)** : la cible est le
+**Gradle Plugin Portal** (compte `cccp-education`, `./gradlew publishPlugins`,
+Plugin Publish `2.2.1`), **pas Maven Central / Sonatype**. Voir `AGENTS.adoc`
+racine, section « Publication (Règle 2) ». Chaque `gradlePlugin.plugins` déclare
+`compatibility { features { configurationCache = …; isolatedProjects = … } }`.
+====
+
 == Regles Absolues
 
 === Git
