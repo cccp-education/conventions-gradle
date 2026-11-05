@@ -59,11 +59,14 @@
 
 == Veille (hors EPIC) — aucun EPIC/US ouvert
 
-- **Plugin Portal ✅** / **Central ✅** : `0.0.13` publié et propagé
+- **Plugin Portal ✅** / **Central ✅** : `0.0.14` publié et propagé
   (`conventions-plugin` + 8 markers repo1 200).
-- **Catalogue MEMPHIS ✅** : BOM/catalog **`0.0.127`** publié (bundle
-  `d07a994f`), catalogue `conventions-plugin = "0.0.13"`.
-- **Rollout ✅** : 133 builds à `0.0.13` (audit strict 0 finding).
+- **Catalogue MEMPHIS ✅** : BOM/catalog **`0.0.128`** publié (bundle
+  `e8b67127`), catalogue `conventions-plugin = "0.0.14"`.
+- **Rollout ✅** : 140 pins / 53 fichiers / 26 dépôts à `0.0.14` (audit strict
+  `OK: 133 builds at 0.0.14`).
+- **BOM de test injecté ✅** : aligné `0.0.127` (S-035).
+- **`training` ✅** : `codebase-plugin 0.0.18` + conventions `0.0.14` (S-035).
 - **CI dépôts privés** (`training`, `payment`, `quizz`) : jobs non démarrés
   (limite de facturation GitHub Actions) → re-déclencher après rétablissement.
   Re-run tenté S-034 (attempt 2, toujours 0 step). Derniers verts : `payment`
@@ -71,8 +74,3 @@
 - **`detekt`** : `1.23.8` refuse `--jvm-target` > 22, aucune release 2.x sur
   Central → branche detekt désactivée, ktlint seul linter actif. À réévaluer à
   la sortie de detekt 2.x.
-- **Optionnel / non bloquant** : aligner le BOM de test injecté (`0.0.126`)
-  sur le BOM publié `0.0.127` — implique une release `0.0.14` + rollout des
-  133 builds, à ne faire que sur demande.
-- **`training` (hors borough)** : `codebase-plugin 0.0.17` — alignement 0.0.18
-  optionnel.

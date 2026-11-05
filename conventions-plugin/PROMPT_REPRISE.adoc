@@ -1,46 +1,41 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 035
+:session: 036
 :date: 2026-11-04
-:epic: CNV-15 TERMINÉ (US-1→US-4) — veille uniquement, aucun EPIC ouvert
+:epic: Aucun EPIC ouvert — veille uniquement
 :max-lines: 70
 
 == Contexte hérité
 
-**CNV-15.1/15.2/15.3 TERMINÉES** (S-033) :
-* `publishingConventions { createMavenPublication = true }` (défaut false) —
-  les 9 contrats N0 l'activent et n'ont plus de bloc `publishing { }`
-  (workspace-bom `cfbbf8c`, −104/+41 l.) ;
-* `DetektCompatibility` (objet pur, majeur ≤ 22) remplace le
-  `startsWith("25")` ; 7 UT + BDD ;
-* BOM de test `0.0.126` ; **release `0.0.13`** : Central bundle
-  `f2ad3ce0-0c5c-4ba3-b190-ffeddc6acb8e` (PUBLISHED) + Plugin Portal ;
-* **rollout** 113 pins / 26 dépôts, 28/28 `assemble` VERTES ;
-* **audit strict `OK: 133 build file(s) at 0.0.13`** ;
-* **BOM/catalog MEMPHIS `0.0.127`** : catalogue `conventions-plugin = "0.0.13"`,
-  Central bundle `d07a994f-6525-4ae3-b785-802589e3da1d` (AUTOMATIC),
-  **propagation repo1 confirmée** (200 ×2).
+**CNV-0→CNV-15 TERMINÉS**, puis **S-035** a soldé les deux derniers items
+optionnels :
+* alignement du BOM de test injecté `0.0.126 → 0.0.127` ; **release `0.0.14`**
+  (Central bundle `e25e4f5f-18a2-4e5e-9710-f298e31944ae` + Portal) ;
+* **rollout** `0.0.13 → 0.0.14` : **140 pins / 53 fichiers / 26 dépôts**,
+  28/28 builds `assemble` VERTES + 9 contrats N0 VERTES ;
+* **audit strict `OK: 133 build file(s) at 0.0.14`** ;
+* **BOM/catalog MEMPHIS `0.0.128`** : catalogue `conventions-plugin = "0.0.14"`,
+  Central bundle `e8b67127-9ca5-4c7a-b00f-ba9306411724`, propagation repo1
+  200 ×2, constraint `conventions-plugin:0.0.14` ;
+* **`training`** : `codebase-plugin 0.0.17 → 0.0.18` + conventions `0.0.14`
+  (commit `3081967`, `assemble` VERT).
 
-CI : conventions `41917976471` ✅ + `41930286354` ✅ + `41931693366` ✅,
-workspace-bom `41924833092` ✅.
+CI : conventions `41936927959` ✅ ; workspace-bom `41943127906` ✅.
 
-**S-034 (veille finale)** : `gradle/actions/setup-gradle` `v4 → v6` (CI
-`41931693366` ✅) ; re-run des CI privées `0.0.13` (`training`, `payment`,
-`quizz`) → **attempt 2, 0 step** : facturation GitHub Actions toujours
-bloquante (hors code).
+Rapport `.agents/sessions/035-alignement-bom-0.0.127.adoc` ;
+`workspace-bom/.agents/sessions/346-*.adoc` (à créer).
 
-Rapports : `.agents/sessions/033-cnv-15-implementation.adoc`,
-`.agents/sessions/034-veille-finale-ci.adoc` ;
-`workspace-bom/.agents/sessions/345-cnv-15-auto-publication-bom-0.0.127.adoc`.
+== Mission session 036
 
-== Mission session 035
-
-1. **Aucun EPIC ouvert, aucune dette actionnable.** L'état est stable :
-   `0.0.13`, rollout 133 builds, audit strict 0, BOM/catalog `0.0.127`.
-2. **Veille** : re-tenter les CI privées (`training`, `payment`, `quizz`)
-   quand la facturation Actions est rétablie ; detekt JVM > 22 (aucune 2.x) ;
-   information `ubuntu-latest` → Ubuntu 26.
-3. **Si un besoin émerge** : proposer un cadrage au pilote (Règle 1) avant
-   toute release (chaque release impose un rollout des 133 builds).
+1. **Aucun EPIC/US, aucune dette actionnable.** État stable : `0.0.14`,
+   rollout 140 pins, audit strict 0, BOM/catalog `0.0.128`.
+2. **Veille** :
+   * CI privées (`training`, `payment`, `quizz`) : facturation GitHub Actions
+     toujours bloquante (attempt 2 en S-034) ; re-tenter après rétablissement ;
+   * `detekt` : `1.23.8` refuse JVM > 22, aucune 2.x sur Central → ktlint seul
+     linter actif ;
+   * `ubuntu-latest` migrera vers Ubuntu 26 (information).
+3. **Si une nouvelle dette émerge** : cadrer un EPIC au pilote (Règle 1) ;
+   toute release impose un rollout des 133 builds.
 
 == Workflow
 
@@ -57,11 +52,12 @@ Rapports : `.agents/sessions/033-cnv-15-implementation.adoc`,
 == Rappels
 
 - Racine de travail : `conventions-plugin/`
-- **8 plugins**, version **0.0.13** (Central `f2ad3ce0` ; Portal publié),
+- **8 plugins**, version **0.0.14** (Central `e25e4f5f` ; Portal publié),
   Java 25, Kotlin 2.4.10, Gradle **9.8.2** (source unique `[versions].gradle`)
-- CI : `.github/workflows/test.yml` (JDK 25, wrapper vérifié, `check`)
+- CI : `.github/workflows/test.yml` (JDK 25, wrapper vérifié, `check`,
+  actions `checkout@v5` / `setup-java@v5` / `setup-gradle@v6`)
 - Publication : `publishAggregationToCentralPortal --no-daemon` (nmcp
   AUTOMATIC) + `publishPlugins` (Portal)
-- Anti-drift : BOM test `0.0.126` (`WorkspaceBom`) ; Gradle `9.8.2`
+- Anti-drift : BOM test `0.0.127` (`WorkspaceBom`) ; Gradle `9.8.2`
   (`GradleWrapperVersion`) ; version du plugin injectée dans le FT d'audit
   (`conventions.version`) ; adoption auditée (`AdoptionAudit`)

@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-034 ✅ **aucun EPIC/US ouvert**. CNV-15 TERMINÉ (US-1→US-4) ; `0.0.13` + rollout 133 builds ; audit strict `OK: 133 builds at 0.0.13` ; BOM/catalog `0.0.127` ; CI actions v5/v6. Reste : veille (facturation Actions privées, detekt JVM > 22, alignement BOM de test optionnel)
+_Derniere mise a jour_ : 2026-11-04 — S-035 ✅ **aucun EPIC/US ouvert**. `0.0.14` + rollout 140 pins / 53 fichiers / 26 dépôts ; audit strict `OK: 133 builds at 0.0.14` ; BOM/catalog `0.0.128` ; `training` codebase 0.0.18. Reste : veille (facturation Actions privées, detekt JVM > 22)
 
 '''
 
@@ -781,7 +781,7 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | *Total* | | *179* |
 |===
 
-=== Suivi hors EPIC (S-034) — aucun EPIC/US ouvert
+=== Suivi hors EPIC (S-035) — aucun EPIC/US ouvert
 
 * **CI dépôts privés** (`training`, `payment`, `quizz`) : jobs non démarrés
   (0 step) — **limite de facturation GitHub Actions**. Re-run tenté S-034
@@ -790,10 +790,7 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 * **`detekt`** : `1.23.8` (dernière release, 2025-02) refuse JVM > 22
   (`--jvm-target` max `22`) → branche detekt désactivée, ktlint seul linter
   actif. Aucune release 2.x sur Central ; réévaluer à sa sortie.
-* **BOM de test injecté** : `0.0.126` (aligné S-033) alors que le BOM publié
-  est `0.0.127`. **Optionnel / non bloquant** : aligner sur `0.0.127` impose
-  une release `0.0.14` + rollout des 133 builds — à ne faire que sur demande.
-* **`training` (hors borough)** : `codebase-plugin 0.0.17` — alignement 0.0.18
-  optionnel.
 * **Info** : `ubuntu-latest` migrera vers Ubuntu 26 (information GitHub, non
   bloquante).
+* ✅ **Soldé S-035** : alignement du BOM de test `0.0.127` (release `0.0.14`,
+  rollout 140 pins, audit strict 0) ; `training` `codebase-plugin 0.0.18`.

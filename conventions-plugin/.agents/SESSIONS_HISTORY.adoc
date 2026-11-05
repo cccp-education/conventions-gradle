@@ -839,3 +839,26 @@ plus de warning Node 20.
 
 **CNV-15 TERMINÉ (US-1→US-4)** ; aucun EPIC ouvert, aucune dette actionnable.
 Rapport `.agents/sessions/034-veille-finale-ci.adoc`.
+
+'''
+
+== Session 035 — 2026-11-04
+Type:: maintenance / release / rollout
+Code:: Suivi hors EPIC (items 3 et 4)
+Titre:: Alignement BOM `0.0.127` (release `0.0.14`) + training codebase 0.0.18
+Score:: 10/10
+Duree:: 1 session
+
+**Item 3** : BOM de test `0.0.126 → 0.0.127` ; bump `0.0.14` ; CI
+`41936927959` ✅ ; Central bundle `e25e4f5f-18a2-4e5e-9710-f298e31944ae` +
+Portal ; rollout `0.0.13 → 0.0.14` : **140 pins / 53 fichiers / 26 dépôts**,
+28/28 `assemble` VERTES + 9 N0 VERTES ; **audit strict
+`OK: 133 builds at 0.0.14`** ; **BOM/catalog `0.0.128`** (Central
+`e8b67127-9ca5-4c7a-b00f-ba9306411724`, catalogue `conventions-plugin =
+"0.0.14"`, propagation repo1 200 ×2).
+
+**Item 4** : `training` `codebase-plugin 0.0.17 → 0.0.18` + conventions
+`0.0.14` (commit `3081967`, `assemble` VERT ; CI privée bloquée facturation).
+
+CI : conventions `41936927959` ✅, workspace-bom `41943127906` ✅.
+Aucun EPIC/US ouvert. Rapport `.agents/sessions/035-alignement-bom-0.0.127.adoc`.

@@ -6,9 +6,20 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-04
-_session terminee_ : 034 — **veille finale** : `setup-gradle@v6` (CI `41931693366` verte), re-run CI privées `0.0.13` → attempt 2, 0 step (facturation Actions toujours bloquante) ; **CNV-15 TERMINÉ (US-1→US-4)**
-_session en cours_ : 034 — clôture de session (commit/push)
-_Prochaine session_ : 035 — aucun EPIC ouvert, veille uniquement
+_session terminee_ : 035 — **alignement BOM `0.0.127` → release `0.0.14`** : rollout 140 pins / 53 fichiers / 26 dépôts, **audit strict `OK: 133 builds at 0.0.14`**, BOM/catalog `0.0.128` (constraint `0.0.14`) ; **training** `codebase-plugin 0.0.18`
+_session en cours_ : 035 — clôture de session (commit/push)
+_Prochaine session_ : 036 — aucun EPIC ouvert, veille uniquement
+
+_Note 2026-11-04 (S-035)_ : **items 3 et 4 du backlog soldés**. (1) Alignement
+du BOM de test injecté `0.0.126 → 0.0.127` + release **`0.0.14`** (Central
+bundle `e25e4f5f-18a2-4e5e-9710-f298e31944ae`, Portal) ; rollout
+`0.0.13 → 0.0.14` : **140 pins / 53 fichiers / 26 dépôts**, 28/28 `assemble`
+VERTES + 9 N0 VERTES ; **audit strict `OK: 133 builds at 0.0.14`** ;
+**BOM/catalog `0.0.128`** (Central `e8b67127`, constraint `0.0.14`, repo1
+200 ×2). (2) `training` : `codebase-plugin 0.0.18` + conventions `0.0.14`
+(commit `3081967`, `assemble` VERT ; CI privée bloquée facturation).
+CI conventions `41936927959` ✅, workspace-bom `41943127906` ✅.
+Rapport `.agents/sessions/035-alignement-bom-0.0.127.adoc`.
 
 _Note 2026-11-04 (S-034)_ : **veille finale**. `gradle/actions/setup-gradle`
 `v4 → v6` (CI `41931693366` ✅, plus de warning Node 20) ; re-run des CI privées
@@ -297,6 +308,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
   | 032 | 2026-11-04 | veille/cadrage | Veille post-CNV-14 (audit vert, BOM `0.0.126` propagé, CI publiques vertes, privés bloqués facturation) + **cadrage CNV-15** (auto-publication, detekt, BOM, CI) — aucun code modifié. | 10/10
   | 033 | 2026-11-04 | dev/release/rollout | **CNV-15.1/15.2/15.3** — auto-publication N0 (−104/+41 l.), `DetektCompatibility`, BOM `0.0.126` ; release `0.0.13` (`f2ad3ce0` + Portal), rollout 113 pins / 26 dépôts, audit strict `OK: 133 builds at 0.0.13`, BOM/catalog `0.0.127`. | 10/10
   | 034 | 2026-11-04 | veille/CI | `setup-gradle@v6` (CI `41931693366` verte) ; re-run CI privées `0.0.13` → attempt 2, 0 step (facturation Actions). **CNV-15 TERMINÉ (US-1→US-4).** | 10/10
+  | 035 | 2026-11-04 | maintenance/release | Alignement BOM `0.0.127` → release `0.0.14` ; rollout 140 pins / 53 fichiers / 26 dépôts ; audit strict `OK: 133 builds at 0.0.14` ; BOM/catalog `0.0.128` ; `training` codebase 0.0.18. | 10/10
   |===
 
 '''
