@@ -74,8 +74,7 @@ complète.
 
 == 5. Aucune régression
 
-* Aucun test local exécuté (Local = Build, Tests = CI) ; la CI du dépôt est
-  déclenchée par le push `main`.
+* CI du dépôt **VERTE** : run `42546529477` (commit `713a671`, tag `v0.0.15`, 4m04s) et run `42546782266` (commit `5e73160`, docs S-039, 3m51s) — `Build & Test (UT + Functional + Cucumber)` ✅. Aucun test local exécuté (Local = Build, Tests = CI).
 * Aucune publication Central/Portal ; le canal secondaire JitPack est
   indépendant et sans credential.
 
