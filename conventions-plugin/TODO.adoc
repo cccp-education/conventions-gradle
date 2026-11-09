@@ -74,6 +74,8 @@
 - [ ] **CNV-16.4** (option) domaine `education.cccp` (DNS TXT) + coordonnées.
 - [ ] **CNV-16.5** (option) build à l'avance (curl sur release) + badge.
 - [x] **CNV-16.6** décision de rollout (S-040) : JitPack = résolveur par défaut des conventions pour les builds **publics** ; pins `0.0.14` conservés (audit strict non câblé) ; canal Central/Portal des privés inchangé.
+- [x] **CNV-16.7** publication JitPack de tous les artefacts publics (S-041) : N0 `workspace-bom` + 9 contrats (`0.0.128`), N1 `codebase-plugin` (`0.0.18`), N2 `codex 0.0.12`, `document 0.0.30`, `bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`, `plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`, `academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`, `container-provision 0.0.1` — HTTP 200 vérifiés. Correctifs signature pour academy/dashboard/bureau.
+- [ ] **CNV-16.7b** retry `video-kernel` (`0.7.0`) + `youtube-auth` (`0.0.2`) — bloqués par l'échec SDKMAN/JitPack (JDK 25 non téléchargé). Recette prête ; rejouer les tags quand la limite est levée.
 
 == Veille (hors EPIC) — aucun EPIC/US ouvert
 

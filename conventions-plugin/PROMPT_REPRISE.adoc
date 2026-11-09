@@ -1,7 +1,7 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 041
+:session: 042
 :date: 2026-11-09
-:epic: CNV-16 — JitPack (US-4/US-5 optionnelles + dette)
+:epic: CNV-16 — JitPack (retry + décisions)
 :max-lines: 70
 
 == Contexte hérité
@@ -11,50 +11,51 @@ Portal), BOM/catalog MEMPHIS `0.0.128`, BOM de test `0.0.127`.
 
 **CNV-16 « JitPack »** (canal secondaire) :
 * **S-037** cadrage ; **S-038** plomberie locale ; **S-039** premier build
-  JitPack réel `0.0.15` (VERT, 43 s, JDK 25, 0 sign) ;
-* **S-040 ✅** rollout public : shim `useModule` (tag JitPack `0.0.15`) dans
-  **27 dépôts / 55 `settings.gradle.kts`** (racines + sous-builds plugins +
-  `academy/dogfood` + `conventions-plugin` + `video-kernel`/`youtube-auth` +
-  9 contrats `workspace-bom`). **17/17 sous-builds plugins** `help` VERT ;
-  **CI verte 18 dépôts** (runs `42550997452` → `42551057903`, dont
-  `runAllTests` workspace-bom `1f97253`). Incident ktlint (double ligne vide)
-  corrigé ; baselines préexistantes `capsule`/`plantuml`/`slider` root et
-  `agile` confirmées ; `magic-stick` échec infra Docker.
+  JitPack `0.0.15` ; **S-040** rollout du shim sur **27 dépôts / 55 settings**
+  (CI verte 18 dépôts) ;
+* **S-041 ✅ CNV-16.7** : publication JitPack de **tous les artefacts
+  publics** — N0 `workspace-bom` + 9 contrats (`0.0.128`), N1
+  `codebase-plugin` (`0.0.18`), N2 `codex 0.0.12`, `document 0.0.30`,
+  `bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`,
+  `plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`,
+  `academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`,
+  `container-provision 0.0.1` (HTTP 200) ; correctifs signature
+  conditionnelle (academy/dashboard/bureau).
 
-== Mission session 041 — optionnel + dette
+== Mission session 042
 
-1. **Dette prioritaire — aligner les pins** : les builds publics déclarent
-   les conventions en `0.0.14` mais le shim résout `0.0.15` (JitPack).
-   `auditConventionsAdoption -Pstrict` signalerait `Obsolete` (non câblé à
-   `check`). Décider : (a) bump coordonné `0.0.14 → 0.0.15` (et publier sur
-   le canal canonique si la politique revient à Central/Portal après le
-   2026-12-01), ou (b) aligner l'audit sur la version JitPack.
-2. **Maintenance du shim** : le tag `0.0.15` est **codé 55 fois**. Un futur
-   EPIC devrait centraliser (script de settings partagé ou plugin de settings)
-   pour éviter 55 éditions à chaque release. Ne pas l'engager sans feu vert.
-3. **US-4 optionnelle** — domaine `education.cccp` : DNS `TXT git.education.cccp`
-   → `https://github.com/cccp-education` ; revalider les coordonnées
-   multi-module (`education.cccp.conventions-gradle:conventions-plugin`).
-4. **US-5 optionnelle** — build à l'avance + badge : workflow
-   `release: created` (curl 30 s) + badge
-   `https://jitpack.io/v/cccp-education/conventions-gradle.svg`.
-5. **Veille** : CI privées (facturation Actions), `detekt` JVM > 22.
+1. **Retry `video-kernel` / `youtube-auth`** (seuls artefacts bloqués).
+   Les builds JitPack échouent **avant Gradle** : SDKMAN ne télécharge pas
+   `25.0.5.0+8-tem` (rate-limit/transitoire, `429`), Gradle tourne en JDK 8.
+   Rejouer `v0.7.0` et `v0.0.2` quand la limite est levée.
+   *Si l'échec persiste*, ajouter un **retry SDKMAN** au `jitpack.yml`
+   (`for i in 1 2 3; do sdk install java 25.0.5.0+8-tem && break; sleep 10; done`)
+   — mais les tags existants pointent l'ancien commit : il faudra un **nouveau
+   commit + tags** (accord pilote), ou déplacer les tags (force-push, accord
+   explicite).
+2. **Décisions** : `review-plugin` (`0.0.1-SNAPSHOT`) → release 0.0.1 ou
+   laisser hors JitPack ; `jhipster` (`assistant` SNAPSHOT / legacy) →
+   publier `persistence` seul ou laisser hors périmètre.
+3. **Veille** : tags déclencheurs de release (document/academy) → échecs
+   doublon attendus ; ne pas créer de tag sans vérifier les workflows
+   `on: push: tags` du dépôt.
+4. Optionnel : US-4 (domaine `education.cccp`, DNS TXT) / US-5 (build à
+   l'avance + badge) ; dette pins `0.0.14 ↔ 0.0.15`.
 
 == Références
 
-* Cadrage : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` (§2.2, §5, §9).
-* Rapports : `037-…cadrage`, `038-…plumbing`, `039-…release`,
-  `040-cnv-16-3-rollout-public.adoc`.
+* Cadrage : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` (§2.2, §5, §7, §9).
+* Rapports : `037-…`, `038-…`, `039-…`, `040-cnv-16-3-rollout-public.adoc`,
+  `041-cnv-16-7-jitpack-publish-all.adoc`.
 
 == Contraintes dures (rappel)
 
-* Shim public (55 settings) :
-  `useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15")`.
-* Canal canonique des **privés** : Central/Portal `0.0.14` (inchangé).
-* **8 plugins**, JitPack `0.0.15`, Java 25, Kotlin 2.4.10, Gradle **9.8.2**.
-* `jitpack.yml` : JDK `25.0.5.0+8-tem`, `CI=true`,
-  `-Pversion="${VERSION#v}"`, `-x test -x functionalTest -x cucumberTest`.
+* JitPack : tag public, `jitpack.yml` (JDK `25.0.5.0+8-tem` via SDKMAN,
+  `CI=true`, `install` sur le sous-build), pas de GPG.
+* `plugin-publish` auto-signe dès qu'il voit `signing` → appliquer `signing`
+  conditionnellement (academy/dashboard/bureau faits).
+* Shim consommateur : `com.github.cccp-education.<repo>:<module>:<version>`
+  via `useModule` (markers non servis au groupId de l'id).
 * Local = Build, Tests = CI ; un seul sessionneur par borough ;
   `git commit --only` si une session parallèle a des fichiers stagés.
-* Anti-drift : BOM test `0.0.127`, Gradle `9.8.2`, version injectée
-  (`conventions.version`), adoption auditée (`AdoptionAudit`).
+* **Ne pas force-push un tag** sans accord pilote explicite.

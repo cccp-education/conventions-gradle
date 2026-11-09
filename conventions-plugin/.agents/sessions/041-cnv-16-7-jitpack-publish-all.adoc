@@ -1,0 +1,151 @@
+= Session 041 — CNV-16.7 : publication JitPack de tous les artefacts publics
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 041
+:date: 2026-11-09
+:type: publication cross-borough (canal JitPack, N0→N2)
+:epic: CNV-16 — extension « publish all »
+
+== Mission
+
+Demande pilote : « c'est bon tous les plugins et libs seront publiés sur
+jitpack ? » puis « lance ». Publier sur JitPack **tous les artefacts publics**
+(plugins et libs), dans l'ordre DAG N0 → N1 → N2, sans passer par Sonatype ni
+le Gradle Plugin Portal.
+
+== 1. Recette appliquée
+
+`jitpack.yml` à la racine de chaque dépôt :
+
+[source,yaml]
+----
+before_install:
+  - sdk install java 25.0.5.0+8-tem
+  - sdk use java 25.0.5.0+8-tem
+install:
+  - ./gradlew -p <sous-build> publishToMavenLocal
+env:
+  CI: "true"
+----
+
+* `workspace-bom` publie le BOM/catalogue + les **9 contrats** (10 commandes
+  `-p`), car ce sont des builds autonomes.
+* `video-kernel-gradle` a deux sous-builds : le `install` publie **un seul
+  artefact selon le tag** (`VERSION` = `0.7.0` ou `0.0.2`).
+* **Correctifs signature** (même verrou que S-038) : `academy-plugin`,
+  `dashboard-plugin` et `bureau-plugin` appliquaient `signing` directement ;
+  `plugin-publish` auto-signe alors même en `CI=true`. `signing` est désormais
+  appliqué **conditionnellement** (`!jitpackBuild && (CCCP_PUBLISH || !CI) &&
+  non SNAPSHOT`).
+
+== 2. Artefacts publiés (HTTP 200 vérifié)
+
+=== N0 — `workspace-bom` (tag `v0.0.128`)
+
+`workspace-bom`, `workspace-catalog`, `agent-contracts`,
+`codebase-contracts`, `i18n-contracts`, `llm-pool-contracts`,
+`ocr-contracts`, `opencode-session-contracts`, `pipeline-contracts`,
+`plantuml-contracts`, `runtime-contracts` — version JitPack **`0.0.128`**
+(JitPack relabelle les modules au tag ; POM vérifié :
+`com.github.cccp-education.workspace-bom:agent-contracts:0.0.128`).
+
+=== N1
+
+[cols="2,1,1"]
+|===
+| Artefact | Version | Verdict
+| `codebase-plugin` | 0.0.18 | ✅ JitPack ok
+| `video-kernel` | 0.7.0 | ⛔ bloqué (SDKMAN/JitPack)
+| `youtube-auth-plugin` | 0.0.2 | ⛔ bloqué (SDKMAN/JitPack)
+|===
+
+=== N2 / plugins
+
+[cols="2,1,1"]
+|===
+| Artefact | Version | Verdict
+| `conventions-plugin` | 0.0.15 | ✅ S-039
+| `codex-plugin` | 0.0.12 | ✅
+| `document-plugin` | 0.0.30 | ✅
+| `bakery-plugin` | 0.0.33 | ✅
+| `planner-plugin` | 0.0.2 | ✅
+| `slider-plugin` | 0.0.20 | ✅
+| `capsule-plugin` | 0.0.15 | ✅
+| `plantuml-plugin` | 0.0.16 | ✅
+| `readme-plugin` | 0.0.2 | ✅
+| `graphify-plugin` | 0.0.5 | ✅
+| `hyperframes-plugin` | 0.0.14 | ✅
+| `academy-plugin` | 0.0.3 | ✅
+| `dashboard-plugin` | 0.0.1 | ✅
+| `bureau-plugin` | 0.0.1 | ✅
+| `flow-plugin` | 0.0.1 | ✅
+| `container-provision-plugin` | 0.0.1 | ✅
+|===
+
+=== Non publiés (justifié)
+
+* `review-plugin` : version `0.0.1-SNAPSHOT` (pas une release).
+* `jhipster-gradle-plugins` : `assistant` SNAPSHOT / legacy, `persistence`
+  0.0.1 (outillage externe) — hors périmètre de cette passe.
+* `runner`, `ticket`, `agile` : aucune publication Maven configurée.
+* `magic-stick` : site/ISO, pas un artefact Maven.
+* Vestiges (`newpipe`, `notebook`, `office-template`, `dashboard-flow`,
+  `intellij-plugins`) : hors périmètre.
+
+== 3. Vérification
+
+* Tous les POM listés ci-dessus répondent **HTTP 200** sur
+  `https://jitpack.io/com/github/cccp-education/<repo>/<module>/<version>/`.
+* Modules JitPack confirmés par l'API (`"status": "ok"`, `jdk: 25`,
+  `modules: [...]`).
+* `workspace-catalog-0.0.128.toml` servi (HTTP 200, 20 623 o).
+
+== 4. Effets de bord des tags (à connaître)
+
+* `document-gradle` `v0.0.30` a déclenché son workflow
+  **`Publish to Maven Central`** → échec « component already exists »
+  (0.0.30 déjà publié). `academy-gradle` `v0.0.3` a déclenché
+  **`Publish (plugin-portal)`** → échec « version exists already ».
+  **Aucune publication non voulue** : ce sont des échecs de doublon, pas des
+  régressions. Les workflows `Test`/`CI` de ces dépôts sont verts.
+* Les autres tags n'ont pas de workflow de release (Test/CI/Full Tests verts).
+
+== 5. Blocage `video-kernel` / `youtube-auth`
+
+Les deux builds JitPack échouent **avant** Gradle :
+
+----
+Downloading: java 25.0.5.0+8-tem
+Download has failed, aborting!
+Can not install java 25.0.5.0+8-tem at this time...
+-> Gradle runs with JVM 8 -> "Gradle requires JVM 17 or later"
+----
+
+C'est un **échec transitoire/rate-limit du CDN SDKMAN côté JitPack** (les 20
+autres builds ont installé le même JDK sans problème ; des `429` ont aussi été
+observés). La recette est prête ; il suffit de **rejouer** les tags `v0.7.0`
+et `v0.0.2` quand la limite est levée. Aucun force-push de tag (non demandé).
+
+== 6. CI GitHub (commits de publication)
+
+* `workspace-bom` `runAllTests` ✅ (`b4f29fd`), `codebase` `CI` ✅
+  (`4e2343b`), `codex` ✅ (`cc93a71`), `bakery` ✅ (`e03bbf2`), `planner` ✅
+  (`82e4f78`), `slider` ✅ (`bdb7240`), `capsule` ✅ (`4fdaa3a`), `plantuml`
+  ✅ (`30dbfdc`), `readme` ✅ (`603fbb3`), `graphify` ✅ (`be90af6`),
+  `hyperframes` ✅ (`db958a3`), `dashboard` ✅ (`5f1f1a6`), `video-kernel`
+  ✅ (`622cae0`), `academy` `Test` ✅ (`def7307`, seul le job Portal a échoué
+  sur doublon), `document` `Test` ✅ (`7cdff0e`, seul le job Central a échoué
+  sur doublon).
+
+== 7. Suivant
+
+* Rejouer `video-kernel` / `youtube-auth` (tags `v0.7.0`, `v0.0.2`) après la
+  limite JitPack ; ajouter un retry SDKMAN au `jitpack.yml` si l'échec
+  persiste (nécessitera un nouveau commit/tag, donc accord pilote).
+* Décider du sort de `review` (SNAPSHOT) et `jhipster` (legacy/SNAPSHOT).
+* Étendre les shims consommateurs aux nouveaux plugins si nécessaire
+  (aujourd'hui seuls les `education.cccp.build.*` sont mappés).
+
+Rapport `.agents/sessions/041-cnv-16-7-jitpack-publish-all.adoc`.

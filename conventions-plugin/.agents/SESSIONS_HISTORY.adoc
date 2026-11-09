@@ -1015,3 +1015,34 @@ Demande pilote : « sur tous les projets dans `foundry/public/` ».
 * Aucun test local ; aucune publication Central/Portal (canal des privés
   inchangé).
 Rapport `.agents/sessions/040-cnv-16-3-rollout-public.adoc`.
+
+== Session 041 — CNV-16.7 publication JitPack de tous les artefacts publics (2026-11-09)
+
+Demande pilote : « tous les plugins et libs seront publiés sur jitpack ? » puis
+« lance ».
+
+* **Recette** : `jitpack.yml` par dépôt (JDK `25.0.5.0+8-tem` via SDKMAN,
+  `CI=true`, `install` = `-p <sous-build> publishToMavenLocal`) ;
+  `workspace-bom` publie le BOM/catalogue + les 9 contrats (10 commandes
+  `-p`) ; `video-kernel-gradle` publie un artefact par tag (`0.7.0` /
+  `0.0.2`).
+* **Correctifs signature** : `academy-plugin`, `dashboard-plugin`,
+  `bureau-plugin` appliquaient `signing` directement → `plugin-publish`
+  auto-signait même en `CI=true`. `signing` est appliqué conditionnellement.
+* **Publiés (HTTP 200)** : N0 `workspace-bom` + 9 contrats (`0.0.128`) ; N1
+  `codebase-plugin 0.0.18` ; N2 `codex 0.0.12`, `document 0.0.30`,
+  `bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`,
+  `plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`,
+  `academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`,
+  `container-provision 0.0.1` (JitPack relabelle les contrats au tag
+  `0.0.128`).
+* **Bloqués** : `video-kernel 0.7.0` et `youtube-auth 0.0.2` — SDKMAN ne
+  télécharge pas le JDK 25 sur JitPack (rate-limit/transitoire, `429`), Gradle
+  tourne en JDK 8 et refuse. Recette prête ; retry nécessaire.
+* **Non publiés (justifié)** : `review` SNAPSHOT, `jhipster` SNAPSHOT/legacy,
+  `runner`/`ticket`/`agile` sans publication, `magic-stick` site.
+* **Effets de bord** : tags `document v0.0.30` et `academy v0.0.3` →
+  workflows release Central/Portal déclenchés, échecs **doublon** attendus ;
+  aucune publication non voulue. CI GitHub verte par ailleurs
+  (`workspace-bom runAllTests` `b4f29fd`, `codebase` `4e2343b`, etc.).
+Rapport `.agents/sessions/041-cnv-16-7-jitpack-publish-all.adoc`.

@@ -6,9 +6,29 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-09
-_session terminee_ : 040 — **CNV-16.3/16.6 rollout JitPack sur tous les projets publics** ✅. Shim `useModule` (tag JitPack `0.0.15`) appliqué à **27 dépôts / 55 `settings.gradle.kts`** (racines + sous-builds `<projet>/<plugin>/` + `academy/dogfood` + `conventions-plugin` + `video-kernel`/`youtube-auth` + **9 contrats** `workspace-bom`). **17/17 sous-builds plugins** `help` VERT ; CI **verte sur 18 dépôts** (runs `42550997452` → `42551057903`, dont `runAllTests` workspace-bom `1f97253`). **Incident réel** : ktlint `Needless blank line(s)` (double ligne vide du shim) → normalisation `\n{3,} → \n\n` + 2ᵉ commit, CI `api-key-pool` repassée verte. Baselines préexistantes confirmées (capsule/plantuml/slider root, `agile` DSL) et `magic-stick` (Docker `apt-get`) sans rapport. Décision **US-6** : JitPack = résolveur par défaut des conventions pour les builds **publics** ; pins `0.0.14` conservés (audit strict non câblé). Aucun test local ; canal Central/Portal des privés inchangé.
-_session en cours_ : aucune — 040 clôturée.
-_Prochaine session_ : 041 — optionnel : **US-4** (domaine `education.cccp`, DNS TXT) / **US-5** (build à l'avance + badge) ; dette : aligner pins `0.0.14 ↔ 0.0.15` ou l'audit.
+_session terminee_ : 041 — **CNV-16.7 publication JitPack de tous les artefacts publics** ✅ (2 bloqués). **N0** `workspace-bom` + 9 contrats (`0.0.128`), **N1** `codebase-plugin` (`0.0.18`), **N2** `codex 0.0.12`, `document 0.0.30`, `bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`, `plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`, `academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`, `container-provision 0.0.1` — **HTTP 200 vérifiés**. Correctifs **signature conditionnelle** (academy/dashboard/bureau : `plugin-publish` auto-signe sinon). `video-kernel 0.7.0` + `youtube-auth 0.0.2` **bloqués** par l'échec SDKMAN/JitPack (JDK 25 non téléchargé, `429` observés) ; recette prête. CI GitHub verte (workspace-bom `runAllTests` `b4f29fd`, codebase `4e2343b`, etc.) ; les tags `document`/`academy` ont déclenché leurs workflows release → échecs **doublon** attendus, aucune publication non voulue.
+_session en cours_ : aucune — 041 clôturée.
+_Prochaine session_ : 042 — retry `video-kernel`/`youtube-auth` ; décider `review` (SNAPSHOT) / `jhipster` (legacy) ; optionnel US-4/US-5.
+
+_Note 2026-11-09 (S-041)_ : **publication JitPack de tous les artefacts
+publics** (demande pilote « tous les plugins et libs »). Recette `jitpack.yml`
+par dépôt (JDK 25 SDKMAN, `-p <sous-build> publishToMavenLocal`, `CI=true`) ;
+**N0** `workspace-bom` + 9 contrats publiés via un `install` multi-`-p`
+(tag `v0.0.128`, JitPack relabelle les modules en `0.0.128`), **N1**
+`codebase-plugin 0.0.18`, **N2** `codex 0.0.12`, `document 0.0.30`,
+`bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`,
+`plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`,
+`academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`,
+`container-provision 0.0.1` — **HTTP 200 vérifiés**. Correctifs **signature
+conditionnelle** (academy/dashboard/bureau : `plugin-publish` auto-signe dès
+que `signing` est appliqué). `video-kernel 0.7.0` + `youtube-auth 0.0.2`
+**bloqués** : SDKMAN ne télécharge pas le JDK 25 sur JitPack (rate-limit/
+transitoire, `429`), Gradle tourne en JDK 8 → échec ; recette prête, retry
+nécessaire. Effets de bord : les tags `document`/`academy` ont déclenché leurs
+workflows release Central/Portal → échecs **doublon** attendus, **aucune
+publication non voulue**. CI GitHub verte (workspace-bom `runAllTests`
+`b4f29fd`, codebase `4e2343b`, etc.). Rapport
+`.agents/sessions/041-cnv-16-7-jitpack-publish-all.adoc`.
 
 _Note 2026-11-09 (S-040)_ : **rollout JitPack public** (demande pilote « sur
 tous les projets dans `foundry/public/` »). Shim `useModule` (tag JitPack
