@@ -15,7 +15,6 @@ pluginManagement.resolutionStrategy.eachPlugin {
     }
 }
 
-
 val globalProps = java.util.Properties().also {
     val globalFile = file(System.getProperty("user.home") + "/.gradle/gradle.properties")
     if (globalFile.exists()) it.load(globalFile.inputStream())
