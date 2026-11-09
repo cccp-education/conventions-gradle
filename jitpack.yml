@@ -1,0 +1,17 @@
+# CNV-16 — JitPack build recipe.
+# JitPack builds on demand from a public tag; no upload and no credential.
+# The real Gradle build is the self-contained `conventions-plugin/` sub-build
+# (the repository root carries no publication).
+before_install:
+  # JitPack defaults to JDK 8; the plugins require Java 25.
+  # Pin the exact Temurin identifier: SDKMAN's `25-tem` alias does not resolve
+  # for `sdk use` on the current candidate list.
+  - sdk install java 25.0.5.0+8-tem
+  - sdk use java 25.0.5.0+8-tem
+install:
+  # Publish the main module and the 8 plugin markers to ~/.m2, where JitPack
+  # harvests them. The version is derived from the git tag (see build script).
+  - ./gradlew -p conventions-plugin publishToMavenLocal -Pversion="${VERSION#v}" -x test -x functionalTest -x cucumberTest
+env:
+  # JitPack has no GPG key; mirror the CI branch of SigningPolicy.
+  CI: "true"

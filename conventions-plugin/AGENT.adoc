@@ -44,6 +44,18 @@ racine, section « Publication (Règle 2) ». Chaque `gradlePlugin.plugins` déc
 `compatibility { features { configurationCache = …; isolatedProjects = … } }`.
 ====
 
+[NOTE]
+====
+**Distribution JitPack (CNV-16, canal secondaire)** : `jitpack.yml` (racine du
+dépôt) construit depuis un **tag public** avec JDK 25 (SDKMAN), exécute le
+**sous-build** (`-p conventions-plugin`) et dérive la version du tag
+(`-Pversion="${VERSION#v}"`, signature désactivée par `CI=true`). JitPack ne
+sert **pas** les marqueurs de plugin au `groupId` de l'id : les consommateurs
+utilisent `pluginManagement.resolutionStrategy.eachPlugin { useModule(...) }`
+vers `com.github.cccp-education.conventions-gradle:conventions-plugin:<tag>`.
+Voir `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc`.
+====
+
 == Regles Absolues
 
 === Git

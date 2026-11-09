@@ -1,15 +1,28 @@
 import org.gradle.plugin.compatibility.compatibility
+import org.gradle.plugins.signing.SigningExtension
 
 plugins {
     kotlin("jvm") version libs.versions.kotlin
     `java-gradle-plugin`
     `maven-publish`
-    signing
     id("com.gradle.plugin-publish") version libs.versions.plugin.publish
 }
 
 group = "education.cccp.build"
-version = "0.0.14"
+
+// CNV-16 — JitPack derives the published version from the git tag.
+// The root `jitpack.yml` passes -Pversion="${VERSION#v}"; normal local and CI
+// builds keep the frozen release version below. A JitPack build without the
+// property is refused so the served artefact can never diverge from its tag.
+val jitpackBuild = providers.environmentVariable("JITPACK").orNull == "true"
+val versionProperty = providers.gradleProperty("version")
+if (jitpackBuild && !versionProperty.isPresent) {
+    error(
+        "JitPack build requires -Pversion=\"\${VERSION#v}\" (see jitpack.yml). " +
+            "Refusing to publish an artefact whose version does not match the git tag.",
+    )
+}
+version = versionProperty.getOrElse("0.0.15")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -272,13 +285,17 @@ publishing {
     }
 }
 
-signing {
-    // Mirrors build.SigningPolicy (not on the buildscript classpath): a test CI
-    // job has no GPG key, a release job exports CCCP_PUBLISH=true and does.
-    val isCi = System.getenv("CI") == "true"
-    val isPublishing = System.getenv("CCCP_PUBLISH") == "true"
-    if ((isPublishing || !isCi) && !version.toString().endsWith("-SNAPSHOT")) {
+// CNV-16 — the `signing` plugin is applied ONLY when a signature is expected.
+// `com.gradle.plugin-publish` auto-signs every publication as soon as it sees
+// the `signing` plugin (2.2.1, `enableSigning`), so applying it on JitPack
+// (which has no GPG key) would fail `publishToMavenLocal`. Signing stays
+// enabled for local releases and for CCCP_PUBLISH=true release jobs.
+val isPublishing = System.getenv("CCCP_PUBLISH") == "true"
+val isCi = System.getenv("CI") == "true"
+if (!jitpackBuild && (isPublishing || !isCi) && !version.toString().endsWith("-SNAPSHOT")) {
+    apply(plugin = "signing")
+    configure<SigningExtension> {
+        useGpgCmd()
         sign(publishing.publications)
     }
-    useGpgCmd()
 }
