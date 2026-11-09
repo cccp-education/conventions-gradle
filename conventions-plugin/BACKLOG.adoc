@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-09 — S-038 ✅ **CNV-16.1 plomberie locale JitPack livrée** (option B) : `jitpack.yml` racine, version dérivée du tag + garde, **signature conditionnelle** (plugin-publish 2.2.1 auto-signe sinon). Preuves locales : compiles/assemble/validatePlugins VERTS, simulation `v0.0.15-probe2` → 9 POM, 0 `.asc`. Aucun test local, aucun tag poussé. Reste : CNV-16.2 (build réel `0.0.15`) ; veille (facturation Actions privées, detekt JVM > 22)
+_Derniere mise a jour_ : 2026-11-09 — S-039 ✅ **CNV-16.2 build JitPack réel `0.0.15` VERT** (tag `v0.0.15`, 43s, JDK 25, 0 sign, artefacts HTTP 200, consommateur /tmp OK). Reste : CNV-16.3 (dépôt réel) + CNV-16.6 (rollout) ; veille (facturation Actions privées, detekt JVM > 22)
 
 '''
 
@@ -798,14 +798,14 @@ sert pas les marqueurs de plugin au `groupId` de l'id).
   `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`,
   du POM et du jar.
 | 3
-| 🟡 À FAIRE
+| ✅ S-039
 
 | CNV-16.3
 | **Preuve consommateur (dogfood)** — 1 dépôt (academy ou dashboard) avec
   `https://jitpack.io` + shim `useModule` ; `help`/`assemble` VERT ; snippet
   documenté.
 | 3
-| 🟡 À FAIRE
+| 🟡 preuve /tmp OK (S-039) — dépôt réel à faire
 
 | CNV-16.4
 | **Domaine personnalisé `education.cccp`** — DNS TXT
@@ -872,8 +872,8 @@ build long/quota ; immuabilité 7 jours. Détail et mitigations dans le cadrage.
 | CNV-15.4 | Maintenance CI actions | 2 | ✅ S-033
 | CNV-16.0 | Cadrage JitPack + preuve locale du shim | 1 | ✅ S-037
 | CNV-16.1 | Plomberie locale JitPack (`jitpack.yml`, version du tag) | 3 | ✅ S-038
-| CNV-16.2 | Premier build JitPack réel (`0.0.15`) | 3 | 🟡 À FAIRE
-| CNV-16.3 | Preuve consommateur (shim `useModule`) | 3 | 🟡 À FAIRE
+| CNV-16.2 | Premier build JitPack réel (`0.0.15`) | 3 | ✅ S-039
+| CNV-16.3 | Preuve consommateur (shim `useModule`) | 3 | 🟡 preuve /tmp OK (S-039)
 | CNV-16.4 | Domaine personnalisé `education.cccp` (option) | 2 | 🟡 À FAIRE
 | CNV-16.5 | Build à l'avance + badge (option) | 2 | 🟡 À FAIRE
 | CNV-16.6 | Décision de rollout | 4 | 🟡 À FAIRE

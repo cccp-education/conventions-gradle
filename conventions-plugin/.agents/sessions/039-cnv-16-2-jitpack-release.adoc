@@ -1,0 +1,91 @@
+= Session 039 — CNV-16.2 : premier build JitPack réel (`0.0.15`)
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 039
+:date: 2026-11-09
+:type: release / publication (canal secondaire JitPack)
+:epic: CNV-16 — JitPack (US-2 + preuve US-3)
+
+== Mission
+
+Feu vert pilote : commit + tag `v0.0.15` + push pour déclencher le premier
+build JitPack, puis vérifier l'artefact et prouver la consommation.
+
+== 1. Actions exécutées
+
+* **Bump** du fallback `0.0.14 → 0.0.15` (`build.gradle.kts`).
+* Vérifications locales (Local = Build) : `compileKotlin` + `compileTestKotlin`
+  + `compileFunctionalTestKotlin` + `assemble` + `validatePlugins` VERTS.
+* **Commit** `abae65b` — `build(conventions): JitPack distribution and
+  tag-derived 0.0.15 (CNV-16)` (jitpack.yml, build script, note AGENT).
+* **Commit** `713a671` — `docs(conventions): CNV-16 JitPack cadrage +
+  S-037/S-038 closure`.
+* **Tag annoté `v0.0.15`** sur `713a671` ; **push** `main` + `v0.0.15`.
+* Déclenchement JitPack (`curl … /0.0.15/`, timeout 30 s attendu) puis polling
+  de l'API (`…/api/builds/com.github.cccp-education/conventions-gradle`).
+
+== 2. Build JitPack — VERT
+
+* Statut API : `"0.0.15" : "ok"` (≈ 40 s après le déclenchement).
+* `BUILD SUCCESSFUL in 43s`.
+* **JDK 25** : `sdk install java 25.0.5.0+8-tem` + `sdk use …` →
+  « Using java version 25.0.5.0+8-tem in this shell ».
+* Commande : `./gradlew -p conventions-plugin publishToMavenLocal
+  -Pversion="${VERSION#v}" -x test -x functionalTest -x cucumberTest`.
+* **0 tâche `sign*`** (le correctif S-038 tient sur JitPack).
+
+== 3. Artefacts vérifiés (HTTP 200)
+
+[cols="3,2,2"]
+|===
+| Artefact | HTTP | Taille
+| `conventions-plugin-0.0.15.pom` | 200 | 2 514 o
+| `conventions-plugin-0.0.15.jar` | 200 | 123 975 o
+| `conventions-plugin-0.0.15-sources.jar` | 200 | 28 020 o
+| `…-javadoc.jar` / `…-0.0.15.module` / `.md5` / `.sha1` | 200 | —
+|===
+
+**Coordonnée confirmée (multi-module)** :
+`com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`.
+
+* POM servi : `groupId=com.github.cccp-education.conventions-gradle`,
+  `artifactId=conventions-plugin`, version `0.0.15`, licence Apache-2.0,
+  dépendances runtime intactes (ktlint, detekt, kover, kotlin-gradle-plugin).
+* Module metadata : `component.group=com.github.cccp-education`,
+  `component.module=conventions-gradle` (réécrit par JitPack).
+* Les **markers** sont réécrits au group JitPack
+  (`…:education.cccp.build.<id>.gradle.plugin:0.0.15`) et leur dépendance
+  pointe vers `…:conventions-plugin:0.0.15` — mais le `plugins {}` standard
+  cherche le marker au **groupId de l'id**, donc le **shim `useModule` reste
+  obligatoire**.
+
+== 4. Preuve consommateur (US-3, partielle)
+
+Consommateur `/tmp/opencode/jitpack-consumer` : repo `https://jitpack.io` +
+`resolutionStrategy.eachPlugin { useModule("com.github.cccp-education
+.conventions-gradle:conventions-plugin:${requested.version}") }` +
+`id("education.cccp.build.lint") version "0.0.15"` → **BUILD SUCCESSFUL in
+11s**. Téléchargement JitPack prouvé par le cache Gradle
+(`modules-2/.../com.github.cccp-education.conventions-gradle/conventions-plugin/0.0.15`).
+Reste à câbler un **dépôt réel** (academy/dashboard) avec CI verte — US-3
+complète.
+
+== 5. Aucune régression
+
+* Aucun test local exécuté (Local = Build, Tests = CI) ; la CI du dépôt est
+  déclenchée par le push `main`.
+* Aucune publication Central/Portal ; le canal secondaire JitPack est
+  indépendant et sans credential.
+
+== 6. Suivant
+
+* **CNV-16.3** : câbler un consommateur réel (academy ou dashboard), CI verte,
+  snippet documenté.
+* **CNV-16.6** : décision de rollout (canal secondaire vs primaire) et
+  généralisation éventuelle.
+* Optionnelles : CNV-16.4 (domaine `education.cccp`), CNV-16.5 (build à
+  l'avance + badge).
+
+Rapport `.agents/sessions/039-cnv-16-2-jitpack-release.adoc`.

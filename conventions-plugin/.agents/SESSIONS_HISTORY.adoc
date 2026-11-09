@@ -951,3 +951,29 @@ un build JitPack, **sans** tag ni publication externe.
 * **Aucun test local, aucune publication Central/Portal, aucun tag poussé.**
   Deux sondes (`0.0.15-probe`, `-probe2`) subsistent dans `~/.m2`.
 Rapport `.agents/sessions/038-cnv-16-1-jitpack-plumbing.adoc`.
+
+== Session 039 — CNV-16.2 premier build JitPack réel `0.0.15` (2026-11-09)
+
+Feu vert pilote : commit + tag + push pour déclencher JitPack.
+
+* **Commits** `abae65b` (build + `jitpack.yml` + note AGENT) et `713a671`
+  (docs S-037/S-038) ; **tag annoté `v0.0.15`** ; push `main` + tag.
+* **Build JitPack VERT** : API `"0.0.15": "ok"`, `BUILD SUCCESSFUL in 43s`.
+  JDK installé `25.0.5.0+8-tem` via SDKMAN ; commande
+  `./gradlew -p conventions-plugin publishToMavenLocal -Pversion=0.0.15
+  -x test -x functionalTest -x cucumberTest` ; **0 tâche `sign*`**.
+* **Artefacts HTTP 200** : POM (2 514 o), jar (123 975 o), sources
+  (28 020 o), javadoc, module, md5/sha1. Coordonnée confirmée :
+  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`.
+  POM : group réécrit par JitPack, dépendances runtime intactes ; module
+  metadata `component.group=com.github.cccp-education`.
+* Les markers sont réécrits au group JitPack
+  (`…:education.cccp.build.<id>.gradle.plugin:0.0.15`) et leur dépendance
+  pointe vers le module JitPack, mais le `plugins {}` standard cherche le
+  marker au **groupId de l'id** → **shim `useModule` confirmé obligatoire**.
+* **Preuve consommateur `/tmp`** (`https://jitpack.io` + shim +
+  `education.cccp.build.lint:0.0.15`) → `BUILD SUCCESSFUL in 11s` ;
+  téléchargement prouvé par le cache Gradle
+  (`com.github.cccp-education.conventions-gradle/conventions-plugin/0.0.15`).
+* Aucun test local ; aucune publication Central/Portal.
+Rapport `.agents/sessions/039-cnv-16-2-jitpack-release.adoc`.
