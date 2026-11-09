@@ -1,0 +1,337 @@
+= Cadrage — EPIC CNV-16 « Distribution JitPack (contournement Sonatype / Plugin Portal) »
+:toc: left
+:toclevels: 3
+:icons: font
+:sectnums:
+
+_Créé_ : 2026-11-09 (session 037) — investigation pilote.
+_Statut_ : 🟡 CADRÉ — US-0 ✅ (S-037), US-1 ✅ (S-038), US-2→US-6 à exécuter.
+_Portée_ : `conventions-gradle` (N0, 8 plugins), puis pilote consommateur.
+
+== 1. Contexte et problème
+
+Depuis le **2026-11-05**, la publication `education.cccp` est contrainte :
+
+* **Sonatype / Maven Central** : restriction pilote jusqu'au **2026-12-01** ;
+* **Gradle Plugin Portal** : cible temporaire (`publishPlugins`, compte
+  `cccp-education`), revue manuelle à la première publication d'un groupe,
+  dépendance à un compte et à un service externe ;
+* les CI privées sont déjà bloquées par la **facturation GitHub Actions**
+  (S-034), ce qui rend le canal de publication encore plus critique.
+
+Objectif de l'EPIC : **disposer d'un canal de distribution public, sans
+credentials, sans revue, sans Sonatype ni Plugin Portal** — JitPack — pour les
+artefacts `education.cccp.build:*` et, par extension, les autres boroughs.
+
+== 2. Investigation — comment fonctionne JitPack
+
+[cols="2,5"]
+|===
+| Sujet | Constat (docs officielles `docs.jitpack.io`)
+
+| Déclenchement
+| Un **tag / GitHub Release** (ou un commit, une branche `-SNAPSHOT`, une PR).
+  JitPack clone la source **publique**, construit à la demande, sert les
+  artefacts. **Aucun upload, aucun credential.**
+
+| Commande de build
+| Par défaut `./gradlew build publishToMavenLocal` ; surchargeable par
+  `jitpack.yml` (`install:`). Les artefacts sont récupérés dans
+  `~/.m2/repository`.
+
+| JDK
+| **OpenJDK 8 par défaut**. JDK récent = `jitpack.yml`
+  (`before_install: sdk install java 25.0.5.0+8-tem; sdk use java 25.0.5.0+8-tem`).
+  `jdk:` seul ne suffit pas (le `sdk use` est obligatoire).
+
+| Multi-module
+| Tous les modules sont publiés sous
+  `com.github.USER.REPO:MODULE:VERSION` (module = `artifactId`).
+  Le **nom du dépôt devient l'artifactId** de référence.
+
+| Domaine personnalisé (option)
+| Un enregistrement DNS `TXT git.<domaine>` → `https://github.com/<org>`
+  permet un `groupId` reverse-domain (ex. `education.cccp`) au lieu de
+  `com.github.cccp-education`.
+
+| Gradle plugins DSL
+| **Pas de marqueur de plugin** au `groupId` de l'id de plugin. Le `plugins {}`
+  standard ne résout **pas** un plugin JitPack sans shim. Le shim officieux
+  (documenté par la communauté) est `pluginManagement.resolutionStrategy
+  .eachPlugin { useModule(...) }`.
+
+| Signature / checksums
+| **Aucune signature GPG**, pas de checksums publiés. Artefacts **immuables
+  après 7 jours** (fenêtre de rebuild).
+
+| Disponibilité
+| Service tiers, builds *on demand* (le premier consommateur attend le build),
+  quota/temps de build, logs publics.
+|===
+
+=== 2.1 Mesure locale (preuve du shim `useModule`)
+
+Un consommateur Gradle minimal a été configuré dans `/tmp` avec
+`pluginManagement.resolutionStrategy.eachPlugin { useModule("education.cccp.build:conventions-plugin:0.0.14") }`
+puis `plugins { id("education.cccp.build.lint") version "0.0.14" }`.
+Résultat : **`BUILD SUCCESSFUL`** (Gradle 9.8.2, JDK 25.0.5). Le mapping
+« id de plugin → un seul module (le jar contient les 8 implémentations et
+leurs descripteurs) » fonctionne ; il reste à le faire pointer vers les
+coordonnées JitPack.
+
+== 3. Contraintes mesurées du dépôt
+
+[cols="2,4,2"]
+|===
+| Point | Constat | Impact JitPack
+
+| Racine vs sous-build
+| La racine `conventions-gradle/` n'a **aucune publication** ; le vrai build
+  est le **sous-build autonome** `conventions-plugin/` (son propre
+  `settings.gradle.kts`, wrapper 9.8.2).
+| `install:` doit lancer `./gradlew -p conventions-plugin publishToMavenLocal`.
+
+| Version
+| `version = "0.0.14"` **codée en dur** dans `conventions-plugin/build.gradle.kts`.
+| Un tag `v0.0.15` ne publierait que `0.0.14` → **divergence tag/artefact**.
+  Il faut `-Pversion="${VERSION#v}"` + lecture de la propriété.
+
+| Signature
+| `signing` s'applique si `CI != true` (et version non SNAPSHOT).
+| JitPack n'a pas de clé GPG → forcer `env: CI: "true"` dans `jitpack.yml`.
+
+| Marqueurs de plugin
+| `java-gradle-plugin` génère 8 POM de marqueur
+  (`education.cccp.build.<id>:…gradle.plugin`).
+| JitPack ne les sert pas à ce `groupId` → **shim `useModule` obligatoire**
+  côté consommateur.
+
+| Stack
+| Java **25**, Kotlin **2.4.10**, Gradle **9.8.2**, 8 plugins.
+| JDK 25 doit être installé via SDKMAN dans `jitpack.yml` ; temps de build
+  (compilation Kotlin + `publishToMavenLocal`) à surveiller.
+
+| Dépendances runtime
+| `ktlint-gradle`, `detekt`, `kover`, `kotlin-gradle-plugin`,
+  `plugin-compatibility` (Central/Portal).
+| Résolubles depuis Central/Portal pendant le build JitPack ; à vérifier
+  dans le POM servi.
+|===
+
+== 4. Options
+
+[cols="1,3,3,3"]
+|===
+| Option | Principe | Avantages | Inconvénients
+
+| **A — JitPack primaire**
+| JitPack devient le canal de référence ; Central/Portal abandonnés.
+| Zéro credential, zéro revue, gratuit, tag = release.
+| Pas de `plugins {}` natif (shim), pas de signature/checksums, pas de
+  découverte Portal, service tiers, builds à la demande, artefactId = nom du
+  dépôt, pas de SNAPSHOT Maven conventionnel.
+
+| **B — JitPack secondaire (recommandée)**
+| Central/Portal restent canoniques ; JitPack est un **canal de secours**
+  (et de test de branches/commits) activé par tag.
+| Débloque immédiatement (pas de Sonatype), conserve la signature et la
+  découverte Portal, permet de tester `main-SNAPSHOT`.
+| Duplication de canal, documentation consommateur double, dette de cohérence
+  des versions.
+
+| **C — Statu quo**
+| Attendre le 2026-12-01 (retour Maven Central) / Portal.
+| Aucun travail.
+| Dépend d'un service externe et de la facturation CI ; pas de secours.
+|===
+
+== 5. Décisions proposées (à valider pilote)
+
+. **Option B** (JitPack = canal secondaire) : ne remplace pas la politique
+  Portal, mais fournit un **fallback sans credential** et un canal de test.
+. **Canal par tag uniquement** (pas de webhook de branche dans un premier
+  temps) ; la branche `main-SNAPSHOT` reste optionnelle.
+. **`jitpack.yml` à la racine du dépôt**, `install` ciblant le sous-build :
+  `./gradlew -p conventions-plugin publishToMavenLocal`.
+. **Version dérivée du tag** via `-Pversion="${VERSION#v}"`, build script
+  lisant `providers.gradleProperty("version")`.
+. **Signature conditionnelle** : `env: CI: "true"` **ne suffit pas** —
+  `com.gradle.plugin-publish` 2.2.1 auto-signe dès que le plugin `signing`
+  est appliqué (`enableSigning`). Le plugin `signing` n'est donc **pas**
+  appliqué sur JitPack (`!jitpackBuild && (CCCP_PUBLISH || !CI) && non
+  SNAPSHOT`) ; la matrice est vérifiée S-038 (0 tâche `sign*` sur JitPack,
+  9 en local/release).
+. **JDK 25 via SDKMAN** (`before_install`), pas de `jdk:` seul.
+. **Shim `useModule` documenté** pour les consommateurs :
+  `useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:${requested.version}")`.
+. **Domaine personnalisé `education.cccp` = P2 optionnel** (DNS TXT), à
+  valider empiriquement avant adoption (coordonnées multi-module ambiguës).
+. **Rollout limité au pilote** : `conventions` + **1 consommateur** avant
+  toute généralisation aux 26 dépôts.
+. **Pas de test local** (Local = Build, Tests = CI) ; preuve = build JitPack
+  réel + CI du consommateur.
+
+== 6. User Stories
+
+[cols="1,5,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| CNV-16.0
+| **Investigation + cadrage** — docs JitPack, mesure locale du shim
+  `useModule`, contraintes du dépôt, options, risks.
+| 1
+| ✅ S-037
+
+| CNV-16.1
+| **Plomberie locale (sans JitPack)** — `jitpack.yml` à la racine ;
+  `version` lue depuis `providers.gradleProperty("version")` (fallback
+  `0.0.14`) ; garde de cohérence tag/version ; `compileKotlin` + `assemble` +
+  `validatePlugins` VERTS. Aucun test local.
+| 3
+| ✅ S-038
+
+| CNV-16.2
+| **Premier build JitPack réel** — bump `0.0.15`, tag annoté `v0.0.15`,
+  push, déclenchement (`curl https://jitpack.io/com/github/cccp-education/conventions-gradle/0.0.15/`),
+  vérification : build log vert, module
+  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`,
+  POM + jar + sources, dépendances runtime résolues.
+| 3
+| 🟡 À FAIRE
+
+| CNV-16.3
+| **Preuve consommateur (dogfood)** — 1 dépôt (proposé : `academy` ou
+  `dashboard`, le moins risqué) configuré avec le repo `https://jitpack.io`
+  en `pluginManagement` + shim `useModule` ; `help`/`assemble` VERT ; CI verte.
+  Documenter le snippet réutilisable.
+| 3
+| 🟡 À FAIRE
+
+| CNV-16.4
+| **Domaine personnalisé `education.cccp` (optionnel)** — DNS TXT
+  `git.education.cccp` → `https://github.com/cccp-education` ; valider les
+  coordonnées multi-module ; décider de l'adoption.
+| 2
+| 🟡 À FAIRE (conditionnelle)
+
+| CNV-16.5
+| **Build à l'avance + badge (optionnel)** — workflow GitHub Actions sur
+  `release: created` (curl 30 s) + badge
+  `https://jitpack.io/v/cccp-education/conventions-gradle.svg`.
+| 2
+| 🟡 À FAIRE (conditionnelle)
+
+| CNV-16.6
+| **Décision de rollout** — si Option A/B retenue : documenter le canal dans
+  `AGENTS.adoc`, `AGENT.adoc` des boroughs, `PUBLICATION_STRATEGY.adoc` ;
+  généraliser le shim aux consommateurs par lots, avec audit.
+| 4
+| 🟡 À FAIRE (après pilote)
+|===
+
+== 7. Risques et inconnues (à lever en US-2)
+
+[cols="3,2,4"]
+|===
+| Risque | Criticité | Mitigation / preuve
+
+| JDK 25 absent de l'image JitPack | Haute
+| SDKMAN `before_install` (`25.0.5.0+8-tem`) ; fallback : autre build 25.x Temurin ; preuve = build log.
+
+| Version publiée ≠ tag | Haute
+| `-Pversion="${VERSION#v}"` + garde de cohérence ; preuve = POM servi.
+
+| Build à la racine au lieu du sous-build | Haute
+| `install: ./gradlew -p conventions-plugin …` ; preuve = log.
+
+| Signature GPG tentée | Haute
+| **Découvert S-038** : `plugin-publish` auto-signe si `signing` est appliqué.
+  Correctif : application **conditionnelle** de `signing`. Preuve : 0 tâche
+  `sign*` / 0 `.asc` en simulation JitPack, 9 en local/release.
+
+| Marqueur de plugin absent | Moyenne
+| Shim `useModule` (mesuré localement) ; preuve = consommateur US-3.
+
+| POM/dépendances mal réécrits par JitPack | Moyenne
+| Inspecter le POM servi ; repli sur un `pom.withXml` si nécessaire.
+
+| ArtefactId = nom du dépôt (pas `conventions-plugin` seul) | Moyenne
+| Coordonnée documentée ; le shim absorbe la différence.
+
+| Build trop long / quota | Moyenne
+| `-x test -x functionalTest -x cucumberTest` ; mesurer.
+
+| Immuabilité 7 jours / service tiers | Faible
+| Canal secondaire (Option B), central reste canonique.
+|===
+
+== 8. Definition of Done
+
+* `jitpack.yml` versionné à la racine, `install` cible le sous-build et
+  désactive la signature.
+* Tag `v0.0.15` → build JitPack **vert** → artefact
+  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`
+  téléchargeable (jar + POM + sources).
+* Un consommateur tiers applique un plugin de conventions **sans Sonatype ni
+  Portal** via le shim `useModule`, build vert.
+* Documentation consommateur (snippet `settings.gradle.kts`) publiée.
+* Aucun secret, aucun credential JitPack, aucun test local exécuté.
+* Décision de rollout (canal secondaire vs primaire) consignée au BACKLOG.
+
+== 9. Procédure de référence (à implémenter en US-1/US-2)
+
+=== `jitpack.yml` (racine du dépôt)
+
+[source,yaml]
+----
+before_install:
+  - sdk install java 25.0.5.0+8-tem
+  - sdk use java 25.0.5.0+8-tem
+install:
+  - ./gradlew -p conventions-plugin publishToMavenLocal -Pversion="${VERSION#v}" -x test -x functionalTest -x cucumberTest
+env:
+  CI: "true"
+----
+
+=== Consommateur — `settings.gradle.kts`
+
+[source,kotlin]
+----
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("education.cccp.build.")) {
+                useModule(
+                    "com.github.cccp-education.conventions-gradle:conventions-plugin:${requested.version}"
+                )
+            }
+        }
+    }
+}
+----
+
+=== Vérification
+
+[source,bash]
+----
+# déclenche/observe un build
+curl -s -m 30 "https://jitpack.io/com/github/cccp-education/conventions-gradle/0.0.15/" || true
+# log
+curl -s "https://jitpack.io/com/github/cccp-education/conventions-gradle/0.0.15/build.log"
+----
+
+== 10. Références
+
+* JitPack — About / Building : https://docs.jitpack.io/ ,
+  https://docs.jitpack.io/building/
+* JDK récent : https://dev.to/cicirello/how-to-configure-jitpack-for-recent-jdk-versions-4pek
+* GroupId personnalisé : https://dev.to/cicirello/ahead-of-time-jitpack-builds-with-custom-groupid-via-github-actions-55cp
+* Plugins DSL + JitPack : https://www.jvt.me/posts/2021/10/27/gradle-plugin-jitpack/
+* Politique de publication courante : `AGENTS.adoc` racine, section
+  « Publication (Règle 2) ».

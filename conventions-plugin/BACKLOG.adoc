@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-04 — S-035 ✅ **aucun EPIC/US ouvert**. `0.0.14` + rollout 140 pins / 53 fichiers / 26 dépôts ; audit strict `OK: 133 builds at 0.0.14` ; BOM/catalog `0.0.128` ; `training` codebase 0.0.18. Reste : veille (facturation Actions privées, detekt JVM > 22)
+_Derniere mise a jour_ : 2026-11-09 — S-038 ✅ **CNV-16.1 plomberie locale JitPack livrée** (option B) : `jitpack.yml` racine, version dérivée du tag + garde, **signature conditionnelle** (plugin-publish 2.2.1 auto-signe sinon). Preuves locales : compiles/assemble/validatePlugins VERTS, simulation `v0.0.15-probe2` → 9 POM, 0 `.asc`. Aucun test local, aucun tag poussé. Reste : CNV-16.2 (build réel `0.0.15`) ; veille (facturation Actions privées, detekt JVM > 22)
 
 '''
 
@@ -743,6 +743,98 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 
 '''
 
+== 🟡 CADRE — CNV-16 : Distribution JitPack (contournement Sonatype / Plugin Portal)
+
+_Investigation S-037. Objectif : un canal public sans credential (ni Sonatype,
+ni Plugin Portal) pour les artefacts `education.cccp.build:*`._
+
+*Priorite* : P1 (débloque la publication quand Sonatype/Portal sont
+indisponibles ; les CI privées sont déjà bloquées par la facturation Actions)
+*Charge estimee* : ~18 pts (~4 sessions)
+*Depend de* : aucune (le build `0.0.14` est stable)
+*Document* : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc`
+*Statut* : 🟡 CADRÉ (US-0 ✅ S-037 ; US-1→US-6 à faire)
+
+=== Contexte
+
+JitPack construit à la demande depuis un **tag GitHub public**, sans upload ni
+credential. Contraintes mesurées : JDK 25 via SDKMAN, build réel dans le
+**sous-build** `conventions-plugin/`, version dérivée du tag, signature
+désactivée (`CI=true`), et **shim `useModule`** côté consommateur (JitPack ne
+sert pas les marqueurs de plugin au `groupId` de l'id).
+
+=== Options
+
+[cols="1,3,3"]
+|===
+| Option | Principe | Verdict
+| A | JitPack primaire | Écarté (pas de `plugins {}` natif, ni signature, ni découverte Portal)
+| **B** | **JitPack secondaire** (Central/Portal canoniques) | **Recommandé** — secours sans credential + canal de test
+| C | Statu quo | Dépend de la facturation/du service externe
+|===
+
+=== User Stories
+
+[cols="1,5,2,2"]
+|===
+| US | Description | Pts | Statut
+
+| CNV-16.0
+| **Investigation + cadrage** — docs JitPack, preuve locale du shim
+  `useModule`, contraintes du dépôt, options, risques.
+| 1
+| ✅ S-037
+
+| CNV-16.1
+| **Plomberie locale** — `jitpack.yml` (racine), `version` lue depuis
+  `providers.gradleProperty("version")` (fallback `0.0.14`), garde de
+  cohérence tag/version, compiles + `assemble` + `validatePlugins` VERTS.
+| 3
+| ✅ S-038
+
+| CNV-16.2
+| **Premier build JitPack réel** — bump `0.0.15`, tag `v0.0.15`, push,
+  déclenchement, vérification du build log, du module
+  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`,
+  du POM et du jar.
+| 3
+| 🟡 À FAIRE
+
+| CNV-16.3
+| **Preuve consommateur (dogfood)** — 1 dépôt (academy ou dashboard) avec
+  `https://jitpack.io` + shim `useModule` ; `help`/`assemble` VERT ; snippet
+  documenté.
+| 3
+| 🟡 À FAIRE
+
+| CNV-16.4
+| **Domaine personnalisé `education.cccp`** — DNS TXT
+  `git.education.cccp` → `https://github.com/cccp-education` ; coordonnées
+  multi-module validées.
+| 2
+| 🟡 À FAIRE (optionnelle)
+
+| CNV-16.5
+| **Build à l'avance + badge** — workflow GHA sur `release: created`
+  (curl 30 s) + badge `jitpack.io/v/...`.
+| 2
+| 🟡 À FAIRE (optionnelle)
+
+| CNV-16.6
+| **Décision de rollout** — documenter le canal (AGENTS/AGENT/PUBLICATION
+  STRATEGY) et généraliser le shim par lots avec audit.
+| 4
+| 🟡 À FAIRE (après pilote)
+|===
+
+=== Risques principaux (à lever US-2)
+
+JDK 25 dans l'image JitPack ; version publiée ≠ tag ; build à la racine au lieu
+du sous-build ; signature GPG tentée ; marqueur de plugin absent ; POM réécrit ;
+build long/quota ; immuabilité 7 jours. Détail et mitigations dans le cadrage.
+
+'''
+
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]
@@ -778,7 +870,14 @@ catalogue/BOM `0.0.127` ; US-4 indépendante.
 | CNV-15.2 | `DetektCompatibility` (JVM ≤ 22) | 2 | ✅ S-033
 | CNV-15.3 | Alignement BOM de test + release 0.0.13 + rollout | 4 | ✅ S-033
 | CNV-15.4 | Maintenance CI actions | 2 | ✅ S-033
-| *Total* | | *179* |
+| CNV-16.0 | Cadrage JitPack + preuve locale du shim | 1 | ✅ S-037
+| CNV-16.1 | Plomberie locale JitPack (`jitpack.yml`, version du tag) | 3 | ✅ S-038
+| CNV-16.2 | Premier build JitPack réel (`0.0.15`) | 3 | 🟡 À FAIRE
+| CNV-16.3 | Preuve consommateur (shim `useModule`) | 3 | 🟡 À FAIRE
+| CNV-16.4 | Domaine personnalisé `education.cccp` (option) | 2 | 🟡 À FAIRE
+| CNV-16.5 | Build à l'avance + badge (option) | 2 | 🟡 À FAIRE
+| CNV-16.6 | Décision de rollout | 4 | 🟡 À FAIRE
+| *Total* | | *197* |
 |===
 
 === Suivi hors EPIC (S-035) — aucun EPIC/US ouvert

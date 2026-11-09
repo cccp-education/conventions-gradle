@@ -5,10 +5,37 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-11-05
-_session terminee_ : 036 — **Compatibilité Gradle Plugin Portal** : Plugin Publish `2.2.1` et déclaration `compatibility` (`configurationCache=false`, `isolatedProjects=false`) sur **16 dépôts** (conventions + academy + bureau + dashboard + planner + slider + plantuml + readme + bakery + hyperframes + youtube-auth + codebase + codex + graphify + newpipe + catalogue workspace-bom) ; **défaut partagé** dans `GradlePluginConventionsPlugin` (`configurationCache=false`, gardé par `withPlugin("org.gradle.plugin-compatibility")`) ; dépendance `org.gradle.plugin:compatibility-plugin:1.1.0` ; compiles/help VERTS, commits/push effectués.
-_session en cours_ : aucune — 036 clôturée ; adoption conventions `0.0.15` planifiée en 037.
-_Prochaine session_ : 037 — publier conventions `0.0.15` (défaut compatibilité) puis bump BOM/catalogue et adopter chez les consommateurs ; traiter `jhipster`/`notebook` si publication Portal, et `document`/`capsule`/`flow`/`review` si activation du canal Portal.
+_Derniere mise a jour_ : 2026-11-09
+_session terminee_ : 038 — **CNV-16.1 plomberie locale JitPack**. `jitpack.yml` à la racine (JDK 25 via SDKMAN, `install` sur le sous-build `-p conventions-plugin`, version du tag, `CI=true`) ; version lue depuis `providers.gradleProperty("version")` (fallback `0.0.14`) + **garde** « JITPACK sans `-Pversion` → échec » ; **signature conditionnelle** (découverte : `plugin-publish` 2.2.1 auto-signe dès que `signing` est appliqué — 13 `.asc` en simulation malgré `CI=true` → correctif, matrice 0/9/9/0). Preuves : compiles + `assemble` + `validatePlugins` VERTS ; simulation install `v0.0.15-probe2` → 9 POM, 0 `.asc`, version du tag. **Aucun test local, aucun tag poussé, aucune publication.**
+_session en cours_ : aucune — 038 clôturée.
+_Prochaine session_ : 039 — **CNV-16.2** sur feu vert pilote : bump `0.0.15`, tag `v0.0.15`, push, build JitPack réel, vérification de l'artefact `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15` (POM + jar).
+
+_Note 2026-11-09 (S-038)_ : **CNV-16.1 livrée** (plomberie locale JitPack,
+option B). `jitpack.yml` racine (`before_install` JDK 25 SDKMAN, `install`
+`./gradlew -p conventions-plugin publishToMavenLocal -Pversion="${VERSION#v}"
+-x test -x functionalTest -x cucumberTest`, `env: CI: "true"`) ; version lue
+depuis `providers.gradleProperty("version")` + garde refusant un build JitPack
+sans `-Pversion`. **Verrou découvert** : `plugin-publish 2.2.1` auto-signe dès
+que le plugin `signing` est appliqué, même en `CI=true` (13 `.asc` en
+simulation) → `signing` appliqué **conditionnellement** ; matrice vérifiée
+(0 tâche `sign*` sur JitPack, 9 en local/release). Preuves locales : compiles +
+`assemble` + `validatePlugins` VERTS ; simulation `v0.0.15-probe2` → POM
+`0.0.15-probe2`, 9 POM (module + 8 markers), 0 `.asc`. Aucun test local, aucun
+tag poussé. Rapport `.agents/sessions/038-cnv-16-1-jitpack-plumbing.adoc`.
+
+_Note 2026-11-09 (S-037)_ : **EPIC CNV-16 « JitPack » cadré** (investigation
+pilote). JitPack construit à la demande depuis un **tag public**, sans upload
+ni credential → contourne Sonatype et Plugin Portal. Contraintes mesurées :
+JDK 8 par défaut (installer **25.0.5.0+8-tem** via SDKMAN), build réel dans le
+**sous-build** `conventions-plugin/` (`-p`), version **dérivée du tag**
+(`-Pversion="${VERSION#v}"`), signature désactivée (`env: CI: "true"`), et
+**shim `useModule`** côté consommateur (JitPack ne sert pas les marqueurs de
+plugin au `groupId` de l'id). Preuve locale du shim : consommateur `/tmp` →
+`BUILD SUCCESSFUL` (Gradle 9.8.2, JDK 25.0.5). Options : A primaire écartée,
+**B secondaire recommandée**, C statu quo. 7 US (~18 pts), 9 risques.
+`.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` ; rapport
+`.agents/sessions/037-cnv-16-jitpack-cadrage.adoc`. Aucun code modifié, aucun
+tag poussé.
 
 _Note 2026-11-04 (S-035)_ : **items 3 et 4 du backlog soldés**. (1) Alignement
 du BOM de test injecté `0.0.126 → 0.0.127` + release **`0.0.14`** (Central

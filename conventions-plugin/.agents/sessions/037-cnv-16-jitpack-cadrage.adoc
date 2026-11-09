@@ -1,0 +1,105 @@
+= Session 037 — Investigation JitPack + cadrage EPIC CNV-16
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 037
+:date: 2026-11-09
+:type: veille / investigation / cadrage
+:epic: CNV-16 (cadré) — JitPack
+
+== Mission
+
+Demande pilote : « investiguer le déploiement vers jitpack.io pour contourner
+Sonatype et Gradle Plugin Portal », EPIC porté par le borough **conventions**.
+
+== 1. Investigation — JitPack
+
+Sources primaires : `docs.jitpack.io` (About, Building), articles de référence
+sur le JDK récent, le groupId personnalisé et le `plugins {}` DSL.
+
+[cols="2,5"]
+|===
+| Point | Résultat
+
+| Mode
+| Build **à la demande** depuis un tag/commit/branche d'un dépôt **public** ;
+  aucun upload ni credential. `./gradlew build publishToMavenLocal` par défaut,
+  surchargeable par `jitpack.yml`.
+
+| JDK
+| **JDK 8 par défaut** → installer JDK 25 via SDKMAN en `before_install`
+  (`sdk install java 25-tem` + `sdk use java 25-tem`). `jdk:` seul est
+  insuffisant.
+
+| Multi-module
+| `com.github.USER.REPO:MODULE:VERSION` (module = `artifactId`). Le **nom du
+  dépôt** est l'artifactId de référence.
+
+| Plugins DSL
+| **Pas de marqueur de plugin** au groupId de l'id → shim obligatoire
+  `pluginManagement.resolutionStrategy.eachPlugin { useModule(...) }`.
+
+| Signature
+| Aucune signature GPG/checksums ; immuabilité après 7 jours.
+
+| GroupId personnalisé
+| DNS `TXT git.<domaine>` → `https://github.com/<org>` (option P2, coordonnées
+  multi-module à valider).
+|===
+
+=== Preuve locale du shim
+
+Consommateur `/tmp/opencode/jitpack-probe` : `useModule(
+"education.cccp.build:conventions-plugin:0.0.14")` + application de
+`education.cccp.build.lint` → **BUILD SUCCESSFUL** (Gradle 9.8.2, JDK 25.0.5).
+Le mapping id de plugin → module unique fonctionne ; il reste à pointer vers
+les coordonnées JitPack.
+
+== 2. Contraintes du dépôt (mesurées)
+
+* Racine `conventions-gradle/` = **aucune publication** ; le build réel est le
+  **sous-build** `conventions-plugin/` → `install` doit utiliser
+  `-p conventions-plugin`.
+* `version = "0.0.14"` **codée en dur** → un tag `v0.0.15` publierait 0.0.14.
+  Correctif : `-Pversion="${VERSION#v}"` + lecture de la propriété.
+* `signing` s'active si `CI != true` → JitPack (sans GPG) échouerait ;
+  `env: CI: "true"`.
+* 8 marqueurs de plugin générés mais non servis au groupId attendu → shim
+  `useModule`.
+* Stack Java 25 / Kotlin 2.4.10 / Gradle 9.8.2.
+
+== 3. Livrable
+
+* Cadrage **`.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc`** :
+  * 3 options (A JitPack primaire, **B secondaire recommandée**, C statu quo) ;
+  * 10 décisions proposées (fallback sans credential, tag-only, version du
+    tag, `CI=true`, JDK SDKMAN, shim `useModule`, pilote 1 consommateur…) ;
+  * 7 US (~18 pts) : US-0 ✅, US-1 plomberie locale, US-2 premier build réel,
+    US-3 preuve consommateur, US-4 domaine personnalisé (option), US-5 build
+    à l'avance + badge (option), US-6 décision de rollout ;
+  * 9 risques et leurs preuves ; `jitpack.yml` de référence ; snippet
+    consommateur ; commandes de vérification.
+* Mise à jour backlog/TODO/INDEX/PROMPT_REPRISE (S-038).
+
+**Aucun code modifié, aucune publication, aucun tag poussé, aucun test
+local.** L'état `0.0.14` est intact.
+
+== 4. Verdict d'investigation
+
+JitPack est **techniquement viable** comme canal secondaire sans credential.
+Les deux seuls points non prouvés (JDK 25 dans l'image, coordonnées exactes du
+module) se lèvent par un **unique build réel** (US-2) ; le mécanisme Gradle
+côté consommateur est déjà prouvé localement (US-0).
+
+Point d'attention majeur : **JitPack ne fournit pas la résolution `plugins {}`
+native** (pas de marqueur de plugin) — chaque consommateur doit ajouter un shim
+`useModule`. C'est acceptable pour un canal de secours, pas idéal comme canal
+primaire pour des plugins OSS destinés à des tiers.
+
+== 5. Suivant (S-038)
+
+Exécuter **CNV-16.1** (plomberie locale : `jitpack.yml`, version depuis le tag,
+garde de cohérence, compiles/assemble/validatePlugins VERTS), puis **CNV-16.2**
+sur feu vert pilote (bump `0.0.15`, tag, push, build JitPack réel, vérification
+de l'artefact). Rapport `.agents/sessions/037-cnv-16-jitpack-cadrage.adoc`.

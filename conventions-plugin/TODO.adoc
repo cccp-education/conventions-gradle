@@ -57,6 +57,28 @@
   `actions/setup-java@v5` + `gradle/actions/setup-gradle@v6` ; CI
   `41931693366` verte.
 
+== 🟡 CADRÉ — CNV-16 « JitPack » (S-037)
+
+- [x] **CNV-16.0** investigation + cadrage
+  (`.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc`) : docs JitPack, preuve locale du
+  shim `useModule`, contraintes du dépôt, 3 options (B recommandée), 7 US,
+  9 risques. Aucun code modifié.
+- [x] **CNV-16.1** plomberie locale (S-038) : `jitpack.yml` (racine),
+  version lue depuis `providers.gradleProperty("version")` (fallback `0.0.14`),
+  garde « JITPACK sans `-Pversion` → échec », **signature conditionnelle**
+  (`plugin-publish` 2.2.1 auto-signe sinon). Compiles + `assemble` +
+  `validatePlugins` VERTS ; simulation `v0.0.15-probe2` → 9 POM, 0 `.asc`.
+  Rapport `.agents/sessions/038-cnv-16-1-jitpack-plumbing.adoc`.
+- [ ] **CNV-16.2** premier build réel : bump `0.0.15`, tag `v0.0.15`, push,
+  build JitPack vert, artefact
+  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`.
+- [ ] **CNV-16.3** preuve consommateur (academy ou dashboard) via
+  `https://jitpack.io` + shim `useModule` ; `help`/`assemble` VERT.
+- [ ] **CNV-16.4** (option) domaine `education.cccp` (DNS TXT) + coordonnées.
+- [ ] **CNV-16.5** (option) build à l'avance (curl sur release) + badge.
+- [ ] **CNV-16.6** décision de rollout (canal secondaire vs primaire) +
+  documentation consommateurs.
+
 == Veille (hors EPIC) — aucun EPIC/US ouvert
 
 - **Plugin Portal ✅** / **Central ✅** : `0.0.14` publié et propagé

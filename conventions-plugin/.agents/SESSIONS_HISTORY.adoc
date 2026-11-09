@@ -887,3 +887,67 @@ https://plugins.gradle.org/docs/publish-plugin#declaring-compatibility.
   `jhipster`), vestiges (`newpipe`, `notebook`), et adoption du défaut
   conventions après publication de `0.0.15` + bump BOM/catalogue.
 Rapport `.agents/sessions/036-plugin-portal-compatibility.adoc`.
+
+== Session 037 — Investigation JitPack + cadrage EPIC CNV-16 (2026-11-09)
+
+Demande pilote : investiguer le déploiement vers **jitpack.io** pour
+contourner Sonatype et le Gradle Plugin Portal, EPIC porté par ce borough.
+
+* **Investigation** (`docs.jitpack.io`) : build à la demande depuis un **tag
+  public**, sans upload ni credential ; commande par défaut
+  `./gradlew build publishToMavenLocal` (surchargeable) ; **JDK 8 par défaut**
+  → installer `25-tem` via SDKMAN en `before_install` ; multi-module
+  `com.github.USER.REPO:MODULE:VERSION` ; **pas de marqueur de plugin** →
+  shim `pluginManagement.resolutionStrategy.eachPlugin { useModule(...) }` ;
+  aucune signature GPG, immuabilité 7 jours ; groupId personnalisé via DNS TXT
+  (option).
+* **Preuve locale** : consommateur `/tmp/opencode/jitpack-probe` avec le shim
+  `useModule("education.cccp.build:conventions-plugin:0.0.14")` +
+  `education.cccp.build.lint` → **BUILD SUCCESSFUL** (Gradle 9.8.2, JDK
+  25.0.5). Le mapping id de plugin → module unique fonctionne.
+* **Contraintes mesurées** : le vrai build est le **sous-build**
+  `conventions-plugin/` (la racine n'a aucune publication) ; version `0.0.14`
+  codée en dur → `-Pversion="${VERSION#v}"` + `providers.gradleProperty` ;
+  `signing` actif si `CI != true` → `env: CI: "true"` ; 8 marqueurs non servis
+  au `groupId` attendu → shim obligatoire.
+* **Cadrage** `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` : options A
+  (primaire, écartée), **B (secondaire, recommandée)**, C (statu quo) ;
+  10 décisions ; **7 US (~18 pts)** — US-0 ✅, US-1 plomberie locale, US-2
+  premier build réel (`0.0.15`), US-3 preuve consommateur, US-4 domaine
+  personnalisé (option), US-5 build à l'avance + badge (option), US-6 décision
+  de rollout ; 9 risques + procédure `jitpack.yml` + snippet consommateur.
+* **Aucun code modifié, aucune publication, aucun tag poussé, aucun test
+  local.** État `0.0.14` intact (audit strict `OK: 133 builds at 0.0.14`).
+Rapport `.agents/sessions/037-cnv-16-jitpack-cadrage.adoc`.
+
+== Session 038 — CNV-16.1 plomberie locale JitPack (2026-11-09)
+
+Feu vert pilote (« c'est parti », option B validée). Préparation du dépôt pour
+un build JitPack, **sans** tag ni publication externe.
+
+* **`jitpack.yml`** (racine) : JDK 25 via SDKMAN (`before_install`),
+  `install: ./gradlew -p conventions-plugin publishToMavenLocal
+  -Pversion="${VERSION#v}" -x test -x functionalTest -x cucumberTest`,
+  `env: CI: "true"`.
+* **Version dérivée du tag** : `version = providers.gradleProperty("version")
+  .getOrElse("0.0.14")` ; **garde** : `JITPACK=true` sans `-Pversion` → échec
+  explicite (l'artefact ne peut pas diverger du tag).
+* **Verrou réel découvert** : `com.gradle.plugin-publish 2.2.1` active
+  automatiquement la signature dès que le plugin `signing` est appliqué
+  (`enableSigning`), même avec `CI=true` → 13 `.asc` et 9 tâches `sign*` en
+  simulation (pourtant sans clé sur JitPack). Correctif : `signing` n'est plus
+  dans `plugins {}` et n'est appliqué que si
+  `!jitpackBuild && (CCCP_PUBLISH=true || CI != true) && version non
+  SNAPSHOT`. Matrice : local 9, CI test 0, CI release 9, JitPack 0.
+* **Preuves locales** : `compileKotlin`/`compileTestKotlin`/
+  `compileFunctionalTestKotlin`, `assemble`, `validatePlugins` VERTS ; garde
+  testée (échec sans `-Pversion`, succès avec) ; override `-Pversion=9.9.9`
+  visible ; **simulation install** `CI=true JITPACK=true
+  VERSION=v0.0.15-probe2 … publishToMavenLocal -Pversion="${VERSION#v}"` →
+  BUILD SUCCESSFUL, POM `0.0.15-probe2`, **9 POM** (module + 8 markers),
+  **0 tâche `sign*`**, **0 `.asc`**.
+* `conventions-plugin/AGENT.adoc` : note « Distribution JitPack (canal
+  secondaire) ».
+* **Aucun test local, aucune publication Central/Portal, aucun tag poussé.**
+  Deux sondes (`0.0.15-probe`, `-probe2`) subsistent dans `~/.m2`.
+Rapport `.agents/sessions/038-cnv-16-1-jitpack-plumbing.adoc`.
