@@ -1,69 +1,60 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 040
+:session: 041
 :date: 2026-11-09
-:epic: CNV-16 — JitPack (US-3 + US-6)
+:epic: CNV-16 — JitPack (US-4/US-5 optionnelles + dette)
 :max-lines: 70
 
 == Contexte hérité
 
 **CNV-0→CNV-15 TERMINÉS.** État stable : `0.0.14` (Central `e25e4f5f` +
-Portal), rollout 140 pins / 53 fichiers / 26 dépôts, audit strict
-`OK: 133 build file(s) at 0.0.14`, BOM/catalog MEMPHIS `0.0.128`.
+Portal), BOM/catalog MEMPHIS `0.0.128`, BOM de test `0.0.127`.
 
-**CNV-16 « JitPack »** (canal secondaire, option B) :
-* **S-037** cadrage ; **S-038** plomberie locale (`jitpack.yml`, version du
-  tag, signature conditionnelle) ;
-* **S-039 ✅ CNV-16.2** : tag `v0.0.15` + push → build JitPack **VERT**
-  (`BUILD SUCCESSFUL in 43s`, JDK `25.0.5.0+8-tem`, 0 tâche `sign*`).
-  Coordonnée confirmée :
-  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`
-  (POM/jar/sources/javadoc/module HTTP 200).
-  **Preuve consommateur `/tmp`** (`education.cccp.build.lint:0.0.15` + shim
-  `useModule`) → `BUILD SUCCESSFUL in 11s`.
+**CNV-16 « JitPack »** (canal secondaire) :
+* **S-037** cadrage ; **S-038** plomberie locale ; **S-039** premier build
+  JitPack réel `0.0.15` (VERT, 43 s, JDK 25, 0 sign) ;
+* **S-040 ✅** rollout public : shim `useModule` (tag JitPack `0.0.15`) dans
+  **27 dépôts / 55 `settings.gradle.kts`** (racines + sous-builds plugins +
+  `academy/dogfood` + `conventions-plugin` + `video-kernel`/`youtube-auth` +
+  9 contrats `workspace-bom`). **17/17 sous-builds plugins** `help` VERT ;
+  **CI verte 18 dépôts** (runs `42550997452` → `42551057903`, dont
+  `runAllTests` workspace-bom `1f97253`). Incident ktlint (double ligne vide)
+  corrigé ; baselines préexistantes `capsule`/`plantuml`/`slider` root et
+  `agile` confirmées ; `magic-stick` échec infra Docker.
 
-== Mission session 040 — CNV-16.3 + CNV-16.6
+== Mission session 041 — optionnel + dette
 
-1. **CNV-16.3 — consommateur réel** (proposé : `academy` ou `dashboard`, le
-   moins risqué). Ajouter dans `settings.gradle.kts` :
-   * `maven("https://jitpack.io")` dans `pluginManagement.repositories` ;
-   * `resolutionStrategy.eachPlugin { if (requested.id.id.startsWith(
-     "education.cccp.build.")) useModule(
-     "com.github.cccp-education.conventions-gradle:conventions-plugin:
-     ${requested.version}") }` ;
-   * **conserver** la version `0.0.14` du catalogue/Portal pour la CI
-     normale, ou tester `0.0.15` via JitPack **sans changer le canal
-     canonique**.
-   Preuves : `help`/`assemble` VERT en local (compilation), puis **CI verte**
-   du dépôt. Documenter le snippet réutilisable. Ne pas exécuter de tests
-   locaux.
-2. **CNV-16.6 — décision de rollout** : consigner canal secondaire (JitPack)
-   vs primaire, coût du shim, et périmètre (quels dépôts adoptent JitPack en
-   secours). Mettre à jour `AGENTS.adoc` racine + `PUBLICATION_STRATEGY.adoc`
-   si la décision dépasse le borough.
-3. Optionnelles si le temps le permet : **CNV-16.4** domaine
-   `education.cccp` (DNS TXT, coordonnées multi-module à revalider) ;
-   **CNV-16.5** build à l'avance (curl sur release) + badge.
+1. **Dette prioritaire — aligner les pins** : les builds publics déclarent
+   les conventions en `0.0.14` mais le shim résout `0.0.15` (JitPack).
+   `auditConventionsAdoption -Pstrict` signalerait `Obsolete` (non câblé à
+   `check`). Décider : (a) bump coordonné `0.0.14 → 0.0.15` (et publier sur
+   le canal canonique si la politique revient à Central/Portal après le
+   2026-12-01), ou (b) aligner l'audit sur la version JitPack.
+2. **Maintenance du shim** : le tag `0.0.15` est **codé 55 fois**. Un futur
+   EPIC devrait centraliser (script de settings partagé ou plugin de settings)
+   pour éviter 55 éditions à chaque release. Ne pas l'engager sans feu vert.
+3. **US-4 optionnelle** — domaine `education.cccp` : DNS `TXT git.education.cccp`
+   → `https://github.com/cccp-education` ; revalider les coordonnées
+   multi-module (`education.cccp.conventions-gradle:conventions-plugin`).
+4. **US-5 optionnelle** — build à l'avance + badge : workflow
+   `release: created` (curl 30 s) + badge
+   `https://jitpack.io/v/cccp-education/conventions-gradle.svg`.
+5. **Veille** : CI privées (facturation Actions), `detekt` JVM > 22.
 
 == Références
 
-* Cadrage : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` (§2.2 résultat, §5
-  décisions, §9 procédure).
-* Rapports : `037-cnv-16-jitpack-cadrage.adoc`,
-  `038-cnv-16-1-jitpack-plumbing.adoc`,
-  `039-cnv-16-2-jitpack-release.adoc`.
+* Cadrage : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` (§2.2, §5, §9).
+* Rapports : `037-…cadrage`, `038-…plumbing`, `039-…release`,
+  `040-cnv-16-3-rollout-public.adoc`.
 
 == Contraintes dures (rappel)
 
-* Coordonnée JitPack : `com.github.cccp-education.conventions-gradle:
-  conventions-plugin:<tag>` ; **shim `useModule` obligatoire**.
-* Le canal canonique reste Central/Portal (`education.cccp.*`) ; JitPack ne
-  remplace pas la découverte Portal.
-* **8 plugins**, version courante `0.0.15` (JitPack) / `0.0.14` (Central),
-  Java 25, Kotlin 2.4.10, Gradle **9.8.2** (`[versions].gradle`).
-* `jitpack.yml` : JDK `25.0.5.0+8-tem` via SDKMAN, `CI=true`,
+* Shim public (55 settings) :
+  `useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15")`.
+* Canal canonique des **privés** : Central/Portal `0.0.14` (inchangé).
+* **8 plugins**, JitPack `0.0.15`, Java 25, Kotlin 2.4.10, Gradle **9.8.2**.
+* `jitpack.yml` : JDK `25.0.5.0+8-tem`, `CI=true`,
   `-Pversion="${VERSION#v}"`, `-x test -x functionalTest -x cucumberTest`.
 * Local = Build, Tests = CI ; un seul sessionneur par borough ;
   `git commit --only` si une session parallèle a des fichiers stagés.
-* Anti-drift : BOM test `0.0.127` (`WorkspaceBom`), Gradle `9.8.2`
-  (`GradleWrapperVersion`), version injectée (`conventions.version`),
-  adoption auditée (`AdoptionAudit`).
+* Anti-drift : BOM test `0.0.127`, Gradle `9.8.2`, version injectée
+  (`conventions.version`), adoption auditée (`AdoptionAudit`).

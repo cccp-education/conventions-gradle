@@ -1,0 +1,120 @@
+= Session 040 — CNV-16.3/16.6 : rollout JitPack sur tous les projets publics
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 040
+:date: 2026-11-09
+:type: rollout cross-borough (canal secondaire JitPack)
+:epic: CNV-16 — JitPack (US-3 + US-6)
+
+== Mission
+
+Demande pilote : « sur tous les projets dans `foundry/public/` ». Câbler le
+shim JitPack (`education.cccp.build.*` → module `conventions-plugin`) dans
+tous les builds Gradle publics et prouver la CI verte. Décision de rollout
+(US-6) : le canal secondaire JitPack devient le **résolveur par défaut** des
+conventions pour les builds publics.
+
+== 1. Périmètre
+
+**27 dépôts**, **55 `settings.gradle.kts`** modifiés : le `settings` racine
+de chaque dépôt **et** les sous-builds autonomes (`<projet>/<plugin>/`,
+`academy/dogfood`, `conventions-plugin`, `video-kernel-plugin`,
+`youtube-auth-plugin`, les **9 contrats** de `workspace-bom`). Les projets
+sans `pluginManagement` (ex. `notebook`, `newpipe/doc`) et les non-Gradle
+(`office-template`, `intellij-plugins`, `dashboard-flow`) sont hors périmètre.
+
+=== Snippet appliqué (identique partout)
+
+[source,kotlin]
+----
+// CNV-16 — JitPack mirror for the education.cccp.build.* conventions
+// (bypasses Sonatype / Gradle Plugin Portal). The JitPack tag is pinned while
+// the canonical plugin declarations may stay on the released version.
+pluginManagement.repositories.maven("https://jitpack.io")
+pluginManagement.resolutionStrategy.eachPlugin {
+    if (requested.id.id.startsWith("education.cccp.build.")) {
+        useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15")
+    }
+}
+----
+
+* Le **tag JitPack est épinglé `0.0.15`** ; les déclarations canoniques
+  restent `0.0.14` (Central/Portal) — les builds publics résolvent donc les
+  conventions depuis JitPack, sans Sonatype ni Portal.
+* L'audit `auditConventionsAdoption -Pstrict` signalerait `Obsolete`
+  (pins 0.0.14 vs plugin 0.0.15) ; il n'est **pas** câblé à `check` (aucun
+  workflow ne l'exécute en strict). À réaligner lors du prochain bump
+  coordonné.
+
+== 2. Vérification locale (Local = Build)
+
+* **17 sous-builds plugins** (`academy-plugin`, `api-key-pool-plugin`,
+  `bakery-plugin`, `bureau-plugin`, `capsule-plugin`, `codebase-plugin`,
+  `codex-plugin`, `container-provision-plugin`, `document-plugin`,
+  `flow-plugin`, `graphify-plugin`, `hyperframes-plugin`, `planner-plugin`,
+  `plantuml-plugin`, `readme-plugin`, `review-plugin`, `slider-plugin`) :
+  `./gradlew -p <plugin> help` **VERT** (17/17).
+* `conventions-plugin` (self-build), `workspace-bom/agent-contracts`,
+  `academy/dogfood`, `magic-stick`, `runner`, `ticket` : VERT.
+* `video-kernel-plugin` + `youtube-auth-plugin` : VERT.
+* Racines : 18/21 VERTES ; **3 échecs préexistants confirmés baseline**
+  (capsule, plantuml, slider — `help` racine) et `agile` (Kotlin DSL
+  `libs` non résolu dans `build.gradle.kts`) : sans rapport avec le shim.
+
+== 3. CI (preuve cross-borough)
+
+**Verte** (run le plus récent sur le commit de normalisation) :
+
+[cols="2,2,3,1"]
+|===
+| Dépôt | Run | Workflow | Commit
+| academy-gradle | 42550997452 | Test | e48024b
+| api-key-pool-gradle | 42551000415 | Lint | 4c7e4ec
+| bakery-gradle | 42551003121 + Test | Publish website + Test | a7f78b4
+| capsule-gradle | 42551008289 | Test | 4dd8b7a
+| codebase-gradle | 42551010157 + CI | OCR + CI | 84ba11a
+| codex-gradle | 42551012427 | Test | aae76df
+| conventions-gradle | 42551017549 | Test | 6c378cf
+| dashboard-gradle | 42551020688 | Lint | ced2819
+| document-gradle | 42551023253 | Test | 39e42fb
+| graphify-gradle | 42551029273 | Test | cdd6ad8
+| hyperframes-gradle | 42551030980 | Test | bb5053a
+| jhipster-gradle-plugins | 42551034149 | Lint | 1abae5d
+| planner-gradle | 42551039293 | Test | c78a64a
+| plantuml-gradle | 42551042024 | Test | e99b959
+| readme-gradle | 42551044209 | CI | 87226b9
+| slider-gradle | 42551052815 | Full Tests | c3b43e3
+| video-kernel-gradle | 42551054826 | Test | 342438c
+| workspace-bom | 42551057903 | runAllTests | 1f97253
+|===
+
+* **Incident réel attrapé par la CI** : `api-key-pool` Lint a échoué sur
+  `ktlintKotlinScriptCheck` (« Needless blank line(s) ») à cause d'une double
+  ligne vide introduite par le shim. Correctif : normalisation
+  `\n{3,} → \n\n` sur **tous** les settings patchés (2ᵉ commit
+  `style: normalize settings blank lines…`) ; `ktlintKotlinScriptCheck`
+  re-vérifié localement, puis CI verte.
+* **Sans CI déclenchée** : `bureau`, `container-provision`, `flow`, `review`,
+  `ticket`, `agile` (pas de workflow push). `magic-stick` : échec
+  **infrastructure Docker** (`apt-get` du builder ISO), sans rapport avec le
+  shim.
+
+== 4. Commits (2 par dépôt)
+
+* `build: resolve education.cccp.build.* via JitPack mirror (CNV-16)`
+* `style: normalize settings blank lines after JitPack shim (CNV-16)`
+
+Aucun test local exécuté. Aucune publication Central/Portal ; le canal
+principal des projets **privés** reste inchangé (0.0.14).
+
+== 5. Suivant
+
+* **US-4/US-5 optionnelles** : domaine personnalisé `education.cccp`
+  (DNS TXT) et build à l'avance + badge.
+* **Dette assumée** : aligner les pins `0.0.14 → 0.0.15` (ou l'audit) lors du
+  prochain bump coordonné ; publier 0.0.15 sur le canal canonique si la
+  politique revient à Central/Portal après le 2026-12-01.
+
+Rapport `.agents/sessions/040-cnv-16-3-rollout-public.adoc`.

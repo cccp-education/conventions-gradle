@@ -977,3 +977,41 @@ Feu vert pilote : commit + tag + push pour déclencher JitPack.
   (`com.github.cccp-education.conventions-gradle/conventions-plugin/0.0.15`).
 * Aucun test local ; aucune publication Central/Portal.
 Rapport `.agents/sessions/039-cnv-16-2-jitpack-release.adoc`.
+
+== Session 040 — CNV-16.3/16.6 rollout JitPack sur tous les projets publics (2026-11-09)
+
+Demande pilote : « sur tous les projets dans `foundry/public/` ».
+
+* **Périmètre** : shim `useModule` (tag JitPack `0.0.15`) appliqué à
+  **27 dépôts / 55 `settings.gradle.kts`** — racines, sous-builds
+  `<projet>/<plugin>/`, `academy/dogfood`, `conventions-plugin`,
+  `video-kernel-plugin` + `youtube-auth-plugin`, et les **9 contrats**
+  `workspace-bom`. Projets sans `pluginManagement` / non-Gradle exclus.
+* **Snippet** : `pluginManagement.repositories.maven("https://jitpack.io")` +
+  `resolutionStrategy.eachPlugin { if (id.startsWith("education.cccp.build."))
+  useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15") }`.
+  Pins canoniques `0.0.14` conservés (audit strict non câblé à `check`).
+* **Vérifications locales** : **17/17 sous-builds plugins** `help` VERT ;
+  `conventions-plugin`, `agent-contracts`, `dogfood`, `magic-stick`, `runner`,
+  `ticket`, `video-kernel` VERT. Baselines préexistantes confirmées par stash :
+  `capsule`/`plantuml`/`slider` root et `agile` (`libs` non résolu).
+* **CI verte 18 dépôts** : academy `42550997452`, api-key-pool `42551000415`,
+  bakery (`Publish website` + `Test`), capsule `42551008289`, codebase
+  (`OCR` + `CI`), codex `42551012427`, conventions `42551017549`, dashboard
+  `42551020688`, document `42551023253`, graphify `42551029273`, hyperframes
+  `42551030980`, jhipster `42551034149`, planner `42551039293`, plantuml
+  `42551042024`, readme `42551044209`, slider `42551052815`, video-kernel
+  `42551054826`, workspace-bom `runAllTests` `42551057903` (`1f97253`).
+* **Incident réel attrapé par la CI** : `api-key-pool` Lint a échoué sur
+  `ktlintKotlinScriptCheck` (« Needless blank line(s) ») à cause d'une double
+  ligne vide introduite par le shim → normalisation `\n{3,} → \n\n` sur tous
+  les settings patchés + 2ᵉ commit `style: normalize settings blank lines…` ;
+  CI repassée verte. `magic-stick` échoue sur l'infra Docker (`apt-get` du
+  builder ISO), sans rapport. Pas de CI déclenchée : `bureau`,
+  `container-provision`, `flow`, `review`, `ticket`, `agile`.
+* **Commits** (2 par dépôt) : `build: resolve education.cccp.build.* via
+  JitPack mirror (CNV-16)` + `style: normalize settings blank lines after
+  JitPack shim (CNV-16)`.
+* Aucun test local ; aucune publication Central/Portal (canal des privés
+  inchangé).
+Rapport `.agents/sessions/040-cnv-16-3-rollout-public.adoc`.

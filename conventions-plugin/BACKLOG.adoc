@@ -5,7 +5,7 @@
 :icons: font
 :sectnums:
 
-_Derniere mise a jour_ : 2026-11-09 — S-039 ✅ **CNV-16.2 build JitPack réel `0.0.15` VERT** (tag `v0.0.15`, 43s, JDK 25, 0 sign, artefacts HTTP 200, consommateur /tmp OK). Reste : CNV-16.3 (dépôt réel) + CNV-16.6 (rollout) ; veille (facturation Actions privées, detekt JVM > 22)
+_Derniere mise a jour_ : 2026-11-09 — S-040 ✅ **CNV-16.3/16.6 rollout JitPack sur les 27 dépôts publics** (55 settings, 17/17 sous-builds plugins VERT, CI verte 18 dépôts, `runAllTests` workspace-bom `1f97253`). Pins 0.0.14 conservés (audit strict non câblé) ; US-4/US-5 optionnelles.
 
 '''
 
@@ -805,7 +805,7 @@ sert pas les marqueurs de plugin au `groupId` de l'id).
   `https://jitpack.io` + shim `useModule` ; `help`/`assemble` VERT ; snippet
   documenté.
 | 3
-| 🟡 preuve /tmp OK (S-039) — dépôt réel à faire
+| ✅ S-040 (27 dépôts, CI verte)
 
 | CNV-16.4
 | **Domaine personnalisé `education.cccp`** — DNS TXT
@@ -824,7 +824,7 @@ sert pas les marqueurs de plugin au `groupId` de l'id).
 | **Décision de rollout** — documenter le canal (AGENTS/AGENT/PUBLICATION
   STRATEGY) et généraliser le shim par lots avec audit.
 | 4
-| 🟡 À FAIRE (après pilote)
+| ✅ S-040 (rollout public)
 |===
 
 === Risques principaux (à lever US-2)
@@ -873,10 +873,10 @@ build long/quota ; immuabilité 7 jours. Détail et mitigations dans le cadrage.
 | CNV-16.0 | Cadrage JitPack + preuve locale du shim | 1 | ✅ S-037
 | CNV-16.1 | Plomberie locale JitPack (`jitpack.yml`, version du tag) | 3 | ✅ S-038
 | CNV-16.2 | Premier build JitPack réel (`0.0.15`) | 3 | ✅ S-039
-| CNV-16.3 | Preuve consommateur (shim `useModule`) | 3 | 🟡 preuve /tmp OK (S-039)
+| CNV-16.3 | Preuve consommateur (shim `useModule`) | 3 | ✅ S-040 (27 dépôts, CI verte)
 | CNV-16.4 | Domaine personnalisé `education.cccp` (option) | 2 | 🟡 À FAIRE
 | CNV-16.5 | Build à l'avance + badge (option) | 2 | 🟡 À FAIRE
-| CNV-16.6 | Décision de rollout | 4 | 🟡 À FAIRE
+| CNV-16.6 | Décision de rollout | 4 | ✅ S-040 (rollout public)
 | *Total* | | *197* |
 |===
 

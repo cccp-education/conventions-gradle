@@ -70,11 +70,10 @@
   `validatePlugins` VERTS ; simulation `v0.0.15-probe2` → 9 POM, 0 `.asc`.
   Rapport `.agents/sessions/038-cnv-16-1-jitpack-plumbing.adoc`.
 - [x] **CNV-16.2** premier build réel (S-039) : bump `0.0.15`, tag `v0.0.15`, push ; build JitPack **VERT** (43s, JDK 25.0.5.0+8-tem, 0 tâche `sign*`) ; artefacts HTTP 200 ; `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.15`.
-- [ ] **CNV-16.3** preuve consommateur : **/tmp OK (S-039)** (`lint` + shim, `BUILD SUCCESSFUL`) ; reste un dépôt réel (academy ou dashboard) + CI verte.
+- [x] **CNV-16.3** preuve consommateur (S-040) : rollout sur **27 dépôts / 55 `settings.gradle.kts`** (racines + sous-builds + 9 contrats workspace-bom) ; 17/17 sous-builds plugins `help` VERT ; CI verte sur 18 dépôts (runs `42550997452` → `42551057903`, dont `runAllTests` workspace-bom `1f97253`). Incident ktlint (double ligne vide) corrigé.
 - [ ] **CNV-16.4** (option) domaine `education.cccp` (DNS TXT) + coordonnées.
 - [ ] **CNV-16.5** (option) build à l'avance (curl sur release) + badge.
-- [ ] **CNV-16.6** décision de rollout (canal secondaire vs primaire) +
-  documentation consommateurs.
+- [x] **CNV-16.6** décision de rollout (S-040) : JitPack = résolveur par défaut des conventions pour les builds **publics** ; pins `0.0.14` conservés (audit strict non câblé) ; canal Central/Portal des privés inchangé.
 
 == Veille (hors EPIC) — aucun EPIC/US ouvert
 

@@ -5,7 +5,7 @@
 :sectnums:
 
 _Créé_ : 2026-11-09 (session 037) — investigation pilote.
-_Statut_ : 🟡 RÉALISÉ (canal secondaire) — US-0 ✅ S-037, US-1 ✅ S-038, US-2 ✅ S-039, US-3 🟡 (preuve /tmp OK S-039, dépôt réel à faire), US-4→US-6 à exécuter.
+_Statut_ : ✅ RÉALISÉ (canal secondaire) — US-0 ✅ S-037, US-1 ✅ S-038, US-2 ✅ S-039, US-3 ✅ S-040 (27 dépôts / 55 settings, CI verte), US-6 ✅ S-040 (rollout public), US-4/US-5 optionnelles.
 _Portée_ : `conventions-gradle` (N0, 8 plugins), puis pilote consommateur.
 
 == 1. Contexte et problème
@@ -220,7 +220,7 @@ coordonnées JitPack.
   en `pluginManagement` + shim `useModule` ; `help`/`assemble` VERT ; CI verte.
   Documenter le snippet réutilisable.
 | 3
-| 🟡 preuve /tmp OK (S-039) — dépôt réel à faire
+| ✅ S-040 (27 dépôts, CI verte)
 
 | CNV-16.4
 | **Domaine personnalisé `education.cccp` (optionnel)** — DNS TXT
@@ -241,7 +241,7 @@ coordonnées JitPack.
   `AGENTS.adoc`, `AGENT.adoc` des boroughs, `PUBLICATION_STRATEGY.adoc` ;
   généraliser le shim aux consommateurs par lots, avec audit.
 | 4
-| 🟡 À FAIRE (après pilote)
+| ✅ S-040 (rollout public)
 |===
 
 == 7. Risques et inconnues (à lever en US-2)
