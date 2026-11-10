@@ -5,7 +5,7 @@
 :sectnums:
 
 _Créé_ : 2026-11-09 (session 037) — investigation pilote.
-_Statut_ : ✅ RÉALISÉ (canal secondaire) — US-0 ✅ S-037, US-1 ✅ S-038, US-2 ✅ S-039, US-3 ✅ S-040, US-6 ✅ S-040, **US-7 ✅ S-041** (publication all ; 2 bloqués SDKMAN/JitPack), US-4/US-5 optionnelles.
+_Statut_ : ✅ RÉALISÉ (canal secondaire) — US-0 ✅ S-037, US-1 ✅ S-038, US-2 ✅ S-039, US-3 ✅ S-040, US-6 ✅ S-040, **US-7 ✅ S-041** (publication all ; 2 bloqués SDKMAN/JitPack), **US-8 ✅ S-042** (bump des dernières versions : `workspace-bom 0.0.129`, `video-kernel 0.7.1`, `youtube-auth-plugin v0.0.4`), US-4/US-5 optionnelles.
 _Portée_ : `conventions-gradle` (N0, 8 plugins), puis pilote consommateur.
 
 == 1. Contexte et problème
@@ -247,6 +247,15 @@ coordonnées JitPack.
 | **Publication JitPack de tous les artefacts publics** — N0 `workspace-bom` + 9 contrats (`0.0.128`), N1 `codebase-plugin` (`0.0.18`), N2 codex/document/bakery/planner/slider/capsule/plantuml/readme/graphify/hyperframes/academy/dashboard/bureau/flow/container-provision ; `video-kernel`/`youtube-auth` bloqués SDKMAN/JitPack.
 | 6
 | ✅ S-041 (2 bloqués)
+
+| CNV-16.8
+| **Bump JitPack des dernières versions** — vérifier les 19 artefacts déjà servis ;
+  publier `workspace-bom 0.0.129` (BOM + 9 contrats + catalogue),
+  `video-kernel 0.7.1` (retry SDKMAN) et `youtube-auth-plugin v0.0.4`
+  (session navigateur isolée US-4) ; SDKMAN passe de `25.0.5.0+8-tem` à
+  `25-open` (candidat résolu sur l'image JitPack). **Public uniquement**.
+| 3
+| ✅ S-042
 |===
 
 == 7. Risques et inconnues (à lever en US-2)

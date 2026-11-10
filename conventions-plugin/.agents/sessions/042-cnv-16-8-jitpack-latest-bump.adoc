@@ -1,0 +1,130 @@
+= Session 042 — CNV-16.8 : bump JitPack des dernières versions publiques
+:toc: left
+:toclevels: 3
+:icons: font
+
+:session: 042
+:date: 2026-11-10
+:type: publication cross-borough (canal JitPack, public uniquement)
+:epic: CNV-16 — extension « bump latest »
+
+== Mission
+
+Demande pilote : « bump dans jitpack toutes les dernières versions des
+boroughs », puis précision : « sauf les boroughs private ».
+
+Périmètre : **tous les boroughs publics** dotés d'une recette `jitpack.yml`
+(sous `foundry/public/`). Les boroughs privés (`foundry/private/`) et les
+contenus métier ne sont **pas** touchés.
+
+== 1. Inventaire — 19 artefacts déjà servis
+
+Les dernières versions publiées depuis S-041 sont **déjà disponibles** sur
+JitPack (POM HTTP 200 vérifié) :
+
+[cols="3,1"]
+|===
+| Artefact | Version
+| `academy-plugin` | 0.0.3
+| `api-key-pool-gradle` (lib, artefact au nom du dépôt) | 0.0.2
+| `bakery-plugin` | 0.0.38
+| `bureau-plugin` | 0.0.1
+| `capsule-plugin` | 0.0.15
+| `codebase-plugin` | 0.0.18
+| `codex-plugin` | 0.0.12
+| `container-provision-plugin` | 0.0.1
+| `conventions-plugin` | 0.0.15
+| `dashboard-plugin` | 0.0.1
+| `document-plugin` | 0.0.30
+| `flow-plugin` | 0.0.1
+| `graphify-plugin` | 0.0.5
+| `hyperframes-plugin` | 0.0.14
+| `planner-plugin` | 0.0.2
+| `plantuml-plugin` | 0.0.16
+| `readme-plugin` | 0.0.2
+| `slider-plugin` | 0.0.20
+| `workspace-bom` | 0.0.128
+|===
+
+Aucun bump n'était nécessaire pour ces 19 lignes.
+
+== 2. Gaps corrigés
+
+=== `workspace-bom 0.0.129` (N0)
+
+Le catalogue local avait avancé à `0.0.129` (S-349 : `bakery-plugin 0.0.38`,
+draft Central différé au 2026-12-01) sans tag JitPack. Tag annoté
+`v0.0.129` sur `46cf546`, push. Build JitPack **ok** :
+
+* `workspace-bom/0.0.129` (BOM)
+* `agent-contracts/0.0.129`, `codebase-contracts/0.0.129`,
+  `i18n-contracts/0.0.129`, `llm-pool-contracts/0.0.129`,
+  `ocr-contracts/0.0.129`, `opencode-session-contracts/0.0.129`,
+  `pipeline-contracts/0.0.129`, `plantuml-contracts/0.0.129`,
+  `runtime-contracts/0.0.129`
+* `workspace-catalog/0.0.129` (POM + `workspace-catalog-0.0.129.toml`)
+
+=== `video-kernel 0.7.1` (N1)
+
+Le tag `v0.7.0` avait échoué en S-041 (SDKMAN indisponible → Gradle tournait en
+JDK 8). Nouveau tag `v0.7.1` (commit `4424bbf`), build **ok**.
+JitPack sert les builds mono-module sous le nom du dépôt :
+coordonnée `com.github.cccp-education.video-kernel-gradle:video-kernel-gradle:0.7.1`.
+
+=== `youtube-auth-plugin v0.0.4` (N1)
+
+La correction US-4 (session navigateur isolée, profil Chromium sans cookie) est
+publiée sur JitPack.
+
+* Le tag `v0.0.3` a échoué : l'installation SDKMAN `25.0.5.0+8-tem` a été
+  refusée deux fois par le CDN (« Download has failed »). Le `before_install`
+  du `jitpack.yml` utilise désormais le candidat **`25-open`** (celui qui
+  fonctionne sur l'image JitPack) avec un retry et un garde `java -version`.
+* Nouveau tag `v0.0.4` (commit `34f618c`), build **ok** :
+  * `com.github.cccp-education.video-kernel-gradle:youtube-auth-plugin:v0.0.4`
+  * marker `education.cccp.video.auth.gradle.plugin:v0.0.4`
+
+`v0.0.3` reste visible comme échec (JitPack) ; `v0.0.4` est la version utile.
+
+== 3. Correctif `jitpack.yml` (video-kernel)
+
+[source,yaml]
+----
+before_install:
+  - sdk install java 25-open || (sleep 10 && sdk install java 25-open)
+  - sdk use java 25-open
+  - java -version 2>&1 | grep -q 'version "25'
+install:
+  - if [ "${VERSION#v}" = "0.7.1" ] || [ "${VERSION#v}" = "0.7.0" ]; then ./video-kernel-plugin/gradlew -p video-kernel-plugin publishToMavenLocal -Pversion="${VERSION#v}"; fi
+  - if [ "${VERSION#v}" = "0.0.4" ]; then ./youtube-auth-plugin/gradlew -p youtube-auth-plugin publishToMavenLocal -Pversion="${VERSION#v}"; fi
+----
+
+Le versioning est désormais forcé depuis le tag (`-Pversion`), donc le
+POM/module metadata correspond à la coordonnée JitPack.
+
+== 4. Preuve de propagation (HTTP 200)
+
+* `workspace-bom/0.0.129` + 9 contrats + catalogue → 200.
+* `video-kernel-gradle/0.7.1/video-kernel-gradle-0.7.1.pom` → 200.
+* `video-kernel-gradle/youtube-auth-plugin/v0.0.4/...pom` → 200.
+* `video-kernel-gradle/education.cccp.video.auth.gradle.plugin/v0.0.4/...pom` → 200.
+* Les 19 artefacts de la section 1 → 200.
+
+== 5. Hors périmètre (justifié)
+
+* **Boroughs privés** — non touchés (demande pilote).
+* `review` (SNAPSHOT), `jhipster` (SNAPSHOT/legacy), `runner`/`ticket`/`agile`
+  (pas de publication Maven), `magic-stick` (site/ISO), vestiges — sans
+  `jitpack.yml`, hors canal JitPack.
+
+== 6. Suite
+
+* Le canal **Central** n'est pas modifié : `youtube-auth-plugin` reste
+  `0.0.2` au catalogue MEMPHIS. Pour propager US-4 aux consommateurs via
+  Central : publication Central (CI verte) → catalogue MEMPHIS → bump
+  `youtube-auth` dans capsule/hyperframes.
+* Un consommateur JitPack de `youtube-auth` doit utiliser la coordonnée
+  `v0.0.4` (le préfixe `v` fait partie de la version servie pour ce tag) et
+  un shim `useModule` pour le plugin id.
+
+Rapport précédent : `.agents/sessions/041-cnv-16-7-jitpack-publish-all.adoc`.
