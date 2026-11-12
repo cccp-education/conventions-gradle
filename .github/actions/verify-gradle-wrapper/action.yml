@@ -10,7 +10,7 @@ inputs:
   expected-version:
     description: Expected Gradle distribution version
     required: false
-    default: "9.8.2"
+    default: "9.9.1"
   wrapper-path:
     description: >-
       Explicit gradle-wrapper.properties path. When empty (default), every
