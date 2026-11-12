@@ -169,3 +169,15 @@ pour les contrats N0.
   constraint `0.0.14`).
 * `training` : `codebase-plugin 0.0.18` + conventions `0.0.14` (`assemble`
   VERT, CI privée bloquée facturation).
+
+== Session 043 (2026-11-12) — Workspace Gradle 9.9.1 ✅
+
+* 101 wrappers (`9.8.2-bin` → `9.9.1-bin`) sur 35 dépôts ; action composite
+  `verify-gradle-wrapper` et catalogue (`[versions].gradle`) à `9.9.1`.
+* Garde : `FALLBACK_VERSION` + fixtures FT/BDD + TestKit plantuml alignés ; test
+  de repli isolé (`ClassLoader(null)`).
+* Canal CNV-16 : tag `v0.0.16` → JitPack `conventions-plugin:0.0.16`
+  (`version=9.9.1` vérifié) ; shim 55 settings / 26 dépôts.
+* `--version` = 9.9.1 sur 98/98 builds ; compiles réels VERTS ; CI verte
+  (hors `magic-stick` infra Docker). Rapport
+  `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.

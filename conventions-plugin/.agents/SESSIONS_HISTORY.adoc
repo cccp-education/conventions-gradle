@@ -1046,3 +1046,20 @@ Demande pilote : « tous les plugins et libs seront publiés sur jitpack ? » pu
   aucune publication non voulue. CI GitHub verte par ailleurs
   (`workspace-bom runAllTests` `b4f29fd`, `codebase` `4e2343b`, etc.).
 Rapport `.agents/sessions/041-cnv-16-7-jitpack-publish-all.adoc`.
+
+== Session 043 — Workspace Gradle 9.9.1 — 2026-11-12
+
+Mise à jour **textuelle** puis usage du **wrapper** : 101 `gradle-wrapper.properties`
+(`9.8.2-bin` → `9.9.1-bin`) sur 35 dépôts ; action composite
+`verify-gradle-wrapper` (défaut `9.9.1`) ; source unique
+`[versions].gradle = "9.9.1"` ; `FALLBACK_VERSION` + fixtures d'alignement (FT,
+BDD) + TestKit plantuml alignés ; test de repli durci (`ClassLoader(null)`).
+Preuve : `--version` = 9.9.1 sur 98/98 builds, compiles réels VERTS, les échecs
+`help` sont préexistants (racines/échantillons).
+
+Cascade de garde : le `verifyGradleWrapper` lit la version **du plugin publié** →
+tag annoté **`v0.0.16`** (JitPack `conventions-plugin:0.0.16`, ressource
+`version=9.9.1` vérifiée) + shim **55 settings / 26 dépôts** (`0.0.15 → 0.0.16`).
+CI verte après rollout sur tous les dépôts publics (hors `magic-stick`, infra
+Docker préexistante) ; dépôts privés/office = infrastructure sans steps.
+Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.

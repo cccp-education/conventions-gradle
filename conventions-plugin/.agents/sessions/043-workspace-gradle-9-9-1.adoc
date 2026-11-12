@@ -1,0 +1,74 @@
+= Session 043 — Workspace Gradle 9.9.1 (wrapper, garde, canal JitPack)
+:toc: left
+:toclevels: 3
+
+:_session_: 043
+:_date_: 2026-11-12
+:_type_: maintenance transverse (tous boroughs)
+:_statut_: ✅ TERMINÉ
+
+== Mission
+
+Le poste pilote est passé de Gradle **9.8.2** à **9.9.1**. Aligner tous les
+builds du workspace sur cette version : d'abord la mise à jour **textuelle**, puis
+l'usage du **wrapper** pour télécharger/exécuter 9.9.1.
+
+== Mise à jour textuelle
+
+[cols="1,3", options="header"]
+|===
+| Cible | Détail
+
+| Wrappers | **101** `gradle/wrapper/gradle-wrapper.properties` (`9.8.2-bin` → `9.9.1-bin`) sur **35 dépôts git** (publics + privés + `office` + sites).
+| Garde CI (action composite) | `conventions-gradle/.github/actions/verify-gradle-wrapper` : `expected-version` par défaut `9.8.2` → `9.9.1` (utilisée par ~30 workflows en `@main`).
+| Source unique | `conventions-plugin/gradle/libs.versions.toml` `[versions].gradle` → `9.9.1` (matérialisée en ressource `build/gradle-version.properties` et lue par `verifyGradleWrapper`).
+| Garde (code) | `GradleWrapperVersion.FALLBACK_VERSION` → `9.9.1` ; fixtures « wrapper aligné » (FT + BDD) → `9.9.1`.
+| Test fragile | le test de repli utilise désormais un `ClassLoader(null)` (avant, il réussissait **par coïncidence** en résolvant la ressource générée).
+| TestKit | `PlantumlWorld` (défaut `withGradleVersion`) → `9.9.1` ; commentaire CNV-13.6 réaligné.
+|===
+
+== Usage du wrapper (preuve locale)
+
+* `./gradlew --version` → **98/98** builds avec script `gradlew` rapportent
+  `Gradle 9.9.1` (JDK 25.0.5) ; 3 entrées sans `gradlew` (2 doublons obsolètes
+  `*/gradle/wrapper/wrapper/…`, `edster-app`).
+* `./gradlew help` (configuration) : **78 OK** ; les 20 échecs sont **préexistants**
+  et sans rapport avec 9.9.1 (racines de consommateurs sans plugin publié
+  `plantuml`/`newpipe`, baselines connues `capsule`/`slider` root — `annotations
+  strictly 13.0`, `agile` DSL, échantillons `office/trainings/*` avec des
+  dépendances disparues `okhttp-digest:1.10`/`grolifant:0.12`, `SelfResolvingDependency`
+  retiré, `payment-scaffold-*` catalogues locaux, `jbake_squeleton` hors build).
+* Compilation réelle sous 9.9.1 : `hyperframes` + `codebase` + `conventions`
+  `compileKotlin` **VERTS**.
+
+== Garde de version — cascade (CNV-16)
+
+`verifyGradleWrapper` lit la version **portée par le plugin publié** (ressource
+générée). Les consommateurs résolvent les conventions via le **canal JitPack**
+(shim `education.cccp.build.*` → `…conventions-plugin:<tag>`), resté au tag
+`0.0.15` (construit avec 9.8.2) → `check` de tous les consommateurs aurait échoué.
+
+Rollout effectué (mécanisme CNV-16.6) :
+
+. `conventions-plugin` : catalogue + garde + fixtures alignés (CI verte `43289938849`).
+. Tag annoté **`v0.0.16`** poussé → JitPack sert
+   `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.16`
+   (POM/JAR HTTP 200, JAR vérifié : `build/gradle-version.properties` = `version=9.9.1`).
+. Shim `settings.gradle.kts` **55 fichiers / 26 dépôts** : `0.0.15` → `0.0.16`.
+
+== Preuve CI (post-rollout)
+
+* **Verts** : academy, api-key-pool, bakery, capsule, codebase (OCR), codex,
+  conventions, dashboard, document, graphify, hyperframes, jhipster, newpipe,
+  planner, plantuml, readme, runner, slider, video-kernel, workspace-bom
+  (`runAllTests`).
+* **Échec infra préexistant** : `magic-stick` (`docker build` de l'ISO, `docker`
+  exit 1 — même baseline que S-040).
+* **Dépôts privés** (`payment-scaffold`, `quizz-benchmark`, `training-catalogue-site`,
+  `training-gradle`) et `office` : workflows sans steps exécutés / secrets
+  absents — infrastructure, **hors périmètre 9.9.1** (aucun step Gradle journalisé).
+
+== Hygiène
+
+Zéro secret ; zéro test local (Local = Build) ; 35 dépôts commités et poussés ;
+`office` conserve un fichier untracked qui ne m'appartient pas (`videos/.gitignore`).

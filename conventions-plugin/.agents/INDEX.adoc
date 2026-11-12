@@ -5,10 +5,10 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-11-09
-_session terminee_ : 041 — **CNV-16.7 publication JitPack de tous les artefacts publics** ✅ (2 bloqués). **N0** `workspace-bom` + 9 contrats (`0.0.128`), **N1** `codebase-plugin` (`0.0.18`), **N2** `codex 0.0.12`, `document 0.0.30`, `bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`, `plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`, `academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`, `container-provision 0.0.1` — **HTTP 200 vérifiés**. Correctifs **signature conditionnelle** (academy/dashboard/bureau : `plugin-publish` auto-signe sinon). `video-kernel 0.7.0` + `youtube-auth 0.0.2` **bloqués** par l'échec SDKMAN/JitPack (JDK 25 non téléchargé, `429` observés) ; recette prête. CI GitHub verte (workspace-bom `runAllTests` `b4f29fd`, codebase `4e2343b`, etc.) ; les tags `document`/`academy` ont déclenché leurs workflows release → échecs **doublon** attendus, aucune publication non voulue.
-_session en cours_ : aucune — 041 clôturée.
-_Prochaine session_ : 042 — retry `video-kernel`/`youtube-auth` ; décider `review` (SNAPSHOT) / `jhipster` (legacy) ; optionnel US-4/US-5.
+_Derniere mise a jour_ : 2026-11-12
+_session terminee_ : 043 — **Workspace Gradle 9.9.1** ✅ (101 wrappers sur 35 dépôts, action `verify-gradle-wrapper` 9.9.1, source unique du catalogue 9.9.1, garde/fixtures alignés, tag JitPack `v0.0.16` + shim 55 settings ; CI verte sur tous les dépôts publics, hors `magic-stick` infra Docker). Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
+_session en cours_ : aucune — 043 clôturée.
+_Prochaine session_ : 044 — retry `video-kernel`/`youtube-auth` (JitPack) ; décider `review` (SNAPSHOT) / `jhipster` (legacy) ; optionnel US-4/US-5.
 
 _Note 2026-11-09 (S-041)_ : **publication JitPack de tous les artefacts
 publics** (demande pilote « tous les plugins et libs »). Recette `jitpack.yml`
