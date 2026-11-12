@@ -72,3 +72,31 @@ Rollout effectué (mécanisme CNV-16.6) :
 
 Zéro secret ; zéro test local (Local = Build) ; 35 dépôts commités et poussés ;
 `office` conserve un fichier untracked qui ne m'appartient pas (`videos/.gitignore`).
+
+== Preuve CI finale (HEAD après rollout 0.0.16)
+
+|===
+| Dépôt | Workflow | Commit | Run | Résultat
+| `academy-gradle` | Test | `b55fb29` | `43291521584` | ✅
+| `api-key-pool-gradle` | Lint | `cafca8c` | `43291530914` | ✅
+| `bakery-gradle` | Test | `5255ba2` | `43291536367` | ✅
+| `capsule-gradle` | Test | `146fb5b` | `43291546071` | ✅
+| `codebase-gradle` | OCR | `0e2937c` | `43291556319` | ✅
+| `codex-gradle` | Test | `c531ea5` | `43291561583` | ✅
+| `conventions-gradle` | Test | `7485150` | `43296395805` | ✅
+| `dashboard-gradle` | Lint | `c257052` | `43291576139` | ✅
+| `document-gradle` | Test | `7d827cf` | `43291582157` | ✅
+| `graphify-gradle` | Test | `02ddab6` | `43291593963` | ✅
+| `hyperframes-gradle` | Test | `809a61a` | `43291598136` | ✅
+| `jhipster-gradle-plugins` | Lint | `01dac8b` | `43291602736` | ✅
+| `newpipe-gradle` | Test | `5e87049` | `43288288517` | ✅
+| `planner-gradle` | Test | `784bf3c` | `43291614113` | ✅
+| `plantuml-gradle` | Test | `52617d1` | `43291618836` | ✅
+| `readme-gradle` | CI | `3da018a` | `43291624894` | ✅
+| `runner-gradle` | Test | `5bc0a36` | `43291635266` | ✅
+| `slider-gradle` | Full Tests | `938a116` | `43291639534` | ✅
+| `video-kernel-gradle` | Test | `199ed1e` | `43291660883` | ✅
+| `workspace-bom` | runAllTests | `5424d84` | `43291666322` | ✅
+|===
+
+*Échec infra préexistant* : `magic-stick` (`Build ISO` → `docker build` exit 1, même baseline que S-040).
