@@ -21,7 +21,7 @@ object GradleWrapperVersion {
     const val WRAPPER_PATH = "gradle/wrapper/gradle-wrapper.properties"
 
     /** Last-resort fallback if the generated resource is missing. */
-    const val FALLBACK_VERSION = "9.8.2"
+    const val FALLBACK_VERSION = "9.9.1"
 
     private val DISTRIBUTION_PATTERN =
         Regex("""gradle-([0-9]+\.[0-9]+(?:\.[0-9]+)?)-(?:bin|all)\.zip""")

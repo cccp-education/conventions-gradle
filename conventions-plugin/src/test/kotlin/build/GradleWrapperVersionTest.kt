@@ -25,7 +25,7 @@ class GradleWrapperVersionTest {
 
     @Test
     fun `version falls back when the resource is absent`() {
-        assertEquals(GradleWrapperVersion.FALLBACK_VERSION, GradleWrapperVersion.version(object : ClassLoader() {}))
+        assertEquals(GradleWrapperVersion.FALLBACK_VERSION, GradleWrapperVersion.version(object : ClassLoader(null) {}))
     }
 
     @Test

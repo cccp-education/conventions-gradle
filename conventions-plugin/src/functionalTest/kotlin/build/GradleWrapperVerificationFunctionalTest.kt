@@ -47,7 +47,7 @@ class GradleWrapperVerificationFunctionalTest {
 
     @Test
     fun `verifyGradleWrapper succeeds when the wrapper matches the workspace version`() {
-        writeProject("9.8.2")
+        writeProject("9.9.1")
 
         val result = runner("verifyGradleWrapper").build()
 
@@ -61,12 +61,12 @@ class GradleWrapperVerificationFunctionalTest {
         val result = runner("verifyGradleWrapper").buildAndFail()
 
         assertTrue(result.output.contains("9.7.9"), result.output)
-        assertTrue(result.output.contains("9.8.2"), result.output)
+        assertTrue(result.output.contains("9.9.1"), result.output)
     }
 
     @Test
     fun `check depends on verifyGradleWrapper`() {
-        writeProject("9.8.2")
+        writeProject("9.9.1")
 
         val result = runner("check", "--dry-run").build()
 
