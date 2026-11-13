@@ -181,3 +181,9 @@ pour les contrats N0.
 * `--version` = 9.9.1 sur 98/98 builds ; compiles réels VERTS ; CI verte
   (hors `magic-stick` infra Docker). Rapport
   `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
+
+== S-044 — `MEM-WARN-ZERO` US-3 ✅
+
+* 3 `val x by tasks.registering {}` → `val x = tasks.register("x") {}`
+  (9 warnings Gradle 9.6 → 0), `resources.srcDir(provider)` inchangé.
+* CI `43357877552` verte.

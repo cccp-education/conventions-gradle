@@ -1063,3 +1063,10 @@ tag annoté **`v0.0.16`** (JitPack `conventions-plugin:0.0.16`, ressource
 CI verte après rollout sur tous les dépôts publics (hors `magic-stick`, infra
 Docker préexistante) ; dépôts privés/office = infrastructure sans steps.
 Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
+
+== Session 044 — `MEM-WARN-ZERO` US-3 (`registering` → `register`) — 2026-11-13
+
+3 tâches de matérialisation des versions `val x by tasks.registering { }` →
+`val x = tasks.register("x") { }` (9 warnings Gradle 9.6 → 0) ; `resources.srcDir(provider)`
+inchangé ; corps identiques. `./gradlew help` → 0 `w:`. CI `43357877552` verte.
+Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
