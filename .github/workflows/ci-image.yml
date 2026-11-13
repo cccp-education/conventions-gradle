@@ -1,0 +1,134 @@
+name: ci-image
+
+# GBL-013 US-2 — build, smoke-test and publish cccp-ci-base.
+#
+# Required repository secrets:
+#   DOCKERHUB_USERNAME / DOCKERHUB_TOKEN                     (cccpeducation, public)
+#   DOCKERHUB_PRIVATE_USERNAME / DOCKERHUB_PRIVATE_TOKEN     (cheroliv, private)
+#
+# The private channel is a private Docker Hub repository. A missing secret makes
+# the job fail explicitly (never a silent skip): the image is a prerequisite of
+# the public and private migration waves.
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'ci-image/**'
+      - '.github/workflows/ci-image.yml'
+  pull_request:
+    paths:
+      - 'ci-image/**'
+      - '.github/workflows/ci-image.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-image-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_PUBLIC: cccpeducation/cccp-ci-base
+  IMAGE_PRIVATE: cheroliv/cccp-ci-base
+
+jobs:
+  build:
+    name: Build, smoke-test and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub (public channel)
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to Docker Hub (private channel)
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_PRIVATE_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PRIVATE_TOKEN }}
+
+      - name: Compute immutable tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_RUN_NUMBER}-${GITHUB_SHA::7}"
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'public=%s:%s\n' "$IMAGE_PUBLIC" "$version" >> "$GITHUB_OUTPUT"
+          printf 'private=%s:%s\n' "$IMAGE_PRIVATE" "$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build (loaded for smoke-test, cache writer)
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ci-image
+          file: ci-image/Dockerfile
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: |
+            ${{ steps.tags.outputs.public }}
+            ${{ steps.tags.outputs.private }}
+            ${{ env.IMAGE_PUBLIC }}:latest
+            ${{ env.IMAGE_PRIVATE }}:latest
+          cache-from: type=gha,scope=cccp-ci-base
+          cache-to: type=gha,mode=max,scope=cccp-ci-base,ignore-error=true
+
+      - name: Smoke-test the toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="${{ steps.tags.outputs.public }}"
+          docker run --rm "$image" java -version
+          docker run --rm "$image" node --version
+          docker run --rm "$image" ffmpeg -version
+          docker run --rm "$image" espeak-ng --version
+          docker run --rm "$image" shellcheck --version
+
+      - name: Publish public channel (cache read, no rebuild)
+        if: github.event_name != 'pull_request'
+        id: publish_public
+        uses: docker/build-push-action@v6
+        with:
+          context: ci-image
+          file: ci-image/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.tags.outputs.public }}
+            ${{ env.IMAGE_PUBLIC }}:latest
+          cache-from: type=gha,scope=cccp-ci-base
+
+      - name: Publish private channel (cache read, no rebuild)
+        if: github.event_name != 'pull_request'
+        id: publish_private
+        uses: docker/build-push-action@v6
+        with:
+          context: ci-image
+          file: ci-image/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.tags.outputs.private }}
+            ${{ env.IMAGE_PRIVATE }}:latest
+          cache-from: type=gha,scope=cccp-ci-base
+
+      - name: Record the digest
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'cccp-ci-base public digest: `%s`\n' "${{ steps.publish_public.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"
+          printf 'cccp-ci-base private digest: `%s`\n' "${{ steps.publish_private.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"
+          printf 'version: `%s`\n' "${{ steps.tags.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"

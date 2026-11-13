@@ -1,0 +1,94 @@
+= cccp-ci-base — portable runtime for the workspace CI
+:toc: left
+:toclevels: 2
+:sectnums:
+:icons: font
+
+[abstract]
+--
+`GBL-013` US-2. One toolchain image for every CI job of the workspace. The
+pipeline YAML is an adapter; the image is the runtime; `ci/run.sh <job>` is the
+contract (see `workspace-bom/ci/README.adoc`).
+--
+
+== 1. What it is
+
+The image provides the toolchain only:
+
+* JDK 25 (Eclipse Temurin);
+* Node 22 and the Playwright/Chromium system dependencies (the browser itself is
+  installed by the job at its own Playwright version);
+* ffmpeg, espeak-ng, git, curl, jq, unzip, shellcheck;
+* DejaVu/Liberation fonts.
+
+It never contains Ollama (binary or models), secrets, or a Gradle wrapper. The
+dedicated `unit-ollama` job keeps its own cached image and model; the wrapper
+stays versioned per repository and is verified by `verify-gradle-wrapper`.
+
+CI runs as root: the mounted Docker socket (Testcontainers) and the Gradle cache
+are then usable without group/GID gymnastics. The container is ephemeral.
+
+== 2. Two channels
+
+[cols="1,3", options="header"]
+|===
+| Channel | Repository
+
+| Public boroughs | `docker.io/cccpeducation/cccp-ci-base`
+| Private / office | `docker.io/cheroliv/cccp-ci-base`
+|===
+
+The same build is pushed to both channels. Never mix: a public repository consumes
+the public channel, a private unit consumes the private channel.
+
+== 3. Build and publish
+
+The build runs in CI only (`.github/workflows/ci-image.yml`). Required repository
+secrets:
+
+[cols="2,3", options="header"]
+|===
+| Secret | Account
+
+| `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN` | `cccpeducation` (public)
+| `DOCKERHUB_PRIVATE_USERNAME` / `DOCKERHUB_PRIVATE_TOKEN` | `cheroliv` (private)
+|===
+
+A missing secret fails the job explicitly: the image is a prerequisite of the
+migration waves, a silent skip would only postpone the failure.
+
+=== Cache
+
+The BuildKit cache is written **once** by the loaded build
+(`type=gha,scope=cccp-ci-base,mode=max,ignore-error=true`) and read by the
+publish step. The image is therefore built once per change, smoke-tested on the
+loaded local image, then pushed from the cache — no rebuild, no re-download. The
+stable `scope` avoids cache thrash with the other workflows of the repository;
+`ignore-error=true` prevents a full cache quota from failing a valid build.
+
+== 4. Consuming the image
+
+Consumers pin the published manifest **by digest**, never by tag (rule R4):
+
+[source,yaml]
+----
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: cccpeducation/cccp-ci-base@sha256:<digest>
+      options: --volume /var/run/docker.sock:/var/run/docker.sock
+    steps:
+      - uses: actions/checkout@v5
+      - run: ci/run.sh test
+----
+
+The digest is printed in the workflow job summary. Docker Hub pulls must be
+authenticated in CI (`DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` of the consuming
+repository) to avoid anonymous rate limiting on shared runner IPs.
+
+== 5. Versioning
+
+* Immutable tag: `<run-number>-<short-sha>`.
+* Moving alias: `latest` (convenience only, never consumed by the CI).
+* The digest is the contract: a tag may move, a digest does not.

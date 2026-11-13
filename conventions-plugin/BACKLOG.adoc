@@ -954,3 +954,23 @@ canal = un nom = une version. Central (nmcp) et Portal sont désactivés pour
   bloquante).
 * ✅ **Soldé S-035** : alignement du BOM de test `0.0.127` (release `0.0.14`,
   rollout 140 pins, audit strict 0) ; `training` `codebase-plugin 0.0.18`.
+
+== EPIC GBL-013 — Portabilité de la CI (transverse) — S-226
+
+_Cadrage racine : `.agents/CADRAGE_EPIC_GBL_013_PORTABILITE_CI.adoc` (jardin secret)._
+_Ce dépôt est **propriétaire de l'image de runtime** : `Dockerfile`, build/push,
+smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
+`cheroliv` (unités privées et `office`) —, même image, jamais de mélange._
+
+|===
+| US | Contenu | Pts | Statut
+
+| GBL-013-2
+| Image `cccp-ci-base` : `Dockerfile`, workflow build/push Docker Hub (public
+  `cccpeducation` / privé `cheroliv`), smoke CI, pin `@sha256`, auth
+  `DOCKERHUB_*`. **Ollama hors image** (amendement S-226). Cache BuildKit
+  `type=gha,scope=cccp-ci-base,mode=max` (build une fois, push depuis le cache)
+| 5
+| 🟡 S-226 (Dockerfile + workflow + smoke + cache ; preuve CI à la 1re exécution)
+|===
+
