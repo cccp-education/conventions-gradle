@@ -1,0 +1,51 @@
+= Session 044 — `MEM-WARN-ZERO` US-3 : `registering` → `register` (conventions)
+:toc:
+
+:_date_: 2026-11-13
+:_borough_: Abidjan (conventions-gradle, N0)
+:_session_precedente_: 043 (workspace Gradle 9.9.1)
+:_statut_: ✅ 3 délégués dépréciés supprimés — iso-comportement
+
+'''
+
+== EPIC rattaché
+
+`MEM-WARN-ZERO` US-3 (porteur MEMPHIS, cadrage
+`workspace-bom/.agents/CADRAGE_EPIC_MEM_WARN_ZERO.adoc`).
+
+'''
+
+== Livré
+
+`conventions-plugin/build.gradle.kts` — 3 tâches de matérialisation des
+versions (lues par `WorkspaceBom`, `GradleWrapperVersion`, `AdoptionAuditTask`) :
+
+[source,kotlin]
+----
+// avant — délégué déprécié (Gradle 9.6 → 10)
+val generateWorkspaceBomInfo by tasks.registering { … }
+// après
+val generateWorkspaceBomInfo =
+    tasks.register("generateWorkspaceBomInfo") { … }
+----
+
+Idem `generateGradleVersionInfo` et `generateConventionsVersionInfo`. Les
+variables restent des `TaskProvider` : `resources.srcDir(<provider>)` et les
+`check`/`assemble` existants sont inchangés. Corps des blocs **identique**.
+
+'''
+
+== Mesure
+
+* **Avant** : 3 × `by tasks.registering` = 9 lignes `w:`.
+* **Après** : `grep -c "by tasks.registering"` = **0** ; `./gradlew help` →
+  `grep -c "^w: "` = **0**.
+* Local = Build : `compileKotlin`, `generateWorkspaceBomInfo`,
+  `generateGradleVersionInfo`, `generateConventionsVersionInfo`,
+  `validatePlugins` — VERTS.
+
+'''
+
+== Reste `MEM-WARN-ZERO`
+
+US-4 `plantuml` (✅ même session côté HTOWN), US-5/US-6 `buildDir`, US-7 gate.

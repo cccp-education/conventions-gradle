@@ -1,8 +1,15 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 042
-:date: 2026-11-09
+:session: 045
+:date: 2026-11-13
 :epic: CNV-16 — JitPack (retry + décisions)
 :max-lines: 70
+
+== Session 044 terminée — `MEM-WARN-ZERO` US-3
+
+* 3 `val x by tasks.registering { }` → `val x = tasks.register("x") { }`
+  (9 warnings Gradle 9.6 → 0), iso-comportement (`resources.srcDir(provider)`
+  inchangé). Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
+* EPIC transverse : `workspace-bom/.agents/CADRAGE_EPIC_MEM_WARN_ZERO.adoc`.
 
 == Contexte hérité
 

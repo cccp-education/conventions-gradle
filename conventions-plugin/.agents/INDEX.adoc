@@ -6,9 +6,10 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-12
+_session terminee_ : 044 — **`MEM-WARN-ZERO` US-3** : 3 délégués `registering` → `register` (9 warnings Gradle 9.6 → 0), iso-comportement. Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
 _session terminee_ : 043 — **Workspace Gradle 9.9.1** ✅ (101 wrappers sur 35 dépôts, action `verify-gradle-wrapper` 9.9.1, source unique du catalogue 9.9.1, garde/fixtures alignés, tag JitPack `v0.0.16` + shim 55 settings ; CI verte sur tous les dépôts publics, hors `magic-stick` infra Docker). Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
-_session en cours_ : aucune — 043 clôturée.
-_Prochaine session_ : 044 — retry `video-kernel`/`youtube-auth` (JitPack) ; décider `review` (SNAPSHOT) / `jhipster` (legacy) ; optionnel US-4/US-5.
+_session en cours_ : aucune — 044 clôturée.
+_Prochaine session_ : 045 — retry `video-kernel`/`youtube-auth` (JitPack) ; décider `review` (SNAPSHOT) / `jhipster` (legacy) ; optionnel US-4/US-5.
 
 _Note 2026-11-09 (S-041)_ : **publication JitPack de tous les artefacts
 publics** (demande pilote « tous les plugins et libs »). Recette `jitpack.yml`

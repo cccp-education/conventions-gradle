@@ -57,17 +57,18 @@ sourceSets.test {
 // is materialised as a resource so TestDependencies can read it at consumer
 // runtime, even without a local `libs` catalog. This replaces the hardcoded
 // constant that had drifted 45 versions behind (0.0.13 vs 0.0.58, S-019 P2-A).
-val generateWorkspaceBomInfo by tasks.registering {
-    val bomVersion = libs.versions.workspace.bom.get()
-    val outputDir = layout.buildDirectory.dir("generated/build-info")
-    inputs.property("workspaceBomVersion", bomVersion)
-    outputs.dir(outputDir)
-    doLast {
-        val file = outputDir.get().file("build/workspace-bom.properties").asFile
-        file.parentFile.mkdirs()
-        file.writeText("version=$bomVersion\n")
+val generateWorkspaceBomInfo =
+    tasks.register("generateWorkspaceBomInfo") {
+        val bomVersion = libs.versions.workspace.bom.get()
+        val outputDir = layout.buildDirectory.dir("generated/build-info")
+        inputs.property("workspaceBomVersion", bomVersion)
+        outputs.dir(outputDir)
+        doLast {
+            val file = outputDir.get().file("build/workspace-bom.properties").asFile
+            file.parentFile.mkdirs()
+            file.writeText("version=$bomVersion\n")
+        }
     }
-}
 
 sourceSets.main {
     resources.srcDir(generateWorkspaceBomInfo)
@@ -78,17 +79,18 @@ sourceSets.main {
 // materialised as a resource so GradleWrapperVersion can read it at consumer
 // runtime. `verifyGradleWrapper` (wired to `check`) then fails any CI whose
 // wrapper drifts from it.
-val generateGradleVersionInfo by tasks.registering {
-    val gradleVersion = libs.versions.gradle.get()
-    val outputDir = layout.buildDirectory.dir("generated/gradle-info")
-    inputs.property("gradleVersion", gradleVersion)
-    outputs.dir(outputDir)
-    doLast {
-        val file = outputDir.get().file("build/gradle-version.properties").asFile
-        file.parentFile.mkdirs()
-        file.writeText("version=$gradleVersion\n")
+val generateGradleVersionInfo =
+    tasks.register("generateGradleVersionInfo") {
+        val gradleVersion = libs.versions.gradle.get()
+        val outputDir = layout.buildDirectory.dir("generated/gradle-info")
+        inputs.property("gradleVersion", gradleVersion)
+        outputs.dir(outputDir)
+        doLast {
+            val file = outputDir.get().file("build/gradle-version.properties").asFile
+            file.parentFile.mkdirs()
+            file.writeText("version=$gradleVersion\n")
+        }
     }
-}
 
 sourceSets.main {
     resources.srcDir(generateGradleVersionInfo)
@@ -97,17 +99,18 @@ sourceSets.main {
 // ── The conventions version itself, materialised for the adoption audit ────
 // AdoptionAuditTask compares every consumer pin to this version, so the
 // expected value can never drift from the published plugin.
-val generateConventionsVersionInfo by tasks.registering {
-    val conventionsVersion = version.toString()
-    val outputDir = layout.buildDirectory.dir("generated/conventions-info")
-    inputs.property("conventionsVersion", conventionsVersion)
-    outputs.dir(outputDir)
-    doLast {
-        val file = outputDir.get().file("build/conventions-version.properties").asFile
-        file.parentFile.mkdirs()
-        file.writeText("version=$conventionsVersion\n")
+val generateConventionsVersionInfo =
+    tasks.register("generateConventionsVersionInfo") {
+        val conventionsVersion = version.toString()
+        val outputDir = layout.buildDirectory.dir("generated/conventions-info")
+        inputs.property("conventionsVersion", conventionsVersion)
+        outputs.dir(outputDir)
+        doLast {
+            val file = outputDir.get().file("build/conventions-version.properties").asFile
+            file.parentFile.mkdirs()
+            file.writeText("version=$conventionsVersion\n")
+        }
     }
-}
 
 sourceSets.main {
     resources.srcDir(generateConventionsVersionInfo)
