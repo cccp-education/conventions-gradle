@@ -88,3 +88,56 @@ Fichiers consommateurs identifiés (30 références, 14 dépôts) : `codebase`,
 **Aucun tag, aucun push, aucune publication** cette session (préparation N0
 seulement). Le tag `v0.0.134` est l'action de release (US-2) à exécuter avec
 accord, suivi de la preuve HTTP.
+
+== Suite exécutée (même session, après feu vert pilote)
+
+=== N0 publié — `workspace-bom 0.0.136`
+
+* Tag `v0.0.136` → build JitPack. **11 modules 200** : `workspace-bom`,
+  `workspace-catalog`, `agent-contracts`, `codebase-contracts`,
+  `i18n-contracts`, `llm-pool-contracts`, `ocr-contracts`,
+  `opencode-session-contracts`, `pipeline-contracts`, `plantuml-contracts`,
+  `runtime-contracts`, `catalog-contracts`.
+* `runtime-contracts` corrigé : il résout ses frères depuis `mavenLocal` avec
+  le **groupe local** `education.cccp` (JitPack réécrit le POM publié vers
+  `com.github.cccp-education.workspace-bom` — vérifié sur le POM servi).
+* `vibecoding-contracts` retiré (vestige non versionné : le dossier n'existe
+  pas dans le clone JitPack). D11 tranché = retrait.
+* Versions des contrats pilotées par le tag (`providers.gradleProperty("version")`).
+
+=== Blocage racine découvert et corrigé — conventions
+
+`JvmProjectConventions.configureRepositories` déclarait des dépôts
+**au niveau projet** (`mavenLocal`, `mavenCentral`, `gradlePluginPortal`), ce
+qui **écrase** `dependencyResolutionManagement` (Gradle `PREFER_PROJECT`) :
+JitPack n'était jamais consulté pour les dépendances. Correctif : ajout de
+JitPack dans `configureRepositories` → **une source unique** pour les 30
+dépôts. Publié `conventions-plugin v0.0.17` (JitPack 200) ; shim
+`useModule` bumpé dans **56 `settings.gradle.kts`**.
+
+=== Consommateurs basculés
+
+* Coordonnées réécrites (`education.cccp:<x>` → JitPack) dans `[libraries]`,
+  `platform(...)`, `from(...)` et les dépendances inline.
+* `workspace-bom`/`workspace-catalog` pinnés à `0.0.136` ; catalogues
+  `versionCatalogs` remis en forme (4 blocs restaurés après réécriture).
+* `planner` : `codebase-plugin` 0.0.17 (absent) → **0.0.18**.
+* `academy` et `container-provision` : JitPack ajouté à leurs `repositories`
+  projet (ils écrasaient les conventions).
+* Compiles VERTES (Local = Build) : codebase, codex, document, plantuml,
+  hyperframes, graphify, bakery, capsule, planner, slider, academy, dashboard,
+  bureau, container-provision, api-key-pool, flow, youtube-auth ; `runner`
+  (N3) `help` vert (pas de `compileKotlin`).
+* **18 dépôts** commités + poussés (`build(catalog): JitPack-only coordinates
+  + workspace 0.0.136 (CNV-17)`) → preuve = CI.
+
+=== Reste (US-3/5/7)
+
+* `conventions-plugin` : la forme `0.0.17` (sans `v`) était encore *Queued* /
+  rate-limitée (429) au moment du bump → le shim utilise **`v0.0.17`**
+  (fonctionnel). À normaliser quand JitPack a servi `0.0.17`.
+* `youtube-auth-plugin` reste `v0.0.4` (préfixe) ; unifier la version du dépôt
+  `video-kernel-gradle` (0.9.1) imposerait de partager une seule version.
+* US-5 : workflows `publish*` (Central/Portal) encore présents dans les dépôts
+  publics — à désactiver derrière `CCCP_PUBLISH_TARGET` (défaut JitPack).
+* US-7 : audit CI + table de preuve HTTP.
