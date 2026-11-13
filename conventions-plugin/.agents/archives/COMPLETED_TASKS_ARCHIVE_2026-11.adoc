@@ -189,3 +189,4 @@ pour les contrats N0.
 * CI `43357877552` verte.
 
 * GBL-013 — portabilité CI (session close) : voir `.agents/sessions/` (rapport dédié).
+* Session 049 — EAGER : publication JitPack canal unique (AGENT/PROMPT_REPRISE alignés ; Central/Portal retirés) — 2026-11-14.
