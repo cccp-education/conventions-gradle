@@ -41,6 +41,11 @@ kotlin {
 repositories {
     mavenCentral()
     gradlePluginPortal()
+    // CNV-17 / GBL-013 — JitPack serves the relabelled `workspace-bom`. A
+    // project-level repositories block overrides the settings'
+    // `dependencyResolutionManagement` (which declares JitPack), so JitPack must
+    // be declared here too, otherwise the BOM is searched only on Central/Portal.
+    maven("https://jitpack.io")
 }
 
 val functionalTest by sourceSets.creating {
