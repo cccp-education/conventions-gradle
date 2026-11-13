@@ -1081,3 +1081,12 @@ N0 préparé : catalogue `workspace-bom` réécrit en coordonnées JitPack, vers
 contrats unifiées à `0.0.134`, `jitpack.yml` normalisé (JDK `25-open`,
 `-Pversion`, `vibecoding-contracts`). `./gradlew help` vert. Aucun tag, aucun
 push, aucune publication. Rapport `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.
+
+== Session 045 (clôture) — CNV-17 TERMINÉ — 2026-11-14
+
+Shim normalisé `0.0.17` (56 settings), N0 `0.0.136` (11 modules HTTP 200),
+`conventions-plugin v0.0.17`, 25 dépôts publics poussés. US-5 audité :
+0 workflow de publication Central/Portal, 0 credential CI. Deferrals : US-3b
+(unifier `video-kernel`/`youtube-auth`) et neutralisation des tâches
+Central/Portal (inatteignables en CI). `foundry/private/**` et `office/**`
+inchangés. Rapport `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.

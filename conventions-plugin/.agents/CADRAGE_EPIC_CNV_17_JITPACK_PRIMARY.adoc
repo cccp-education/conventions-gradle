@@ -5,7 +5,7 @@
 :sectnums:
 
 _Créé_ : 2026-11-13 (session 045) — décision pilote.
-_Statut_ : 🟡 EN COURS — US-0 ✅ (cadrage + preuves), US-1→US-7 🟡.
+_Statut_ : ✅ TERMINÉ (S-045) — N0 `0.0.136` (BOM + catalogue + 10 contrats), `conventions-plugin v0.0.17`, 18 dépôts migrés. **Deferrals assumés** : US-3b (unifier `video-kernel`/`youtube-auth` sur une version de dépôt) et US-5 (neutralisation *des tâches* Central/Portal — audit S-045 : **0 workflow de publication**, 0 credential CI, canal JitPack seul).
 _Portée_ : **tout `foundry/public/`** (canal de publication unique). **Exclu** :
 `foundry/private/**` et `office/**` (boroughs privés, sites).
 _Remplace_ : la politique « Publication → Gradle Plugin Portal » (AGENTS.adoc

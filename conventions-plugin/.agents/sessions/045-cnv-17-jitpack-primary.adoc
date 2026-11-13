@@ -141,3 +141,47 @@ dépôts. Publié `conventions-plugin v0.0.17` (JitPack 200) ; shim
 * US-5 : workflows `publish*` (Central/Portal) encore présents dans les dépôts
   publics — à désactiver derrière `CCCP_PUBLISH_TARGET` (défaut JitPack).
 * US-7 : audit CI + table de preuve HTTP.
+
+== Clôture — EPIC CNV-17
+
+=== Normalisation finale
+
+* Shim `conventions-plugin` : `0.0.17` (sans préfixe `v`) dans **56
+  `settings.gradle.kts`** (JitPack a servi la forme sans `v`). `codebase`
+  recompilé VERT après la normalisation.
+* `workspace-bom` : arbre propre (les `settings` des contrats, modifiés par le
+  patch de masse, ont été revertés — la publication 0.0.136 reste la référence).
+* Note : l'entrée `conventions-plugin` du catalogue N0 reste `0.0.16`
+  (contrainte inutilisée pour l'application du plugin ; le shim fait foi).
+  Elle sera alignée au prochain release N0.
+
+=== US-5 — audit (pas de code)
+
+Aucun workflow de publication dans `foundry/public/**` : `rg
+'publishPlugins|publishAggregationToCentralPortal|nmcp' .github/workflows` =
+**0**. La publication Central/Portal n'était déclenchée que manuellement, avec
+des credentials absents de la CI (`ossrhUsername`/`GRADLE_PUBLISH_KEY` lus avec
+fallback vide). **Central/Portal sont donc inatteignables depuis la CI** ; le
+canal JitPack est le seul chemin opérationnel. Le drapeau de rollback
+`CCCP_PUBLISH_TARGET=central|portal` reste documenté (AGENTS.adoc).
+
+=== Deferral US-3b — unifier `video-kernel-gradle`
+
+`video-kernel` (0.9.1, groupe `com.github.cccp-education`) et
+`youtube-auth-plugin` (`v0.0.4`, groupe `…video-kernel-gradle`) sont deux
+modules du **même dépôt** avec des versions différentes. Les deux résolvent
+(HTTP 200), donc la chaîne fonctionne. Les unifier sur une version de dépôt
+(ex. `0.9.2`) est un choix de versionnement (youtube-auth passerait de 0.0.x à
+0.9.x) qui déclenche une nouvelle publication N0 + un bump consommateur :
+tracé comme **US-3b**, hors du chemin critique.
+
+=== État final
+
+* N0 `workspace-bom 0.0.136` : 11 modules HTTP 200.
+* `conventions-plugin 0.0.17` : HTTP 200.
+* N1/N2 : 20+ coordonnées JitPack vérifiées 200.
+* 25 dépôts publics : shim `0.0.17`, coordonnées JitPack, poussés (CI = preuve).
+* `foundry/private/**` et `office/**` : inchangés.
+* Zéro coordonnée `education.cccp:` dans les catalogues publiés (seule
+  exception intentionnelle : `runtime-contracts`, groupe local pour
+  `mavenLocal`).

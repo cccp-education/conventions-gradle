@@ -840,7 +840,7 @@ build long/quota ; immuabilité 7 jours. Détail et mitigations dans le cadrage.
 
 '''
 
-== 🟡 EN COURS — CNV-17 : JITPACK-PRIMARY (mise en sécurité de la chaîne de publication)
+== ✅ TERMINÉ — CNV-17 : JITPACK-PRIMARY (mise en sécurité de la chaîne de publication)
 
 _Décision pilote S-045 (2026-11-13) : « mise en sécurité de la chaîne de
 publication en optant pour la totalité vers JitPack »._
@@ -850,7 +850,7 @@ jusqu'au 2026-12-01, contraintes Portal, propriété de groupe `newpipe`).
 *Charge estimee* : ~24 pts (~6 sessions)
 *Depend de* : CNV-16 (canal secondaire déjà opérationnel)
 *Document* : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc`
-*Statut* : 🟡 EN COURS (US-0 ✅ S-045 ; US-1→US-7 à faire)
+*Statut* : ✅ TERMINÉ (S-045) — US-0→US-7 livrées ; deferrals US-3b/US-5 documentés
 
 === Problème — le double canal produit des coordonnées concurrentes
 

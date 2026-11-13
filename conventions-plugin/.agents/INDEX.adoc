@@ -418,7 +418,7 @@ _Toute modification du code source du plugin DOIT etre suivie de `./gradlew -q p
 | CNV-12 | Version alignment — fallbacks bump + BOM + annotations hack + publicationType (vision Famille 6 + 8) | ✅ TERMINE | P0
 | PUB | Publication Gradle Plugin Portal + Maven Central | ✅ TERMINE (4/4 US) | P1
 | CNV-16 | Distribution JitPack — canal **secondaire** (tag = release, shim `useModule`, 20 artefacts servis) | ✅ REALISE (S-037→S-042) | P1
-| CNV-17 | **JITPACK-PRIMARY** — canal unique pour `foundry/public/**` (coordonnées JitPack, BOM `platform`, Central/Portal désactivés, privés exclus) | 🟡 EN COURS (S-045) | P0
+| CNV-17 | **JITPACK-PRIMARY** — canal unique pour `foundry/public/**` (coordonnées JitPack, BOM `platform`, Central/Portal désactivés, privés exclus) | ✅ TERMINÉ (S-045) — N0 0.0.136 + conventions v0.0.17 + 18 dépôts | P0
 | CNV-13.0 | Cadrage EPIC adoption + resynchronisation gouvernance | ✅ TERMINE (S-024) | P0
 | CNV-13.1 | `publishing` paramétrable (identité propriétaire) + bump 0.0.9 + pin BOM test | ✅ TERMINE (S-024) | P0
 | CNV-13.2 | Adoption `payment-scaffold` (16 modules) + CI JDK 25 | ✅ TERMINE (S-024) | P0
