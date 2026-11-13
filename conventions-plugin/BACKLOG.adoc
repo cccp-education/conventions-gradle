@@ -971,6 +971,6 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
   `DOCKERHUB_*`. **Ollama hors image** (amendement S-226). Cache BuildKit
   `type=gha,scope=cccp-ci-base,mode=max` (build une fois, push depuis le cache)
 | 5
-| 🟡 S-226 (Dockerfile + workflow + smoke + cache ; preuve CI à la 1re exécution)
+| 🔴 BLOQUÉ secrets — code livré (Dockerfile + workflow + smoke + cache), run `43477829278` : « Username and password required » (`DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` absents du dépôt). À reprendre après `gh secret set`.
 |===
 

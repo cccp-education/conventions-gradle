@@ -57,6 +57,22 @@ secrets:
 A missing secret fails the job explicitly: the image is a prerequisite of the
 migration waves, a silent skip would only postpone the failure.
 
+=== Configuring the secrets
+
+[source,shell]
+----
+gh secret set DOCKERHUB_USERNAME --repo cccp-education/conventions-gradle
+gh secret set DOCKERHUB_TOKEN --repo cccp-education/conventions-gradle
+gh secret set DOCKERHUB_PRIVATE_USERNAME --repo cccp-education/conventions-gradle
+gh secret set DOCKERHUB_PRIVATE_TOKEN --repo cccp-education/conventions-gradle
+----
+
+Observed on the first run (`43477829278`): the public login step fails with
+`Username and password required` when the secret is absent — the gate is
+fail-loud, never a silent skip. The private repository
+`cheroliv/cccp-ci-base` must exist (Docker Hub free tier allows one private
+repository; create or free a slot before the private publish step).
+
 === Cache
 
 The BuildKit cache is written **once** by the loaded build
