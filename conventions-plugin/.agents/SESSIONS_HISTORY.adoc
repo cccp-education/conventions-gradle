@@ -1090,3 +1090,7 @@ Shim normalisé `0.0.17` (56 settings), N0 `0.0.136` (11 modules HTTP 200),
 (unifier `video-kernel`/`youtube-auth`) et neutralisation des tâches
 Central/Portal (inatteignables en CI). `foundry/private/**` et `office/**`
 inchangés. Rapport `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.
+
+== Session 048 — GBL-013 : image cccp-ci-base + migration CI + fix JitPack — 2026-11-14
+
+US-2 : Dockerfile + workflow bi-canal (cccpeducation/cheroliv), publication `sha256:4722c1bc…`/`sha256:7b13e2b9…`, run 43478967276 VERT. US-4 : `ci/run.sh` + `test.yml` migré, run 43489495567 VERT. Fix : JitPack déclaré dans les repositories projet (BOM 0.0.136 introuvable, CI rouge depuis 62b5def). Rapport `.agents/sessions/048-gbl-013-ci-image-and-build.adoc`.

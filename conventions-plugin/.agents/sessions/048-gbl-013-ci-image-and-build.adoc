@@ -1,0 +1,34 @@
+= Session 048 — GBL-013 : image `cccp-ci-base` + migration CI + fix JitPack
+:date: 2026-11-14
+:borough: ABIDJAN (conventions-gradle)
+
+== Livré
+
+* **GBL-013 US-2** — `ci-image/Dockerfile` (JDK 25, Node 22, deps Playwright,
+  ffmpeg, espeak-ng, shellcheck ; Ollama **hors image**) +
+  `.github/workflows/ci-image.yml` : deux canaux (`cccpeducation` public /
+  `cheroliv` privé), login **par canal**, smoke, digest, cache BuildKit
+  `type=gha,scope=cccp-ci-base,mode=max,ignore-error=true`.
+  Publications : `cccpeducation/cccp-ci-base:7-9a56e22` @ `sha256:4722c1bc…`,
+  `cheroliv/cccp-ci-base:7-9a56e22` @ `sha256:7b13e2b9…`. Run `43478967276` VERT
+  (1m9s, cache chaud).
+* **GBL-013 US-4** — `ci/run.sh` (`fast`/`test`) + `test.yml` migré
+  (`container:` épinglé, plus de `setup-java`, `ci/run.sh test`). Run
+  `43489495567` VERT.
+
+== Constat
+
+Les deux comptes Docker Hub partagent la clé `docker.io` dans
+`~/.docker/config.json` : le login privé écrasait le public → `insufficient_scope`.
+Correctif : login juste avant chaque push.
+
+== Fix préexistant
+
+JitPack n'était pas déclaré dans le bloc `repositories` **projet** de
+`conventions-plugin/build.gradle.kts` : il masquait le `dependencyResolutionManagement`
+du settings, donc le BOM `0.0.136` (pourtant publié, HTTP 200) était introuvable.
+CI rouge depuis `62b5def`. Corrigé.
+
+== Suivant
+
+CNV-17 US-5→US-7 (session 047, en cours) ; puis vague 2 GBL-013.

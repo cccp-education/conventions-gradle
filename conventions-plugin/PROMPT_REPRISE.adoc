@@ -59,3 +59,8 @@ Décision pilote : JitPack = **canal unique** des artefacts publics.
 
 * Cadrage : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc`.
 * Rapport : `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.
+
+== GBL-013 (clôture) — 2026-11-14
+Portabilité CI livrée : image \`cccp-ci-base\`, \`ci/run.sh\`, adapter fin.
+Rapport \`.agents/sessions/048-gbl-013-ci-image-and-build.adoc\`. Reste : US-5→US-9 (cadrage racine
+\`.agents/CADRAGE_EPIC_GBL_013_PORTABILITE_CI.adoc\`).
