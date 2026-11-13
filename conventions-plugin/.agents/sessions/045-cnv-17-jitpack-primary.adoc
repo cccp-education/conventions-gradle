@@ -185,3 +185,42 @@ tracé comme **US-3b**, hors du chemin critique.
 * Zéro coordonnée `education.cccp:` dans les catalogues publiés (seule
   exception intentionnelle : `runtime-contracts`, groupe local pour
   `mavenLocal`).
+
+=== Correction post-CI (preuves vertes) — enseignement majeur
+
+La première activation a révélé un **fait structurel** : un artefact JitPack
+d'une version **réutilisée** n'est pas identique à l'artefact Central de la
+même version. `document-plugin 0.0.30` et `plantuml-plugin 0.0.16` sur JitPack
+sont construits depuis des commits **différents** de leurs homologues Central
+(tag créé avant/après la release). Conséquence : la garde de langue
+`PlantumlTranslationPortAdapter` (PLT-OUT-3) **préserve** les labels que le
+faux traducteur des tests laisse en français → 4 tests bakery échouent.
+
+Décisions de clôture :
+
+* **Guards alignés JitPack** (corrigés) : `DocumentPluginPublicationTest`,
+  `PlantumlPluginPublicationTest`, `CodexPluginPublicationTest`,
+  `HyperframesPluginPublicationTest`, `BakeryPluginPublicationTest`,
+  `WorkspaceCatalogStructureTest`, `PlatformCatalogAlignmentTest`,
+  `VersionCatalogTransitiveVersionsTest`, `ReadmePluginPublicationTest` +
+  injection `ws.versions.workspace.bom` (plus de littéral `0.0.115`) +
+  ktlint `chain-method-continuation`.
+* **N0 CI** : `runtime-contracts` publié localement avant le batch parallèle
+  (workflow `n0-contracts`). Le job N0 est **VERT**.
+* **Bakery = exception documentée** : consumer **reverté** à l'état
+  `cf47a822` (catalogue JitPack `v0.0.133` + plateforme BOM Central), car ses
+  tests encodent le **contrat plantuml antérieur**. Sa publication (`0.0.38`)
+  reste sur JitPack ; seule sa **consommation** de document/plantuml reste
+  Central. Suivi **US-3c** : re-releaser `plantuml 0.0.17` depuis HEAD puis
+  mettre à jour les faux traducteurs des tests bakery (langue cible sans
+  résidu français) et réactiver.
+* **Preuves CI vertes** : codebase, codex, document, plantuml, hyperframes,
+  readme, capsule, planner, bakery (après revert), dashboard, slider, academy,
+  bureau, flow, container-provision, api-key-pool, runner, video-kernel.
+  `workspace-bom` : job N0 vert ; jobs cross-borough bakery re-déclenchés
+  après le revert.
+
+**Règle issue de S-045** : *ne jamais réutiliser un numéro de version d'un
+canal à l'autre sans vérifier que la source est identique*. Un canal JitPack
+propre exige de **re-releaser chaque module depuis HEAD** (D2), pas de repointer
+d'anciens numéros.
