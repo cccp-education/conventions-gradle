@@ -40,6 +40,13 @@ internal object JvmProjectConventions {
         project.repositories.mavenLocal()
         project.repositories.mavenCentral()
         project.repositories.gradlePluginPortal()
+        // CNV-17 — JitPack is the single publication channel: project-level
+        // repositories override `dependencyResolutionManagement` (Gradle
+        // PREFER_PROJECT), so JitPack must be declared here for every consumer.
+        project.repositories.maven {
+            it.name = "JitPack"
+            it.setUrl("https://jitpack.io")
+        }
     }
 
     /**

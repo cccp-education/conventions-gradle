@@ -1,0 +1,295 @@
+= Cadrage — EPIC CNV-17 « JITPACK-PRIMARY »
+:toc: left
+:toclevels: 3
+:icons: font
+:sectnums:
+
+_Créé_ : 2026-11-13 (session 045) — décision pilote.
+_Statut_ : 🟡 EN COURS — US-0 ✅ (cadrage + preuves), US-1→US-7 🟡.
+_Portée_ : **tout `foundry/public/`** (canal de publication unique). **Exclu** :
+`foundry/private/**` et `office/**` (boroughs privés, sites).
+_Remplace_ : la politique « Publication → Gradle Plugin Portal » (AGENTS.adoc
+racine, décision 2026-11-05) pour les artefacts **publics**.
+
+== 1. Décision pilote
+
+« Mise en sécurité de la chaîne de publication en optant pour la **totalité**
+vers JitPack. »
+
+JitPack devient le **canal de publication de référence et unique** des
+artefacts publics `education.cccp` (plugins Gradle + libs + BOM + catalogue).
+Maven Central (nmcp) et le Gradle Plugin Portal cessent d'être publiés pour
+les dépôts publics : **un artefact = un canal = un nom = une version**.
+Aucun double canal, donc aucune concurrence de coordonnées.
+
+== 2. Pourquoi (constats mesurés)
+
+[cols="2,4", options="header"]
+|===
+| Source de blocage | Constat
+
+| **Sonatype / Maven Central**
+| Quota mensuel de releases atteint (`capsule-plugin 0.0.20` refusé,
+  `monthly release count limit`), reset **2026-12-01**. Publication impossible
+  jusqu'à cette date.
+
+| **Gradle Plugin Portal**
+| Contraintes de build (`compatibility` à déclarer), `plugin-publish 2.2.1`
+  auto-signe dès que `signing` est appliqué, revue manuelle du groupe,
+  et **blocage de propriété** (`newpipe` : « You are not the owner of group
+  `education.cccp` »).
+
+| **Double canal = coordonnées concurrentes**
+| Le même artefact logique porte **deux noms** : `education.cccp:video-kernel`
+  (Central) vs `com.github.cccp-education.video-kernel-gradle:video-kernel-gradle`
+  (JitPack). Constat aggravant : `codebase` et `bakery` mélangent déjà
+  **catalogue JitPack + BOM Central** dans le même build. Le catalogue
+  `libs.versions.toml` n'est plus une source de vérité unique → dérive
+  garantie.
+|===
+
+== 3. Preuves mesurées (2026-11-13, HTTP direct)
+
+=== 3.1 Le BOM et le catalogue sont utilisables depuis JitPack
+
+[source,text]
+----
+GET /com/github/cccp-education/workspace-bom/workspace-bom/0.0.133/workspace-bom-0.0.133.pom
+  → 200  packaging=pom  <dependencyManagement> présent  84 <dependency> contraints
+GET /com/github/cccp-education/workspace-bom/workspace-bom/0.0.133/workspace-bom-0.0.133.module
+  → 200  24 618 octets (Gradle module metadata)
+GET /com/github/cccp-education/workspace-bom/workspace-catalog/0.0.133/workspace-catalog-0.0.133.toml
+  → 200
+----
+
+*Correction d'un constat antérieur* (S-272/S-283 « le BOM JitPack perd
+`dependencyManagement`, aucun `.module` ») : ce constat portait sur la
+coordonnée **courte au niveau dépôt**
+(`…/workspace-bom/0.0.133/workspace-bom-0.0.133.pom`), qui est le POM du projet
+**conteneur** racine. La coordonnée **multi-module**
+(`com.github.cccp-education.workspace-bom:workspace-bom`) est complète.
+→ **Un `platform(...)` JitPack est valide** : l'Option A (JitPack primaire) est
+techniquement débloquée.
+
+=== 3.2 Sur JitPack, une version par dépôt (le tag)
+
+[source,text]
+----
+agent-contracts  0.0.133 → 200      agent-contracts  0.0.4 → 404
+codebase-contracts 0.0.133 → 200    codebase-contracts 0.0.2 → 404
+i18n-contracts   0.0.133 → 200      i18n-contracts   0.0.5 → 404
+catalog-contracts 0.0.133 → 200     catalog-contracts 0.0.1 → 404
+----
+
+**Règle structurelle** : JitPack **relabelle tous les modules d'un dépôt à la
+version du tag**. Les versions par module (contrats N0 à `0.0.4`, `0.0.2`,
+`0.0.5`…) **n'existent pas** sur JitPack. Conséquence assumée : les artefacts
+d'un dépôt partagent **une seule version**.
+
+=== 3.3 Couverture du canal (POM, HTTP 200)
+
+[cols="3,3,3,1", options="header"]
+|===
+| Dépôt | Groupe JitPack | Artefact | Verdict
+
+| workspace-bom | `com.github.cccp-education.workspace-bom` | `workspace-bom`, `workspace-catalog`, 10 contrats | ✅ 0.0.133
+| conventions-gradle | `…conventions-gradle` | `conventions-plugin` | ✅ 0.0.16
+| codebase-gradle | `…codebase-gradle` | `codebase-plugin` | ✅ 0.0.18
+| codex-gradle | `…codex-gradle` | `codex-plugin` | ✅ 0.0.12
+| document-gradle | `…document-gradle` | `document-plugin` | ✅ 0.0.30
+| bakery-gradle | `…bakery-gradle` | `bakery-plugin` | ✅ 0.0.38
+| planner-gradle | `…planner-gradle` | `planner-plugin` | ✅ 0.0.2
+| slider-gradle | `…slider-gradle` | `slider-plugin` | ✅ 0.0.20
+| capsule-gradle | `…capsule-gradle` | `capsule-plugin` | ✅ 0.0.21
+| plantuml-gradle | `…plantuml-gradle` | `plantuml-plugin` | ✅ 0.0.16
+| readme-gradle | `…readme-gradle` | `readme-plugin` | ✅ 0.0.2
+| graphify-gradle | `…graphify-gradle` | `graphify-plugin` | ✅ 0.0.5
+| hyperframes-gradle | `…hyperframes-gradle` | `hyperframes-plugin` | ✅ 0.0.16
+| academy-gradle | `…academy-gradle` | `academy-plugin` | ✅ 0.0.3
+| dashboard-gradle | `…dashboard-gradle` | `dashboard-plugin` | ✅ 0.0.2
+| bureau-gradle | `…bureau-gradle` | `bureau-plugin` | ✅ 0.0.1
+| flow-gradle | `…flow-gradle` | `flow-plugin` | ✅ 0.0.1
+| container-provision-gradle | `…container-provision-gradle` | `container-provision-plugin` | ✅ 0.0.1
+| video-kernel-gradle | `com.github.cccp-education` | `video-kernel-gradle` | ✅ 0.9.1 (mono, group = org)
+| video-kernel-gradle | `…video-kernel-gradle` | `youtube-auth-plugin` | ⚠️ ✅ `v0.0.4` (préfixe `v` à supprimer)
+| api-key-pool-gradle | `com.github.cccp-education` | `api-key-pool-gradle` | ✅ 0.0.2 (mono, artifact ≠ nom du module)
+|===
+
+Hors canal (justifié) : `runner` (N3, aucune publication), `dashboard-flow`
+(site), `review`/`jhipster` (SNAPSHOT/legacy), `newpipe`/`notebook` (vestiges),
+`ticket`/`agile` (pas de publication Maven), `magic-stick`/`office` (sites).
+
+== 4. Schéma de coordonnées canonique
+
+[source,text]
+----
+groupId    = com.github.cccp-education.<repo>
+artifactId = <artifactId du module>        (mono-module : = <repo>)
+version    = <tag sans le préfixe v>       (X.Y.Z)
+----
+
+.Exemples
+[source,kotlin]
+----
+// BOM + catalogue (N0)
+platform("com.github.cccp-education.workspace-bom:workspace-bom:0.0.134")
+versionCatalog { from("com.github.cccp-education.workspace-bom:workspace-catalog:0.0.134") }
+
+// contrats N0 (même version que le tag workspace-bom)
+implementation("com.github.cccp-education.workspace-bom:agent-contracts:0.0.134")
+
+// plugin N2 consommé comme dépendance
+implementation("com.github.cccp-education.bakery-gradle:bakery-plugin:0.0.38")
+
+// plugin appliqué par id (le shim useModule absorbe la coordonnée)
+useModule("com.github.cccp-education.bakery-gradle:bakery-plugin:0.0.38")
+----
+
+== 5. Décisions
+
+. **D1 — JitPack = canal unique** des artefacts publics. Central (nmcp) et
+  Portal sont **désactivés** pour `foundry/public/**` (US-5).
+. **D2 — Version = tag, uniforme par dépôt.** Tag `vX.Y.Z` ; le build force
+  `-Pversion="${VERSION#v}"` ; la version servie est `X.Y.Z` (sans `v`).
+  Convention de release : bump de la version dans le dépôt **avant** le tag,
+  pour que la valeur locale et la valeur servie coïncident.
+. **D3 — Un seul schéma de coordonnées** (§4), appliqué partout (BOM,
+  catalogue, libs, plugins).
+. **D4 — BOM et catalogue servis par JitPack** (preuve §3.1), même version que
+  le tag. Plus de « catalogue JitPack + BOM Central ».
+. **D5 — Versions N0 unifiées.** Les 11 versions par contrat (`agent-contracts
+  0.0.4`, …) sont abolies : **tous les contrats = version du tag workspace-bom**.
+  Le BOM ne contraint que des coordonnées JitPack.
+. **D6 — Un artefact, un nom.** Aucun `libs.versions.toml` publié ne peut
+  contenir à la fois des coordonnées Central et JitPack pour le groupe.
+. **D7 — Le shim `useModule` est le seul mapping de plugin.** Les ids restent
+  `education.cccp.*` ; la résolution est forcée vers la coordonnée JitPack.
+. **D8 — Private exclu.** `foundry/private/**` et `office/**` ne sont pas
+  modifiés (ni canal, ni coordonnées).
+. **D9 — Preuve.** Local = Build (compile uniquement) ; CI verte ;
+  HTTP 200 par coordonnée servie ; `grep` zéro coordonnée en double.
+. **D10 — Rollback.** Un drapeau `CCCP_PUBLISH_TARGET=central|portal` reste
+  disponible (code conservé) pour la reprise après le 2026-12-01 ; le
+  basculement est **global**, jamais par artefact.
+. **D11 — `vibecoding-contracts`** : module supprimé du build mais encore
+  contraint par le BOM. Décision US-2 : soit réintégré au `jitpack.yml`
+  (publié à la version du tag), soit **retiré** du catalogue et du BOM.
+
+== 6. User stories / vagues
+
+[cols="1,5,1,2", options="header"]
+|===
+| US | Contenu | Pts | Statut
+
+| CNV-17.0
+| Cadrage, preuves HTTP, schéma de coordonnées, mapping (§3, §4).
+| 1
+| ✅ S-045
+
+| CNV-17.1
+| **Normaliser `jitpack.yml`** des 22 dépôts publiers : JDK `25-open` avec
+  retry + garde `java -version`, `-Pversion="${VERSION#v}"` sur chaque
+  `publishToMavenLocal`, `CI=true`. Créer les `jitpack.yml` manquants des
+  dépôts qui publient.
+| 3
+| 🟡
+
+| CNV-17.2
+| **N0 — workspace-bom** : catalogue réécrit en coordonnées JitPack,
+  versions contrats unifiées (D5), `vibecoding-contracts` tranché (D11),
+  bump `0.0.134`, tag + build JitPack, preuve HTTP.
+| 3
+| 🟡
+
+| CNV-17.3
+| **N1** — `codebase-plugin`, `video-kernel-gradle`, `youtube-auth-plugin` :
+  version = tag (suppression du préfixe `v`), retag, preuve.
+| 2
+| 🟡
+
+| CNV-17.4
+| **N2** — les 16 plugins : catalogue/consommation en coordonnées JitPack,
+  `settings.gradle.kts` (`platform`, shim), versions alignées sur le tag.
+| 5
+| 🟡
+
+| CNV-17.5
+| **Désactiver Central/Portal** pour `foundry/public/**` : workflows
+  `publish*` → JitPack seulement ; `nmcp`/`publishPlugins` derrière le
+  drapeau D10 (défaut = désactivé).
+| 3
+| 🟡
+
+| CNV-17.6
+| **Propagation** : compilation de tous les dépôts publics (Local = Build),
+  zéro coordonnée `education.cccp:` résiduelle dans les catalogues publiés.
+| 5
+| 🟡
+
+| CNV-17.7
+| **Audit final + CI** : table de preuve HTTP 200, `grep` anti-double canal,
+  CI verte par dépôt, rapport de session.
+| 2
+| 🟡
+|===
+
+== 7. Séquence de release (canal unique)
+
+[source,bash]
+----
+# 1. bump de version dans le dépôt (catalogue/propriété)
+# 2. commit + tag annoté
+git tag -a vX.Y.Z -m "vX.Y.Z"
+git push origin main --tags
+# 3. build JitPack à la demande
+curl -s -m 30 "https://jitpack.io/com/github/cccp-education/<repo>/X.Y.Z/build.log"
+# 4. preuve
+curl -s -o /dev/null -w "%{http_code}" \
+  "https://jitpack.io/com/github/cccp-education/<repo>/<module>/X.Y.Z/<module>-X.Y.Z.pom"
+----
+
+**Ordre DAG obligatoire** : N0 (`workspace-bom`) → N1 (`codebase`,
+`video-kernel`) → N2 (plugins) → consommateurs. Un consommateur ne peut pas
+résoudre une version non taggée.
+
+== 8. Risques
+
+[cols="3,2,4", options="header"]
+|===
+| Risque | Criticité | Mitigation
+
+| Build JitPack indisponible / lent (premier consommateur)
+| Haute
+| US-1 : pré-build à la release (`release: created` + `curl`) ; badge.
+| Version tag ≠ version publiée
+| Haute
+| D2 : `-Pversion="${VERSION#v}"` + bump avant tag + preuve POM.
+| Modules multiples non publiés par le `jitpack.yml`
+| Haute
+| US-1 : `install` énumère **tous** les sous-builds publiants.
+| Préfixe `v` dans une version consommée
+| Moyenne
+| D2 + US-3 (retag `youtube-auth` sans `v`).
+| Dépendance à un service tiers unique
+| Moyenne
+| D10 : drapeau de retour Central/Portal ; code conservé.
+| Divergence de pin entre catalogue et build
+| Moyenne
+| US-7 : garde `verifyCrossBoroughPins` ré-alignée sur JitPack.
+|===
+
+== 9. Definition of Done
+
+* Tous les `jitpack.yml` normalisés ; chaque dépôt publie **tous** ses modules.
+* Catalogue et BOM en coordonnées JitPack, une version par dépôt.
+* Aucun `libs.versions.toml` publié ne référence `education.cccp:<x>`.
+* Central/Portal désactivés pour les dépôts publics (drapeau D10).
+* Preuve HTTP 200 pour chaque artefact ; CI verte.
+* `foundry/private/**` et `office/**` **inchangés**.
+* Rapport de session + BACKLOG/INDEX/PROMPT_REPRISE synchronisés.
+
+== 10. Références
+
+* Cadrage précédent : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc`.
+* Rapports : `037`→`042` (canal secondaire, rollout, publication all).
+* Politique remplacée : `AGENTS.adoc` racine, « Publication (Règle 2) ».

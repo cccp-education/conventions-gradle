@@ -1,68 +1,66 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 045
+:session: 046
 :date: 2026-11-13
-:epic: CNV-16 — JitPack (retry + décisions)
+:epic: CNV-17 — JITPACK-PRIMARY (canal unique)
 :max-lines: 70
 
-== Session 044 terminée — `MEM-WARN-ZERO` US-3
+== Session 045 terminée — EPIC `CNV-17` ouvert
 
-* 3 `val x by tasks.registering { }` → `val x = tasks.register("x") { }`
-  (9 warnings Gradle 9.6 → 0), iso-comportement (`resources.srcDir(provider)`
-  inchangé). Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
-* EPIC transverse : `workspace-bom/.agents/CADRAGE_EPIC_MEM_WARN_ZERO.adoc`.
+Décision pilote : « mise en sécurité de la chaîne de publication en optant
+pour la **totalité** vers JitPack ». JitPack devient le canal **unique** des
+artefacts publics. `foundry/private/**` et `office/**` **hors périmètre**.
 
-== Contexte hérité
+Preuves mesurées (S-045) :
+* `com.github.cccp-education.workspace-bom:workspace-bom:0.0.133` → POM 200
+  avec `dependencyManagement` (84 contraintes) + `.module` 24 618 o →
+  **le BOM est un `platform` JitPack valide** (corrige S-272/S-283).
+* JitPack **relabelle tous les modules à la version du tag** :
+  `agent-contracts:0.0.133` 200, `0.0.4` 404 → versions par contrat abolies.
+* 20/22 coordonnées 200 ; à retagger : `video-kernel` (préfixe `v`),
+  `api-key-pool` (absent).
 
-**CNV-0→CNV-15 TERMINÉS.** État stable : `0.0.14` (Central `e25e4f5f` +
-Portal), BOM/catalog MEMPHIS `0.0.128`, BOM de test `0.0.127`.
+Cadrage complet : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc`.
 
-**CNV-16 « JitPack »** (canal secondaire) :
-* **S-037** cadrage ; **S-038** plomberie locale ; **S-039** premier build
-  JitPack `0.0.15` ; **S-040** rollout du shim sur **27 dépôts / 55 settings**
-  (CI verte 18 dépôts) ;
-* **S-041 ✅ CNV-16.7** : publication JitPack de **tous les artefacts
-  publics** — N0 `workspace-bom` + 9 contrats (`0.0.128`), N1
-  `codebase-plugin` (`0.0.18`), N2 `codex 0.0.12`, `document 0.0.30`,
-  `bakery 0.0.33`, `planner 0.0.2`, `slider 0.0.20`, `capsule 0.0.15`,
-  `plantuml 0.0.16`, `readme 0.0.2`, `graphify 0.0.5`, `hyperframes 0.0.14`,
-  `academy 0.0.3`, `dashboard 0.0.1`, `bureau 0.0.1`, `flow 0.0.1`,
-  `container-provision 0.0.1` (HTTP 200) ; correctifs signature
-  conditionnelle (academy/dashboard/bureau).
+== État du code (déjà modifié S-045)
 
-== Mission session 042
+* `workspace-bom/gradle/libs.versions.toml` — `[libraries]` réécrit en
+  coordonnées JitPack (contrats, plugins N2, `video-kernel`), versions
+  contrats **unifiées** à `0.0.134`, `workspace-bom = "0.0.134"`.
+* `workspace-bom/runtime-contracts/gradle/libs.versions.toml` — coordonnées
+  JitPack.
+* `workspace-bom/jitpack.yml` — `-Pversion="${VERSION#v}"` sur tous les
+  `publishToMavenLocal`.
 
-1. **Retry `video-kernel` / `youtube-auth`** (seuls artefacts bloqués).
-   Les builds JitPack échouent **avant Gradle** : SDKMAN ne télécharge pas
-   `25.0.5.0+8-tem` (rate-limit/transitoire, `429`), Gradle tourne en JDK 8.
-   Rejouer `v0.7.0` et `v0.0.2` quand la limite est levée.
-   *Si l'échec persiste*, ajouter un **retry SDKMAN** au `jitpack.yml`
-   (`for i in 1 2 3; do sdk install java 25.0.5.0+8-tem && break; sleep 10; done`)
-   — mais les tags existants pointent l'ancien commit : il faudra un **nouveau
-   commit + tags** (accord pilote), ou déplacer les tags (force-push, accord
-   explicite).
-2. **Décisions** : `review-plugin` (`0.0.1-SNAPSHOT`) → release 0.0.1 ou
-   laisser hors JitPack ; `jhipster` (`assistant` SNAPSHOT / legacy) →
-   publier `persistence` seul ou laisser hors périmètre.
-3. **Veille** : tags déclencheurs de release (document/academy) → échecs
-   doublon attendus ; ne pas créer de tag sans vérifier les workflows
-   `on: push: tags` du dépôt.
-4. Optionnel : US-4 (domaine `education.cccp`, DNS TXT) / US-5 (build à
-   l'avance + badge) ; dette pins `0.0.14 ↔ 0.0.15`.
+== Mission session 046 (US-1 → US-4)
+
+. **US-1** normaliser les `jitpack.yml` des dépôts publics : JDK `25-open`
+   (+ retry + garde `java -version`), `-Pversion="${VERSION#v}"` sur chaque
+   `publishToMavenLocal`, `CI=true`. Créer les manquants des dépôts qui
+   publient.
+. **US-2** N0 : tag `v0.0.134` workspace-bom → build JitPack → preuve HTTP
+   (`workspace-bom`, `workspace-catalog`, 10 contrats). Trancher
+   `vibecoding-contracts` (réintégrer au `install` ou retirer du BOM).
+. **US-3** N1 : `codebase-plugin`, `video-kernel-gradle`,
+   `youtube-auth-plugin` — version = tag (supprimer le préfixe `v`).
+. **US-4** N2 : les 16 plugins — catalogues/BOM/`settings.gradle.kts` en
+   coordonnées JitPack, shim `useModule` aligné.
+
+== Règles dures
+
+* **Ordre DAG** : N0 → N1 → N2 → consommateurs. Un consommateur ne peut pas
+  résoudre une version non taggée.
+* **Un artefact = un canal = un nom = une version.** Aucun `libs.versions.toml`
+  publié ne référence `education.cccp:<x>` (grep final = 0).
+* Local = Build, Tests = CI. Ne pas lancer de tests locaux.
+* **Ne pas toucher** `foundry/private/**` ni `office/**`.
+* Pas de `git tag`/`push` sans preuve de compilation (Local = Build) ; tag
+  annoté `vX.Y.Z`, version bumpée **avant** le tag.
+* Rollback conservé : `CCCP_PUBLISH_TARGET=central|portal` (global, jamais
+  par artefact).
 
 == Références
 
-* Cadrage : `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc` (§2.2, §5, §7, §9).
-* Rapports : `037-…`, `038-…`, `039-…`, `040-cnv-16-3-rollout-public.adoc`,
-  `041-cnv-16-7-jitpack-publish-all.adoc`.
-
-== Contraintes dures (rappel)
-
-* JitPack : tag public, `jitpack.yml` (JDK `25.0.5.0+8-tem` via SDKMAN,
-  `CI=true`, `install` sur le sous-build), pas de GPG.
-* `plugin-publish` auto-signe dès qu'il voit `signing` → appliquer `signing`
-  conditionnellement (academy/dashboard/bureau faits).
-* Shim consommateur : `com.github.cccp-education.<repo>:<module>:<version>`
-  via `useModule` (markers non servis au groupId de l'id).
-* Local = Build, Tests = CI ; un seul sessionneur par borough ;
-  `git commit --only` si une session parallèle a des fichiers stagés.
-* **Ne pas force-push un tag** sans accord pilote explicite.
+* Cadrage : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc` (§3 preuves,
+  §4 schéma, §6 US, §7 release).
+* Historique canal secondaire : `CADRAGE_EPIC_CNV_16_JITPACK.adoc`,
+  rapports `037`→`042`.

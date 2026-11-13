@@ -1,0 +1,90 @@
+= Session 045 — EPIC CNV-17 JITPACK-PRIMARY (cadrage + N0)
+:session: 045
+:date: 2026-11-13
+:epic: CNV-17
+:statut: 🟡 EN COURS (US-0 ✅, N0 préparé)
+
+== Mission
+
+Décision pilote : « mise en sécurité de la chaîne de publication en optant
+pour la **totalité** vers JitPack ». Créer l'EPIC et lancer la correction
+générale, **hors boroughs privés**.
+
+== Livré
+
+=== 1. EPIC CNV-17 (cadrage complet)
+
+`.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc` — 11 décisions (D1→D11),
+schéma de coordonnées, mapping vérifié, 8 US (~24 pts), séquence de release,
+risques, DoD.
+
+Preuves HTTP mesurées :
+* `workspace-bom:0.0.133` → POM **200** avec `dependencyManagement`
+  (84 contraintes) **et** `.module` 24 618 o → le BOM est un `platform` JitPack
+  valide. *Corrige le constat S-272/S-283* (qui portait sur le POM du projet
+  conteneur racine, pas sur la coordonnée multi-module).
+* JitPack **relabelle tous les modules à la version du tag** :
+  `agent-contracts:0.0.133` 200, `0.0.4` 404 ; idem `codebase-contracts`,
+  `i18n-contracts`, `catalog-contracts` → les versions par contrat N0 sont
+  abolies.
+* 20/22 coordonnées vérifiées 200. Cas particuliers : `video-kernel` =
+  `com.github.cccp-education:video-kernel-gradle` (0.9.1), `api-key-pool` =
+  `com.github.cccp-education:api-key-pool-gradle` (0.0.2), `youtube-auth` =
+  `…video-kernel-gradle:youtube-auth-plugin:v0.0.4` (préfixe `v` à corriger).
+
+=== 2. Gouvernance
+
+* `AGENTS.adoc` racine — « Publication (Règle 2) » **remplacée** : JitPack
+  canal unique, invariants (version = tag, un dépôt = une version, zéro double
+  canal, rollback `CCCP_PUBLISH_TARGET`), privés exclus.
+* `BACKLOG.adoc` racine — **GBL-012** ajouté (EPIC transverse).
+* `conventions-plugin/BACKLOG.adoc` — section CNV-17 (problème, décision,
+  preuves, 8 US).
+* `.agents/INDEX.adoc` — roadmap CNV-16 ✅ / CNV-17 🟡, session 045.
+* `PROMPT_REPRISE.adoc` — mission 046 (US-1→US-4, ordre DAG).
+
+=== 3. N0 — workspace-bom (préparé, non taggé)
+
+* `gradle/libs.versions.toml` : `[libraries]` **réécrit en coordonnées
+  JitPack** (11 contrats, 16 plugins, `video-kernel`, `youtube-auth`) ;
+  versions des contrats **unifiées** à `0.0.134` (D5) ; `workspace-bom =
+  "0.0.134"` ; `video-kernel = "0.9.1"` (0.7.0 absent de JitPack) ;
+  `youtube-auth-plugin = "v0.0.4"` (provisoire, US-3).
+* `runtime-contracts/gradle/libs.versions.toml` : coordonnées + versions
+  JitPack.
+* `jitpack.yml` : JDK `25-open` (+ retry + garde `java -version`),
+  `-Pversion="${VERSION#v}"` sur **tous** les `publishToMavenLocal`,
+  `vibecoding-contracts` **réintégré** au `install` (D11).
+
+== Preuve (Local = Build)
+
+`./gradlew help` sur `workspace-bom` → **BUILD SUCCESSFUL** (catalogue valide,
+accessors résolus, TOML parsé). Aucun test local exécuté.
+
+Incident corrigé en séance : la première réécriture du bloc `[libraries]` avait
+supprimé la ligne `mapstruct` (ligne intercalée hors du bloc remplacé) →
+`Unresolved reference 'mapstruct'` ; ligne restaurée, `help` vert.
+
+== Non fait (séquence obligatoire)
+
+Les consommateurs **ne sont pas encore basculés** : ils pointent des versions
+qui n'existent pas encore sur JitPack. Ordre imposé par le DAG :
+
+1. **US-2** tag `v0.0.134` workspace-bom → build JitPack → preuve HTTP
+   (BOM + catalogue + 11 contrats).
+2. **US-3** N1 : retag `video-kernel` (sans `v`) et `youtube-auth`.
+3. **US-4** N2 : 16 plugins + `settings.gradle.kts` (`platform`, `from`,
+   shim).
+4. **US-5/6** désactiver Central/Portal, propager, compiler chaque dépôt.
+5. **US-7** audit (`grep education.cccp:` = 0 dans les catalogues publiés).
+
+Fichiers consommateurs identifiés (30 références, 14 dépôts) : `codebase`,
+`bakery`, `bureau`, `capsule`, `codex`, `container-provision`, `conventions`,
+`dashboard`, `document`, `flow`, `graphify`, `hyperframes`, `plantuml`,
+`readme`, `runner`, `video-kernel/youtube-auth`.
+
+== Statut publication
+
+**Aucun tag, aucun push, aucune publication** cette session (préparation N0
+seulement). Le tag `v0.0.134` est l'action de release (US-2) à exécuter avec
+accord, suivi de la preuve HTTP.

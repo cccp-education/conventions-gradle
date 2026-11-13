@@ -1070,3 +1070,14 @@ Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
 `val x = tasks.register("x") { }` (9 warnings Gradle 9.6 → 0) ; `resources.srcDir(provider)`
 inchangé ; corps identiques. `./gradlew help` → 0 `w:`. CI `43357877552` verte.
 Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
+
+== Session 045 — EPIC CNV-17 JITPACK-PRIMARY (cadrage + N0) — 2026-11-13
+
+Décision pilote : canal **unique** JitPack pour tout `foundry/public/**`
+(privés/office exclus). EPIC `CNV-17` créé (11 décisions, 8 US ~24 pts).
+Preuves HTTP : BOM JitPack = `platform` valide (84 contraintes + `.module`),
+JitPack relabelle tous les modules à la version du tag, 20/22 coordonnées 200.
+N0 préparé : catalogue `workspace-bom` réécrit en coordonnées JitPack, versions
+contrats unifiées à `0.0.134`, `jitpack.yml` normalisé (JDK `25-open`,
+`-Pversion`, `vibecoding-contracts`). `./gradlew help` vert. Aucun tag, aucun
+push, aucune publication. Rapport `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.

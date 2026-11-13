@@ -33,3 +33,5 @@ nmcpSettings {
 }
 
 rootProject.name = "conventions-plugin"
+
+dependencyResolutionManagement.repositories.maven("https://jitpack.io")

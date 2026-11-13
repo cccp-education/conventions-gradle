@@ -128,7 +128,7 @@ dependencies {
     // the plugin itself; this dependency only provides the compile/runtime types).
     implementation("org.gradle.plugin:compatibility-plugin:1.1.0")
 
-    testImplementation(platform("education.cccp:workspace-bom:${libs.versions.workspace.bom.get()}"))
+    testImplementation(platform("com.github.cccp-education.workspace-bom:workspace-bom:0.0.136"))
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(libs.cucumber.java)
     testImplementation(libs.cucumber.junit.platform.engine)
@@ -137,7 +137,7 @@ dependencies {
 
     add(functionalTest.implementationConfigurationName, gradleTestKit())
     add(functionalTest.implementationConfigurationName, libs.kotlin.test.junit5)
-    add(functionalTest.runtimeOnlyConfigurationName, platform("education.cccp:workspace-bom:${libs.versions.workspace.bom.get()}"))
+    add(functionalTest.runtimeOnlyConfigurationName, platform("com.github.cccp-education.workspace-bom:workspace-bom:0.0.136"))
     add(functionalTest.runtimeOnlyConfigurationName, libs.junit.platform.launcher)
 }
 

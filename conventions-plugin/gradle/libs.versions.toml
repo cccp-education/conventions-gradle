@@ -16,7 +16,7 @@ workspace-bom = "0.0.127"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-workspace-bom = { module = "education.cccp:workspace-bom", version.ref = "workspace-bom" }
+workspace-bom = { module = "com.github.cccp-education.workspace-bom:workspace-bom", version.ref = "workspace-bom" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
 cucumber-junit-platform-engine = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }

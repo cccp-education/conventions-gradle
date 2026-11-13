@@ -840,6 +840,61 @@ build long/quota ; immuabilité 7 jours. Détail et mitigations dans le cadrage.
 
 '''
 
+== 🟡 EN COURS — CNV-17 : JITPACK-PRIMARY (mise en sécurité de la chaîne de publication)
+
+_Décision pilote S-045 (2026-11-13) : « mise en sécurité de la chaîne de
+publication en optant pour la totalité vers JitPack »._
+
+*Priorite* : P0 (bloque toute publication publique : quota Sonatype épuisé
+jusqu'au 2026-12-01, contraintes Portal, propriété de groupe `newpipe`).
+*Charge estimee* : ~24 pts (~6 sessions)
+*Depend de* : CNV-16 (canal secondaire déjà opérationnel)
+*Document* : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc`
+*Statut* : 🟡 EN COURS (US-0 ✅ S-045 ; US-1→US-7 à faire)
+
+=== Problème — le double canal produit des coordonnées concurrentes
+
+Le même artefact porte deux noms : `education.cccp:video-kernel` (Central) et
+`com.github.cccp-education.video-kernel-gradle:video-kernel-gradle` (JitPack).
+`codebase` et `bakery` mélangent déjà **catalogue JitPack + BOM Central** : le
+catalogue n'est plus une source de vérité unique. Un artefact qui change de nom
+selon qui le sert n'est pas distribué, c'est une snapshot de source.
+
+=== Décision
+
+JitPack devient le **canal unique** des artefacts publics : un artefact = un
+canal = un nom = une version. Central (nmcp) et Portal sont désactivés pour
+`foundry/public/**` (drapeau de retour conservé). `foundry/private/**` et
+`office/**` sont **hors périmètre**.
+
+=== Preuves mesurées (S-045)
+
+* `com.github.cccp-education.workspace-bom:workspace-bom:0.0.133` → POM 200
+  avec `dependencyManagement` (84 contraintes) + `.module` 24 618 o : **le BOM
+  est utilisable comme `platform` JitPack** (corrige le constat S-272/S-283).
+* JitPack **relabelle tous les modules d'un dépôt à la version du tag** :
+  `agent-contracts:0.0.133` 200 mais `0.0.4` 404 → les versions par contrat
+  sont abolies (tous les contrats = version du tag).
+* 20/22 coordonnées servies (HTTP 200) ; restent à retagger `video-kernel`
+  (préfixe `v` à supprimer) et `api-key-pool` (absent).
+
+=== User Stories
+
+[cols="1,5,1,2"]
+|===
+| US | Contenu | Pts | Statut
+| CNV-17.0 | Cadrage, preuves HTTP, schéma de coordonnées | 1 | ✅ S-045
+| CNV-17.1 | Normaliser les 22 `jitpack.yml` (JDK `25-open` + retry + `-Pversion`) | 3 | 🟡
+| CNV-17.2 | N0 `workspace-bom` : catalogue JitPack, versions contrats unifiées, `vibecoding-contracts` tranché, tag | 3 | 🟡
+| CNV-17.3 | N1 `codebase` / `video-kernel` / `youtube-auth` : version = tag | 2 | 🟡
+| CNV-17.4 | N2 : 16 plugins en coordonnées JitPack + shim + `platform` | 5 | 🟡
+| CNV-17.5 | Désactiver Central/Portal pour les dépôts publics (drapeau D10) | 3 | 🟡
+| CNV-17.6 | Propagation + compilation de tous les dépôts publics | 5 | 🟡
+| CNV-17.7 | Audit final (HTTP 200, zéro double canal) + CI | 2 | 🟡
+|===
+
+'''
+
 == Synthese — Charge restante
 
 [cols="1,3,2,2"]

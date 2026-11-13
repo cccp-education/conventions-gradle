@@ -13,3 +13,5 @@ pluginManagement.resolutionStrategy.eachPlugin {
 }
 
 rootProject.name = "conventions-gradle"
+
+dependencyResolutionManagement.repositories.maven("https://jitpack.io")
