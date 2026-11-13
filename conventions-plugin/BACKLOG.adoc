@@ -971,6 +971,6 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
   `DOCKERHUB_*`. **Ollama hors image** (amendement S-226). Cache BuildKit
   `type=gha,scope=cccp-ci-base,mode=max` (build une fois, push depuis le cache)
 | 5
-| 🔴 BLOQUÉ secrets — code livré (Dockerfile + workflow + smoke + cache), run `43477829278` : « Username and password required » (`DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` absents du dépôt). À reprendre après `gh secret set`.
+| ✅ S-226 — **publiée** : `cccpeducation/cccp-ci-base:7-9a56e22` @ `sha256:4722c1bc…` (public) et `cheroliv/cccp-ci-base:7-9a56e22` @ `sha256:7b13e2b9…` (privé). Run `43478967276` **VERT** (1m9s, cache chaud). Bug corrigé : les deux comptes Docker Hub partagent la clé `docker.io` dans `~/.docker/config.json` → login **par canal** juste avant chaque push.
 |===
 

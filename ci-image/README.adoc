@@ -84,6 +84,20 @@ stable `scope` avoids cache thrash with the other workflows of the repository;
 
 == 4. Consuming the image
 
+=== Published
+
+[cols="1,3", options="header"]
+|===
+| Channel | Reference
+
+| Public
+| `cccpeducation/cccp-ci-base:7-9a56e22` @
+  `sha256:4722c1bcc71c0343c05257842b774715fc2574ff79182599a29fe8c1361cbeb3`
+| Private
+| `cheroliv/cccp-ci-base:7-9a56e22` @
+  `sha256:7b13e2b9925101cbdbc30d1abf1ba3dc7ef333af8b7e93e587d9ce4a23a35887`
+|===
+
 Consumers pin the published manifest **by digest**, never by tag (rule R4):
 
 [source,yaml]
