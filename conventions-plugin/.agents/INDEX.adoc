@@ -506,3 +506,9 @@ _Note_ : Cet index est maintenu automatiquement par l'agent en fin de session.
 
 == Session 048 — GBL-013 (clôture) — 2026-11-14
 Image cccp-ci-base + migration CI + fix JitPack ; runs 43478967276 / 43489495567.
+
+== Session 049 — EAGER : publication JitPack canal unique (2026-11-14)
+
+Alignement EAGER (AGENT/PROMPT_REPRISE) : JitPack canal unique ;
+Central/Portal retirés. Zéro code. Rapport
+`.agents/sessions/049-eager-publication-jitpack-only.adoc`.
