@@ -972,5 +972,10 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
   `type=gha,scope=cccp-ci-base,mode=max` (build une fois, push depuis le cache)
 | 5
 | ✅ S-226 — **publiée** : `cccpeducation/cccp-ci-base:7-9a56e22` @ `sha256:4722c1bc…` (public) et `cheroliv/cccp-ci-base:7-9a56e22` @ `sha256:7b13e2b9…` (privé). Run `43478967276` **VERT** (1m9s, cache chaud). Bug corrigé : les deux comptes Docker Hub partagent la clé `docker.io` dans `~/.docker/config.json` → login **par canal** juste avant chaque push.
+
+| GBL-013-4
+| Vague 1 — migrer `conventions-gradle` (image + `ci/run.sh`), preuve P1→P4 en CI
+| —
+| ✅ S-226 — job `test` dans `cccp-ci-base@sha256:4722…` via `ci/run.sh test`, run `43489495567` **VERT**. Fix inclus : JitPack déclaré dans le bloc `repositories` projet (il masquait le BOM `0.0.136` ; CI rouge depuis `62b5def`).
 |===
 
