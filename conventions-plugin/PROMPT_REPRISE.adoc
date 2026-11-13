@@ -34,9 +34,9 @@ Décision pilote : JitPack = **canal unique** des artefacts publics.
 
 1. **Normaliser `conventions-plugin`** : quand JitPack a servi la forme
    `0.0.17` (sans `v`), remplacer le shim `v0.0.17` → `0.0.17` (56 settings).
-2. **US-5 — désactiver Central/Portal** pour les dépôts publics : workflows
-   `publish*` et `publishPlugins` derrière `CCCP_PUBLISH_TARGET` (défaut
-   JitPack). Ne pas toucher aux privés.
+2. **US-5 — supprimer Central/Portal** pour les dépôts publics : retirer les
+   workflows/tâches `publish*` et `publishPlugins` Central/Portal (JitPack
+   canal unique). Ne pas toucher aux privés.
 3. **US-3 — unifier `video-kernel-gradle`** : `video-kernel 0.9.1` vs
    `youtube-auth-plugin v0.0.4` → **une version par dépôt** (tag commun),
    suppression du préfixe `v`.

@@ -37,11 +37,12 @@ de build Gradle. TOUT le reste (code, tests, gouvernance, documentation agent) v
 
 [NOTE]
 ====
-**Publication (politique temporaire, jusqu'au 2026-12-01)** : la cible est le
-**Gradle Plugin Portal** (compte `cccp-education`, `./gradlew publishPlugins`,
-Plugin Publish `2.2.1`), **pas Maven Central / Sonatype**. Voir `AGENTS.adoc`
-racine, section « Publication (Règle 2) ». Chaque `gradlePlugin.plugins` déclare
-`compatibility { features { configurationCache = …; isolatedProjects = … } }`.
+**Publication (politique définitive)** : la cible est **JitPack** (canal
+unique, tag `vX.Y.Z`), **pas Maven Central / Sonatype, pas Gradle Plugin
+Portal**. Voir `AGENTS.adoc` racine, sections « Publication (Règle 2) » et
+« Méthode de Publication — JitPack ». Chaque `gradlePlugin.plugins` déclare
+`compatibility { features { configurationCache = …; isolatedProjects = … } }`
+(métadonnée descriptive, sans effet sur JitPack).
 ====
 
 [NOTE]
@@ -171,7 +172,7 @@ Le plugin expose 8 convention plugins sous le group `education.cccp.build` :
 | Plugin ID | Role
 | `education.cccp.build.gradle-plugin` | `java-gradle-plugin` + `kotlin-jvm` + test JUnit + `withSourcesJar` + `withJavadocJar`
 | `education.cccp.build.library` | **N0 contracts** — `java-library` + `kotlin-jvm` + test JUnit + jars sources/javadoc + gardes (pas de `java-gradle-plugin`, pas de publishing)
-| `education.cccp.build.publishing` | POM Maven Central (developers, scm, licenses) + signing conditionnel + relocation
+| `education.cccp.build.publishing` | POM (licence/dev/scm) (developers, scm, licenses) + signing conditionnel + relocation
 | `education.cccp.build.functional-test` | Source set `functionalTest` + GradleTestKit + task registration
 | `education.cccp.build.cucumber` | Source set features/scenarios + cucumberTask + exclusion jupiter
 | `education.cccp.build.kover` | Kover coverage (seuil, source sets, rapports HTML/XML)
