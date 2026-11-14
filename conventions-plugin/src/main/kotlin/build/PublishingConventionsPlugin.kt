@@ -72,6 +72,9 @@ class PublishingConventionsPlugin : Plugin<Project> {
             PublishingConventionsExtension::class.java
         )
 
+        ChannelVerificationTask.register(project)
+        guardCentralOnlyTasks(project)
+
         project.afterEvaluate {
             configurePublishing(project, extension)
             configureSigning(project)
@@ -116,6 +119,22 @@ class PublishingConventionsPlugin : Plugin<Project> {
                     }
                 }
             )
+        }
+    }
+
+    /**
+     * GBL-014 — a Central-only task must never run on the `jitpack` channel.
+     * The guard is attached lazily to every task; it only triggers for the
+     * Central-only names (`publishPlugins`, nmcp aggregation).
+     */
+    private fun guardCentralOnlyTasks(project: Project) {
+        val channel = PublicationChannel.parse(
+            project.findProperty(PublicationChannel.PROPERTY)?.toString(),
+        )
+        project.tasks.configureEach { task ->
+            PublishChannelGuard.violation(channel, task.name)?.let { message ->
+                task.doFirst { throw GradleException(message) }
+            }
         }
     }
 

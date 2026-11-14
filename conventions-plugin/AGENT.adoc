@@ -37,12 +37,16 @@ de build Gradle. TOUT le reste (code, tests, gouvernance, documentation agent) v
 
 [NOTE]
 ====
-**Publication (politique définitive)** : la cible est **JitPack** (canal
-unique, tag `vX.Y.Z`), **pas Maven Central / Sonatype, pas Gradle Plugin
-Portal**. Voir `AGENTS.adoc` racine, sections « Publication (Règle 2) » et
-« Méthode de Publication — JitPack ». Chaque `gradlePlugin.plugins` déclare
-`compatibility { features { configurationCache = …; isolatedProjects = … } }`
-(métadonnée descriptive, sans effet sur JitPack).
+**Publication (canal dual, GBL-014)** : le canal est une **propriété du
+build** (`-Pchannel=central|jitpack`, défaut `jitpack`), **jamais une
+branche**. `jitpack` → `com.github.cccp-education.<repo>:<artifact>` (shim
+`useModule`, tag `vX.Y.Z`, signature désactivée) ; `central` →
+`education.cccp:<artifact>` (markers `education.cccp.*`, nmcp / Portal,
+signature GPG). Un tag = **un seul commit** ; une même version ne part jamais
+sur les deux canaux. Voir `AGENTS.adoc` racine § Publication (Règle 2) et
+`.agents/CADRAGE_EPIC_GBL_014_DUAL_CHANNEL.adoc`. Chaque `gradlePlugin.plugins`
+déclare `compatibility { features { configurationCache = …; isolatedProjects = … } }`
+(métadonnée descriptive).
 ====
 
 [NOTE]
@@ -56,6 +60,18 @@ utilisent `pluginManagement.resolutionStrategy.eachPlugin { useModule(...) }`
 vers `com.github.cccp-education.conventions-gradle:conventions-plugin:<tag>`.
 Voir `.agents/CADRAGE_EPIC_CNV_16_JITPACK.adoc`.
 ====
+
+=== Canal de publication — garde `verifyChannel` (GBL-014)
+
+* `verifyChannel` (groupe `verification`) compare `settings.gradle(.kts)` au
+  canal : `jitpack` exige le repository JitPack + le shim ; `central` les
+  interdit (zéro mélange).
+* Câblé à `check` **seulement si `-Pchannel` est fourni** (transition : les
+  consommateurs non migrés ne sont pas cassés). `ci/run.sh` le passera au
+  rollout (GBL-014-5).
+* Les tâches Central-only (`publishPlugins`,
+  `publishAggregationToCentralPortal`) échouent si `channel=jitpack` : une
+  version ne part jamais sur deux canaux.
 
 == Regles Absolues
 

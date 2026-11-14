@@ -22,7 +22,7 @@ if (jitpackBuild && !versionProperty.isPresent) {
             "Refusing to publish an artefact whose version does not match the git tag.",
     )
 }
-version = versionProperty.getOrElse("0.0.15")
+version = versionProperty.getOrElse("0.0.18")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25

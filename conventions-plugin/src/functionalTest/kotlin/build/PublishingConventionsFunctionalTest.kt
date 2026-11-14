@@ -217,6 +217,69 @@ class PublishingConventionsFunctionalTest {
         assertTrue(pomFile.readText().contains("<name>Auto Published Contracts</name>"), pomFile.readText())
     }
 
+    // GBL-014 — the channel is a build property projected onto settings.
+    @Test
+    fun `verifyChannel accepts jitpack settings on the jitpack channel`() {
+        settingsFile.writeText(
+            """
+            pluginManagement.repositories.maven("https://jitpack.io")
+            pluginManagement.resolutionStrategy.eachPlugin {
+                if (requested.id.id.startsWith("education.cccp.build.")) {
+                    useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.18")
+                }
+            }
+            dependencyResolutionManagement.repositories.maven("https://jitpack.io")
+            rootProject.name = "test-channel-jitpack"
+            """.trimIndent(),
+        )
+        buildFile.writeText(
+            """
+            plugins {
+                id("education.cccp.build.publishing")
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("verifyChannel", "-Pchannel=jitpack")
+            .withPluginClasspath()
+            .build()
+
+        assertTrue(result.output.contains("CHANNEL OK"), result.output)
+    }
+
+    @Test
+    fun `verifyChannel refuses a jitpack shim on the central channel`() {
+        settingsFile.writeText(
+            """
+            pluginManagement.repositories.maven("https://jitpack.io")
+            pluginManagement.resolutionStrategy.eachPlugin {
+                if (requested.id.id.startsWith("education.cccp.build.")) {
+                    useModule("com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.18")
+                }
+            }
+            dependencyResolutionManagement.repositories.maven("https://jitpack.io")
+            rootProject.name = "test-channel-central-mixed"
+            """.trimIndent(),
+        )
+        buildFile.writeText(
+            """
+            plugins {
+                id("education.cccp.build.publishing")
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withArguments("verifyChannel", "-Pchannel=central")
+            .withPluginClasspath()
+            .buildAndFail()
+
+        assertTrue(result.output.contains("FORBIDDEN"), result.output)
+    }
+
     @Test
     fun `plugin does not create a publication by default`() {
         settingsFile.writeText("rootProject.name = \"test-project-no-auto-publish\"")
