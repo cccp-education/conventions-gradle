@@ -35,10 +35,9 @@ class ChannelConsistencyTest {
 
     @Test
     fun `jitpack settings without the repository are refused`() {
-        val settings = jitpackSettings.replace(
-            """dependencyResolutionManagement.repositories.maven("https://jitpack.io")""",
-            "",
-        )
+        val settings = jitpackSettings
+            .replace("""pluginManagement.repositories.maven("https://jitpack.io")""", "")
+            .replace("""dependencyResolutionManagement.repositories.maven("https://jitpack.io")""", "")
         val findings = ChannelConsistency.auditSettings(settings, PublicationChannel.JITPACK)
         assertEquals(
             listOf(ChannelConsistency.Finding.Rule.MISSING_JITPACK_REPOSITORY),
