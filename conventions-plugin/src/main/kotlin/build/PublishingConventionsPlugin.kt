@@ -1,6 +1,7 @@
 package build
 
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -9,6 +10,7 @@ import org.gradle.api.publish.maven.MavenPomDeveloperSpec
 import org.gradle.api.publish.maven.MavenPomLicenseSpec
 import org.gradle.api.publish.maven.MavenPomScm
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.api.publish.maven.MavenPomDistributionManagement
@@ -96,6 +98,25 @@ class PublishingConventionsPlugin : Plugin<Project> {
                 configurePom(project, extension, publication)
             }
         )
+
+        // Sonatype 130791 — refuse to publish a POM whose url/scm is the bare
+        // organization root or a non-existent personal path. Runs at publish
+        // time only (no impact on `check`/build).
+        val website = resolveWebsite(project, extension)
+        val vcsUrl = resolveVcsUrl(project, extension)
+        if (PomMetadataHygiene.isInvalid(website) || PomMetadataHygiene.isInvalid(vcsUrl)) {
+            project.tasks.withType(PublishToMavenRepository::class.java).configureEach(
+                Action { task ->
+                    task.doFirst {
+                        throw GradleException(
+                            "POM url/scm ($website / $vcsUrl) is not a repository. Set " +
+                                "publishingConventions { website = ...; vcsUrl = ... } to the exact " +
+                                "GitHub repository (Sonatype 130791)."
+                        )
+                    }
+                }
+            )
+        }
     }
 
     private fun configurePom(project: Project, extension: PublishingConventionsExtension, publication: MavenPublication) {
