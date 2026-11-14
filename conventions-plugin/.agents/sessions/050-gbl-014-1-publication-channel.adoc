@@ -1,0 +1,74 @@
+= Session 050 — GBL-014-1 : propriété de canal + gardes de publication
+:date: 2026-11-14
+:scope: conventions-plugin — `-Pchannel`, `verifyChannel`, garde Central-only
+:statut: ✅ CODE COMPILÉ ET POUSSÉ — preuve = CI du commit `961ea5d`
+
+== Contexte
+
+La politique JitPack-canal-unique (session 049) est **remplacée** par la
+décision pilote du 2026-11-14 : **canal dual**, propriété de build
+(`-Pchannel=central|jitpack`, défaut `jitpack`). Voir `AGENTS.adoc` racine §
+Publication et `.agents/CADRAGE_EPIC_GBL_014_DUAL_CHANNEL.adoc` (GBL-014 US-1).
+
+== Livré
+
+[cols="2,4", options="header"]
+|===
+| Élément | Contenu
+
+| `PublicationChannel`
+| Énumération pure `JITPACK`/`CENTRAL`, `parse()` insensible à la casse,
+  **refus explicite** d'une valeur inconnue (pas de repli silencieux).
+
+| `ChannelConsistency`
+| Audit pur de `settings.gradle(.kts)` : `jitpack` exige le repository JitPack
+  + le shim `useModule` ; `central` les **interdit** (zéro mélange). Les lignes
+  de commentaire sont ignorées (les `// CNV-16 …` de tous les consommateurs ne
+  produisent pas de faux positif).
+
+| `PublishChannelGuard`
+| Politique pure : `publishPlugins`, `publishAggregationToCentralPortal`,
+  `publishAllPublicationsToCentralPortal` sont **Central-only** ; une exécution
+  en `channel=jitpack` produit un message de violation.
+
+| `ChannelVerificationTask`
+| `verifyChannel` (groupe `verification`) lit `settings.gradle(.kts)` réel et
+  échoue sur findings. Câblé à `check` **seulement si `-Pchannel` est
+  explicite** — transition : les 20 consommateurs non migrés ne sont pas cassés.
+
+| `PublishingConventionsPlugin`
+| Enregistre `verifyChannel` et ajoute le garde Central-only à chaque tâche
+  (`doFirst` → `GradleException`). Aucun impact sur `check`/`build` en mode
+  `jitpack` sans tâche Central.
+
+| Version
+| Fallback local `0.0.15` → **`0.0.18`** (le tag JitPack passe `-Pversion`,
+  inchangé).
+|===
+
+== Tests ajoutés (exécutés en CI)
+
+* `PublicationChannelTest` — défaut, casse/espaces, valeur inconnue refusée.
+* `ChannelConsistencyTest` — jitpack conforme, repository/shim manquants,
+  central propre, central avec repository+shim refusé, commentaires ignorés.
+* `PublishChannelGuardTest` — tâches Central-only autorisées/refusées,
+  `publishToMavenLocal`/`publish` autorisés dans les deux canaux.
+* `PublishingConventionsFunctionalTest` — `verifyChannel` accepte jitpack et
+  **échoue** sur un `settings` JitPack en `-Pchannel=central` (TestKit).
+
+== Gates
+
+* Local = Build : `compileKotlin`, `compileTestKotlin`,
+  `compileFunctionalTestKotlin`, `assemble`, `validatePlugins` **VERTS**.
+* Aucun test lancé localement (règle EAGER).
+* Preuve = CI `Test` du commit `961ea5d` (run `43645763085`).
+* Aucune publication, aucun tag, aucun secret.
+
+== Suivant
+
+. Vérifier le run CI `43645763085` (corriger si rouge).
+. **GBL-014-2** : tag annoté `v0.0.18` → JitPack (même commit), preuve HTTP.
+. **GBL-014-3** (`workspace-bom`) : deux catalogues/BOM projetés d'une source
+  unique + `CatalogueNoMix`.
+. **GBL-014-5** : `ci/run.sh` passe `-Pchannel` (active `check` → `verifyChannel`)
+  et les consommateurs alignent leurs `settings.gradle.kts`.

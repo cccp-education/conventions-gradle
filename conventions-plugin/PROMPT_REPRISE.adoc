@@ -1,66 +1,55 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 047
+:session: 051
 :date: 2026-11-14
-:epic: CNV-17 — JITPACK-PRIMARY (canal unique)
+:epic: GBL-014 — canal de publication dual (Central/Portal + JitPack)
 :max-lines: 70
 
-== Session 045 terminée — N0 + conventions + consommateurs basculés
+== Session 050 terminée — GBL-014-1 livrée (code poussé)
 
-Décision pilote : JitPack = **canal unique** des artefacts publics.
-`foundry/private/**` et `office/**` **hors périmètre**.
+Décision pilote : le canal est une **propriété du build**
+(`-Pchannel=central|jitpack`, défaut `jitpack`), **jamais une branche**.
+Un tag `vX.Y.Z` = un seul commit ; une version ne part jamais sur deux canaux.
 
-=== Livré et vérifié (HTTP / compiles)
+Livré dans `conventions-plugin` (commit `961ea5d`) :
 
-* **N0 `workspace-bom 0.0.136`** publié (tag `v0.0.136`) : BOM + catalogue +
-  **10 contrats**, 11 modules HTTP 200. `dependencyManagement` + `.module`
-  présents → `platform(...)` JitPack valide.
-* `runtime-contracts` : résout ses frères via `mavenLocal` au groupe **local**
-  `education.cccp` ; JitPack réécrit le POM publié vers
-  `com.github.cccp-education.workspace-bom` (vérifié).
-* `vibecoding-contracts` retiré (vestige non versionné, absent du clone
-  JitPack). D11 tranché = retrait.
-* **Blocage racine corrigé** : `JvmProjectConventions.configureRepositories`
-  déclarait les dépôts au niveau projet (écrase
-  `dependencyResolutionManagement`, Gradle `PREFER_PROJECT`) → JitPack jamais
-  consulté. Ajout de JitPack dans `configureRepositories` (source unique).
-  `conventions-plugin v0.0.17` publié ; shim bumpé dans **56 settings**.
-* **18 dépôts** consommateurs réécrits (coordonnées JitPack, BOM/catalogue
-  `0.0.136`, `versionCatalogs` restaurés) et poussés. Compiles VERTES :
-  codebase, codex, document, plantuml, hyperframes, graphify, bakery, capsule,
-  planner, slider, academy, dashboard, bureau, container-provision,
-  api-key-pool, flow, youtube-auth ; `runner` (N3) `help` vert.
+* `PublicationChannel` — parse `-Pchannel`, refus explicite d'une valeur
+  inconnue (pas de repli silencieux).
+* `ChannelConsistency` — audit pur de `settings.gradle(.kts)` : `jitpack`
+  exige repository JitPack + shim `useModule` ; `central` les interdit.
+* `PublishChannelGuard` — `publishPlugins` / `publishAggregationToCentralPortal`
+  / `publishAllPublicationsToCentralPortal` refusés en `channel=jitpack`.
+* `ChannelVerificationTask` — `verifyChannel` (groupe `verification`), câblé à
+  `check` **seulement si `-Pchannel` est explicite** (transition non cassante).
+* Version locale `0.0.18` ; tests unitaires + 2 tests TestKit.
 
-=== Mission session 047 (US-3/5/7)
+Gates locales (Local = Build) : `compileKotlin`, `compileTestKotlin`,
+`compileFunctionalTestKotlin`, `assemble`, `validatePlugins` VERTS.
+Preuve = CI `Test` du commit `961ea5d` (run `43645763085`).
 
-1. **Normaliser `conventions-plugin`** : quand JitPack a servi la forme
-   `0.0.17` (sans `v`), remplacer le shim `v0.0.17` → `0.0.17` (56 settings).
-2. **US-5 — supprimer Central/Portal** pour les dépôts publics : retirer les
-   workflows/tâches `publish*` et `publishPlugins` Central/Portal (JitPack
-   canal unique). Ne pas toucher aux privés.
-3. **US-3 — unifier `video-kernel-gradle`** : `video-kernel 0.9.1` vs
-   `youtube-auth-plugin v0.0.4` → **une version par dépôt** (tag commun),
-   suppression du préfixe `v`.
-4. **US-7 — audit** : `grep 'education.cccp:'` = 0 dans les catalogues
-   publiés ; table de preuve HTTP 200 ; CI verte par dépôt.
+== Mission session 051
+
+1. **Vérifier la CI `43645763085`** (corriger si rouge).
+2. **GBL-014-2** : tag annoté `v0.0.18` sur le commit vert → JitPack
+   (`conventions-plugin 0.0.18`), preuve HTTP POM/JAR/module + tag.
+3. Si vert : **GBL-014-3** (`workspace-bom`) — deux catalogues/BOM projetés
+   depuis une source unique + garde `CatalogueNoMix` ; le BOM JitPack n'est
+   **pas** un `platform`.
 
 == Règles dures
 
-* **Ordre DAG** N0 → N1 → N2 → consommateurs ; pas de version non taggée.
-* **Un artefact = un canal = un nom = une version.** Aucun `libs.versions.toml`
-  publié ne référence `education.cccp:<x>`.
-* `-Pversion="${VERSION#v}"` partout ; tag `vX.Y.Z`, version servie `X.Y.Z`.
-* Local = Build, Tests = CI. Pas de test local.
+* **Un canal = un catalogue** ; zéro coordonnée de l'autre canal.
+* BOM Central = `platform` réel (`dependencyManagement` + `.module`) ;
+  BOM JitPack = lisibilité, jamais importé via `platform(...)`.
+* Ordre DAG N0 → N1 → N2 → N3 sur le canal choisi ; pas de version non taggée.
+* `-Pchannel` explicite en CI pour activer `verifyChannel` ; défaut `jitpack`.
+* Local = Build, Tests = CI : compiler, pousser, preuve = run CI.
 * **Ne pas toucher** `foundry/private/**` ni `office/**`.
-* Piège connu : une regex multi-ligne sur `:<version>)` peut avaler les
-  accolades du bloc `versionCatalogs` — vérifier les `settings.gradle.kts`
-  après toute réécriture de masse.
+* Aucune branche permanente `jitpack`/`central` ; tag unique `vX.Y.Z`.
+* Ne pas modifier `configuration/` (privé, credentials) sans ordre explicite.
 
 == Références
 
-* Cadrage : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc`.
-* Rapport : `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.
-
-== GBL-013 (clôture) — 2026-11-14
-Portabilité CI livrée : image \`cccp-ci-base\`, \`ci/run.sh\`, adapter fin.
-Rapport \`.agents/sessions/048-gbl-013-ci-image-and-build.adoc\`. Reste : US-5→US-9 (cadrage racine
-\`.agents/CADRAGE_EPIC_GBL_013_PORTABILITE_CI.adoc\`).
+* Cadrage : `.agents/CADRAGE_EPIC_GBL_014_DUAL_CHANNEL.adoc` (racine workspace).
+* Politique : `AGENTS.adoc` racine § Publication (Règle 2) + Méthode.
+* Décision : `.agents/CADRAGE_EPIC_CNV_17_JITPACK_PRIMARY.adoc` (canal JitPack
+  historique, remplacé/étendu par GBL-014).

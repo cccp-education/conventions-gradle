@@ -5,12 +5,13 @@
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
-_Derniere mise a jour_ : 2026-11-13
+_Derniere mise a jour_ : 2026-11-14
+_session terminee_ : 050 — **GBL-014-1** : propriété de canal (`-Pchannel=central|jitpack`, défaut `jitpack`), audit pur `ChannelConsistency`, garde Central-only `PublishChannelGuard`, tâche `verifyChannel` (câblée à `check` seulement si `-Pchannel` explicite), tests unitaires + TestKit. Version locale `0.0.18`. Preuve = CI du commit `961ea5d` (run `43645763085`). Rapport `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
 _session terminee_ : 045 — **EPIC `CNV-17 JITPACK-PRIMARY` ouvert** (décision pilote : canal unique JitPack pour tout `foundry/public/`). Cadrage + preuves HTTP : le BOM JitPack est un `platform` valide (84 contraintes + `.module`), JitPack relabelle tous les modules à la version du tag (versions par contrat abolies), 20/22 coordonnées 200. `foundry/private/**` et `office/**` hors périmètre. Rapport `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.
 _session terminee_ : 044 — **`MEM-WARN-ZERO` US-3** : 3 délégués `registering` → `register` (9 warnings Gradle 9.6 → 0), iso-comportement. Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
 _session terminee_ : 043 — **Workspace Gradle 9.9.1** ✅ (101 wrappers sur 35 dépôts, action `verify-gradle-wrapper` 9.9.1, source unique du catalogue 9.9.1, garde/fixtures alignés, tag JitPack `v0.0.16` + shim 55 settings ; CI verte sur tous les dépôts publics, hors `magic-stick` infra Docker). Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
-_session en cours_ : 047 — CNV-17 US-5→US-7 (désactivation Central/Portal, unification video-kernel, audit).
-_Prochaine session_ : 047 — normaliser le shim `v0.0.17` → `0.0.17`, désactiver Central/Portal (drapeau), audit `grep education.cccp:` = 0 + preuve HTTP.
+_session en cours_ : 051 — GBL-014-2 : tag `v0.0.18` → JitPack (même commit), preuve HTTP POM/JAR/module.
+_Prochaine session_ : 051 — publier `conventions-plugin 0.0.18` (tag JitPack) ; puis GBL-014-3 (`workspace-bom`, deux catalogues/BOM + `CatalogueNoMix`).
 _Note 2026-11-14 (S-045 suite)_ : N0 `workspace-bom 0.0.136` publié (11 modules 200) ; blocage racine corrigé (`JvmProjectConventions` écrasait `dependencyResolutionManagement` → JitPack ajouté aux dépôts projet), `conventions-plugin v0.0.17` + shim 56 settings ; 18 dépôts consommateurs réécrits et poussés, compiles VERTES.
 
 _Note 2026-11-09 (S-041)_ : **publication JitPack de tous les artefacts

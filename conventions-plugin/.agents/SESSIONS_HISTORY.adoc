@@ -1100,3 +1100,13 @@ US-2 : Dockerfile + workflow bi-canal (cccpeducation/cheroliv), publication `sha
 Alignement EAGER : JitPack canal unique ; Maven Central/Sonatype et
 Gradle Plugin Portal **retirés**. Aucun code, aucun test, aucune
 publication. Rapport `.agents/sessions/049-eager-publication-jitpack-only.adoc`.
+
+== Session 050 — GBL-014-1 : propriété de canal + gardes — 2026-11-14
+
+Décision pilote canal dual : `-Pchannel=central|jitpack` (défaut `jitpack`).
+`PublicationChannel` (parse strict), `ChannelConsistency` (audit pur settings),
+`PublishChannelGuard` (tâches Central-only refusées en jitpack),
+`ChannelVerificationTask` (`verifyChannel`, câblé à `check` si `-Pchannel`
+explicite), version locale `0.0.18`. Tests unitaires + TestKit. Commit
+`961ea5d` ; preuve = CI run `43645763085`. Rapport
+`.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
