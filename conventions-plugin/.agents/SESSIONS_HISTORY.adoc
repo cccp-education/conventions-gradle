@@ -1107,6 +1107,7 @@ Décision pilote canal dual : `-Pchannel=central|jitpack` (défaut `jitpack`).
 `PublicationChannel` (parse strict), `ChannelConsistency` (audit pur settings),
 `PublishChannelGuard` (tâches Central-only refusées en jitpack),
 `ChannelVerificationTask` (`verifyChannel`, câblé à `check` si `-Pchannel`
-explicite), version locale `0.0.18`. Tests unitaires + TestKit. Commit
-`961ea5d` ; preuve = CI run `43645763085`. Rapport
+explicite), version locale `0.0.18`. Tests unitaires + TestKit. **CI verte
+`43646315278`** (commit `1482fbd`) ; **release JitPack `v0.0.18`** (POM/JAR/
+`.module` + markers HTTP 200). Rapport
 `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.

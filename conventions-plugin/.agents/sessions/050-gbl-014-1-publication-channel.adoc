@@ -1,7 +1,7 @@
 = Session 050 — GBL-014-1 : propriété de canal + gardes de publication
 :date: 2026-11-14
 :scope: conventions-plugin — `-Pchannel`, `verifyChannel`, garde Central-only
-:statut: ✅ CODE COMPILÉ ET POUSSÉ — preuve = CI du commit `961ea5d`
+:statut: ✅ CI VERTE + RELEASE JITPACK `v0.0.18` (commit `1482fbd`, run `43646315278`)
 
 == Contexte
 
@@ -61,14 +61,24 @@ Publication et `.agents/CADRAGE_EPIC_GBL_014_DUAL_CHANNEL.adoc` (GBL-014 US-1).
 * Local = Build : `compileKotlin`, `compileTestKotlin`,
   `compileFunctionalTestKotlin`, `assemble`, `validatePlugins` **VERTS**.
 * Aucun test lancé localement (règle EAGER).
-* Preuve = CI `Test` du commit `961ea5d` (run `43645763085`).
-* Aucune publication, aucun tag, aucun secret.
+* **CI `Test` VERTE** : run `43646315278` (commit `1482fbd`) — unit +
+  functional + Cucumber.
+* CI rouge initiale `43645763085` : **fixture de test** (elle ne retirait
+  qu'une des deux lignes `https://jitpack.io`), corrigée ; le code n'était pas
+  en cause.
+
+== Publication GBL-014-2 — `conventions-plugin 0.0.18`
+
+* Tag annoté **`v0.0.18`** poussé (`git ls-remote` : tag présent).
+* JitPack HTTP 200 :
+  `conventions-plugin-0.0.18.pom`, `.jar`, `.module`, et markers
+  `education.cccp.build.publishing.gradle.plugin-0.0.18.pom`,
+  `education.cccp.build.lint.gradle.plugin-0.0.18.pom`.
+* Aucun tag réutilisé ; aucun secret ; signature désactivée (`CI=true`).
 
 == Suivant
 
-. Vérifier le run CI `43645763085` (corriger si rouge).
-. **GBL-014-2** : tag annoté `v0.0.18` → JitPack (même commit), preuve HTTP.
 . **GBL-014-3** (`workspace-bom`) : deux catalogues/BOM projetés d'une source
-  unique + `CatalogueNoMix`.
+  unique + `CatalogueNoMix` (le BOM JitPack n'est **pas** un `platform`).
 . **GBL-014-5** : `ci/run.sh` passe `-Pchannel` (active `check` → `verifyChannel`)
   et les consommateurs alignent leurs `settings.gradle.kts`.
