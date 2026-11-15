@@ -979,3 +979,12 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
 | ✅ S-226 — job `test` dans `cccp-ci-base@sha256:4722…` via `ci/run.sh test`, run `43489495567` **VERT**. Fix inclus : JitPack déclaré dans le bloc `repositories` projet (il masquait le BOM `0.0.136` ; CI rouge depuis `62b5def`).
 |===
 
+== GBL-014 — canal de publication dual
+
+* **US-1 ✅ S-050** : `PublicationChannel` (parse strict), `ChannelConsistency`
+  (audit settings), `PublishChannelGuard` (Central-only refusé en jitpack),
+  `verifyChannel` (câblé à `check` si `-Pchannel` explicite), tests.
+* **US-2 ✅ S-050** : release JitPack `v0.0.18` (POM/JAR/`.module` + markers
+  HTTP 200), CI `43646315278`.
+* Rapport `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
+
