@@ -19,7 +19,7 @@ jobs:
       image: cccpeducation/cccp-ci-base@sha256:4722c1bcc71c0343c05257842b774715fc2574ff79182599a29fe8c1361cbeb3
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Verify the Gradle wrapper version
         uses: ./.github/actions/verify-gradle-wrapper
