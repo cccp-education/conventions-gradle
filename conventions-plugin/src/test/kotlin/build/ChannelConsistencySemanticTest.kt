@@ -90,7 +90,25 @@ class ChannelConsistencySemanticTest {
     }
 
     @Test
-    fun `central refuses the jitpack projection placed in the else branch of a central guard`() {
+    fun `central refuses a jitpack repository in the then branch of a central guard`() {
+        val settings =
+            """
+            val publicationChannel = providers.gradleProperty("channel").getOrElse("jitpack")
+            if (publicationChannel == "central") {
+                pluginManagement.repositories.maven("https://jitpack.io")
+            } else {
+                pluginManagement.repositories.mavenCentral()
+            }
+            rootProject.name = "inverted-guard"
+            """.trimIndent()
+        assertEquals(
+            listOf(ChannelConsistency.Finding.Rule.FORBIDDEN_JITPACK_REPOSITORY),
+            centralFindings(settings),
+        )
+    }
+
+    @Test
+    fun `central ignores the jitpack repository of the else branch of a central guard`() {
         val settings =
             """
             val publicationChannel = providers.gradleProperty("channel").getOrElse("jitpack")
@@ -99,12 +117,9 @@ class ChannelConsistencySemanticTest {
             } else {
                 pluginManagement.repositories.maven("https://jitpack.io")
             }
-            rootProject.name = "inverted-guard"
+            rootProject.name = "inverted-guard-else"
             """.trimIndent()
-        assertEquals(
-            listOf(ChannelConsistency.Finding.Rule.FORBIDDEN_JITPACK_REPOSITORY),
-            centralFindings(settings),
-        )
+        assertEquals(emptyList<ChannelConsistency.Finding.Rule>(), centralFindings(settings))
     }
 
     @Test
