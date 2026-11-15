@@ -190,3 +190,11 @@ pour les contrats N0.
 
 * GBL-013 — portabilité CI (session close) : voir `.agents/sessions/` (rapport dédié).
 * Session 049 — EAGER : publication JitPack canal unique (AGENT/PROMPT_REPRISE alignés ; Central/Portal retirés) — 2026-11-14.
+
+== S-050 — GBL-014-1/2 : canal de publication ✅
+
+* `PublicationChannel`, `ChannelConsistency`, `PublishChannelGuard`,
+  `verifyChannel` (câblé à `check` si `-Pchannel` explicite) + tests.
+* CI `43646315278` verte (commit `1482fbd`) ; release JitPack `v0.0.18`
+  (POM/JAR/`.module` + markers HTTP 200).
+* Rapport `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
