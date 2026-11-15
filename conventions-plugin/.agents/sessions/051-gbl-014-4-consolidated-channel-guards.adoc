@@ -1,0 +1,133 @@
+= Session 051 — GBL-014-4 : gardes consolidées du canal de publication
+:date: 2026-11-15
+:scope: conventions-plugin — audit sémantique du settings + `verifyChannel` dans `.lint`
+:statut: ✅ CI VERTE (`5a1ae46` run `43664464982`, `2acd6ae` run `43664765633`) + RELEASE JITPACK `v0.0.19`
+
+== Contexte
+
+Deux découvertes mesurées en session 229 (GBL-014-5, rollout) rendaient les
+gardes du canal incomplètes : (1) `verifyChannel` n'existait que dans les
+builds appliquant `education.cccp.build.publishing` ; (2) `ChannelConsistency`
+était **textuel** et aurait flagué un `settings` migré en mode `central`, où
+le dépôt JitPack et le shim restent présents dans la projection conditionnelle.
+
+Décision pilote : corrections et release `conventions-plugin 0.0.19`.
+
+== Découverte 1 — `verifyChannel` absent des builds `.lint`
+
+`academy`, `dashboard`, `jhipster` appliquent `plugin-publish` +
+`education.cccp.build.lint` **sans** `.publishing` : aucune gate de canal alors
+que leurs `settings` sont projetés. `bureau` et `container-provision` ne
+prennent que `.cucumber` (aucun gate possible sans adopter une convention de
+publication/lint → reste du rollout).
+
+*Correctif* : `ChannelVerificationTask.register(project)` est appelé **aussi**
+par `LintConventionsPlugin` (convention la plus appliquée, 28 consommateurs).
+`register` reste idempotent (`tasks.names.contains`) — un build appliquant
+`.publishing` **et** `.lint` n'a qu'une tâche. La sémantique de transition est
+conservée : `check` → `verifyChannel` **seulement** si `-Pchannel` est explicite.
+
+== Découverte 2 — audit sémantique (et non plus textuel)
+
+Depuis GBL-014-5, un `settings.gradle.kts` conforme contient `https://jitpack.io`
+et `useModule(` **dans** le bloc `if (publicationChannel == "jitpack") { … }`.
+
+*Design* (`ChannelConsistency`, domaine pur, zéro I/O) :
+
+. **Deux passes lexicales index-alignées** — `sanitize(text, blankStrings=false)`
+   masque `//` et bloc-commentaires (les `// CNV-16 …` de tous les
+   consommateurs ne produisent pas de faux positif), `sanitize(text, true)`
+   masque en plus le **contenu** des littéraux (échappements + raw strings).
+   Les offsets et les sauts de ligne sont préservés.
+. **Localisation des gardes** sur la passe structurelle : `if` (mot-clé entier)
+   → parenthèses équilibrées → condition lue sur la passe *visible* (la chaîne
+   `"jitpack"`/`"central"` y survit) → bloc `{ … }` équilibré.
+. **Projection `central`** : on blanchit les branches que `central` n'exécute
+   jamais — le **then** d'une garde `… "jitpack"` et l'**else** d'une garde
+   `… "central"` (sélection de catalogue). Toute référence JitPack qui survit
+   **hors** de ces projections reste un finding `FORBIDDEN_*`.
+. **`jitpack`** : présence du dépôt et du shim exigée dans le texte visible,
+   garde conditionnelle **ou** déclaration inconditionnelle (rétrocompatible).
+
+*Preuve sur les `settings` réels des dépôts voisins* (lecture seule, exécution
+du code compilé via `jshell`) :
+
+[cols="2,1,1", options="header"]
+|===
+| `settings.gradle.kts` | `central` | `jitpack`
+| `capsule-gradle` | 0 | 0
+| `workspace-bom` | 0 | 0
+| `runner-gradle` | 0 | 0
+| `dashboard-gradle` | 0 | 0
+| `codebase-gradle/codebase-plugin` | **1** `FORBIDDEN_JITPACK_REPOSITORY` | 0
+| `conventions-gradle` (non migré) | 2 (`REPOSITORY` + `SHIM`) | 0
+|===
+
+`codebase` conserve un `maven("https://jitpack.io")` **inconditionnel** dans
+`dependencyResolutionManagement.repositories` → finding **légitime** (dette de
+rollout, dépôt non modifié). `conventions-gradle` n'est pas encore migré → 2
+findings corrects. Tous les settings migrés auditent proprement.
+
+== Fichiers
+
+[cols="2,3", options="header"]
+|===
+| Fichier | Nature
+
+| `src/main/kotlin/build/ChannelConsistency.kt`
+| réécrit : audit sémantique (sanitize 2 passes, gardes, projections)
+
+| `src/main/kotlin/build/LintConventionsPlugin.kt`
+| `+ ChannelVerificationTask.register(project)`
+
+| `src/main/kotlin/build/ChannelVerificationTask.kt`
+| KDoc : enregistrement partagé `.publishing` + `.lint`, idempotent
+
+| `src/test/kotlin/build/ChannelConsistencySemanticTest.kt`
+| **nouveau** — 13 tests (garde then/else, accolades en littéraux, garde
+  commentée, gardes imbriquées, bloc-commentaire, shim hors garde, messages)
+
+| `src/functionalTest/kotlin/build/ChannelVerificationLintFunctionalTest.kt`
+| **nouveau** — 5 tests TestKit (lint seul enregistre/valide/refuse,
+  `check` sans `-Pchannel` ne dépend pas de la gate, avec `-Pchannel` si)
+|===
+
+Aucun test existant modifié ni affaibli.
+
+== Gates
+
+* Local = Build (règle EAGER, aucun test local) :
+  `compileKotlin compileTestKotlin compileFunctionalTestKotlin` **VERTS**,
+  `validatePlugins` **VERT**, `assemble` **VERT**, `publishToMavenLocal` **VERT**
+  (`education.cccp.build:conventions-plugin:0.0.19`, jar/module/pom + 8 markers).
+* **CI `Test`** : run `43664464982` (commit `5a1ae46`) **VERTE** — unit +
+  functional + Cucumber ; run `43664765633` (commit `2acd6ae`, bump) **VERTE**.
+* CI rouge intermédiaire `43664159399` : **attente de test erronée** de ma part
+  (le *else* d'une garde `central` ne s'exécute pas en `central` → il doit être
+  ignoré, pas refusé). Test corrigé (then = refusé, else = ignoré) ; aucun code
+  de production en cause.
+
+== Publication — `conventions-plugin 0.0.19` (Règle 2)
+
+* Version `0.0.18 → 0.0.19` dans `conventions-plugin/build.gradle.kts`
+  (commit séparé `2acd6ae`).
+* Tag annoté **`v0.0.19`** (`b136b892`) poussé ; `git ls-remote` confirme.
+* JitPack HTTP 200 — `conventions-plugin-0.0.19.pom`, `.jar`, `.module`
+  (+ marker `education.cccp.build.publishing.gradle.plugin-0.0.19.pom`).
+  Jar servi vérifié : `build/ChannelConsistency$Guard.class`,
+  `$State.class` présents (implémentation sémantique) ; POM
+  `com.github.cccp-education.conventions-gradle:conventions-plugin:0.0.19`.
+* Aucun secret, signature désactivée (`CI=true`), aucune version republiée.
+
+== Reste
+
+. **Rollout `0.0.19`** chez les consommateurs (shim `settings` + pins
+  `education.cccp.build.lint`/`.publishing`/`.gradle-plugin` encore à
+  `0.0.18`/`0.0.14`) — les gates ne prennent effet qu'après ce bump.
+. **`bureau` / `container-provision`** : aucun gate tant qu'ils n'adoptent pas
+  `.lint` ou `.publishing` (à traiter au rollout).
+. **`codebase-gradle`** : retirer le `maven("https://jitpack.io")`
+  inconditionnel de `dependencyResolutionManagement.repositories` (dette
+  détectée par l'audit sémantique).
+. **Bump catalogue `workspace-bom`** (`conventions-plugin 0.0.19`) : hors
+  périmètre (garde `PlatformCatalogAlignmentTest`, permission explicite).

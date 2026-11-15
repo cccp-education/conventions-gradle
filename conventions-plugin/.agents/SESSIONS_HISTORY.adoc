@@ -1111,3 +1111,29 @@ explicite), version locale `0.0.18`. Tests unitaires + TestKit. **CI verte
 `43646315278`** (commit `1482fbd`) ; **release JitPack `v0.0.18`** (POM/JAR/
 `.module` + markers HTTP 200). Rapport
 `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
+
+== Session 051 — GBL-014-4 : gardes consolidées du canal — 2026-11-15
+
+Deux découvertes du rollout S-229 corrigées. (1) `verifyChannel` n'existait que
+dans les builds `.publishing` : il est désormais enregistré aussi par
+`LintConventionsPlugin` (academy/dashboard/jhipster couverts ; registration
+idempotente, `check` → gate seulement si `-Pchannel` explicite ; bureau/
+container-provision restent hors périmètre, sans convention lint/publishing).
+(2) `ChannelConsistency` passe du textuel au **sémantique** : deux passes
+lexicales index-alignées (commentaires masqués ; contenu des littéraux masqué
+pour la structure), gardes `if (… "jitpack")`/`if (… "central")` localisées à
+parenthèses/accolades équilibrées, projection `central` = then d'une garde
+jitpack + else d'une garde central ignorés ; toute référence JitPack hors
+projection reste un finding. Preuve sur settings réels (lecture seule, via
+`jshell`) : capsule/workspace-bom/runner/dashboard → 0 finding en `central` ;
+`codebase` → 1 `FORBIDDEN_JITPACK_REPOSITORY` (maven JitPack inconditionnel,
+dette réelle) ; `conventions-gradle` (non migré) → 2. 13 unit
+(`ChannelConsistencySemanticTest`) + 5 TestKit
+(`ChannelVerificationLintFunctionalTest`) nouveaux, zéro test existant modifié.
+CI rouge intermédiaire `43664159399` = attente de test erronée (else d'une
+garde central), corrigée (`5a1ae46`) ; CI vertes `43664464982` /
+`43664765633`. Release JitPack **`conventions-plugin 0.0.19`** (tag `v0.0.19`,
+`b136b892` ; POM/JAR/`.module`/marker HTTP 200 ; jar servi contient
+`ChannelConsistency$Guard`). Reste : rollout `0.0.19`, GBL-014-3 (catalogues
+`workspace-bom`), dette `codebase`, bump catalogue (hors périmètre). Rapport
+`.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.

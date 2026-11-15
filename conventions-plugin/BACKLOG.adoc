@@ -986,5 +986,30 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
   `verifyChannel` (câblé à `check` si `-Pchannel` explicite), tests.
 * **US-2 ✅ S-050** : release JitPack `v0.0.18` (POM/JAR/`.module` + markers
   HTTP 200), CI `43646315278`.
+* **US-4 ✅ S-051** — gardes consolidées (les deux découvertes du rollout S-229) :
+  * `verifyChannel` enregistré **aussi** par `education.cccp.build.lint`
+    (`ChannelVerificationTask.register` idempotent) → `academy`, `dashboard`,
+    `jhipster` ont enfin la gate ; `check` → gate **seulement** si `-Pchannel`
+    explicite (transition conservée). 5 tests TestKit
+    (`ChannelVerificationLintFunctionalTest`).
+  * `ChannelConsistency` **sémantique** : masquage commentaires/littéraux
+    (2 passes index-alignées), gardes `if (… "jitpack")` / `if (… "central")`
+    localisées à accolades équilibrées ; en `central` le *then* d'une garde
+    jitpack et l'*else* d'une garde central sont ignorés, toute référence
+    JitPack hors projection reste un finding. 13 unit
+    (`ChannelConsistencySemanticTest`), zéro test existant modifié.
+  * Preuve settings réels (lecture seule) : capsule/workspace-bom/runner/
+    dashboard = 0 finding `central` ; `codebase` = 1
+    `FORBIDDEN_JITPACK_REPOSITORY` (maven inconditionnel, dette réelle) ;
+    `conventions-gradle` (non migré) = 2.
+  * CI vertes `43664464982` (`5a1ae46`) + `43664765633` (`2acd6ae`) ; release
+    JitPack **`v0.0.19`** (tag `b136b892`, POM/JAR/`.module`/marker HTTP 200).
+  * Rapport `.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.
+* **US-5 🟡 À FAIRE** — rollout `0.0.19` : shim `settings.gradle.kts` + pins
+  `education.cccp.build.*` (encore `0.0.18`/`0.0.14`) ; `bureau` et
+  `container-provision` à faire adopter `.lint`/`.publishing` ; retirer le
+  `maven("https://jitpack.io")` inconditionnel de `codebase-gradle`.
+* **US-3 🟡 À FAIRE** — `workspace-bom` : deux catalogues/BOM projetés d'une
+  source unique + `CatalogueNoMix`.
 * Rapport `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
 
