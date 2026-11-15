@@ -977,6 +977,11 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
 | Vague 1 — migrer `conventions-gradle` (image + `ci/run.sh`), preuve P1→P4 en CI
 | —
 | ✅ S-226 — job `test` dans `cccp-ci-base@sha256:4722…` via `ci/run.sh test`, run `43489495567` **VERT**. Fix inclus : JitPack déclaré dans le bloc `repositories` projet (il masquait le BOM `0.0.136` ; CI rouge depuis `62b5def`).
+
+| GBL-013-10
+| Node 26 LTS : image `cccp-ci-base` + actions `node24`-natives
+| —
+| ✅ S-053 — `setup_26.x` (`1ca29a3`), smoke `v26.13.1` (`ci-image` `43689467097`), digest `sha256:03ead378…` repiné chez les consommateurs ; `checkout@v5 → v7` (`e5d06ab`). `Test` `43685734737`/`43689467176`/`43690078183` vertes.
 |===
 
 == GBL-014 — canal de publication dual

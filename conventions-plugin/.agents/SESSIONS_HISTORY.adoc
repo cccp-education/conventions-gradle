@@ -1159,3 +1159,17 @@ Preuve container-provision : shim `0.0.20` dans les deux settings
 `container-provision-plugin/` est autonome et n'applique aucune convention
 (pas de gate sans adoption, rollout US-5). Rapport
 `.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc`.
+
+== Session 053 — GBL-013-10 : image `cccp-ci-base` sur Node 26 LTS — 2026-11-15
+
+Reconstruction de l'image sur **Node 26 LTS** (`ci-image/Dockerfile`,
+NodeSource `setup_26.x`, `1ca29a3`) ; smoke `node --version` = **v26.13.1**
+(`ci-image` `43689467097`) ; digest publié
+`sha256:03ead3787ed8f09068cc582191e4cd8f5e48e3ce696fe53836ecd826de57ea1f`,
+repiné chez `slider`/`capsule`/`bakery`. Actions `node24`-natives
+(`checkout@v5 → v7`, `e5d06ab`). Rappel propriétaire du canal : releases
+`0.0.19` (tag `v0.0.19`, `2acd6ae`) et `0.0.20` (tag `v0.0.20`, `95a8387`)
+vérifiées ; shim interne `0.0.19` (`b249e23`). `Test` `43685734737`,
+`43689467176`, `43690078183` vertes. Aucun code, aucun test, aucune nouvelle
+publication. Rapport
+`.agents/sessions/053-node-lts-image-and-channel-owner.adoc`.

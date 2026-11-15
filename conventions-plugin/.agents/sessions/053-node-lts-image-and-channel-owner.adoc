@@ -1,0 +1,89 @@
+= Session 053 — GBL-013-10 : image `cccp-ci-base` sur Node 26 LTS + propriétaire du canal 0.0.19/0.0.20
+:date: 2026-11-15
+:scope: conventions-plugin — reconstruction et smoke de l'image CI, actions `node24`, digest publié, release de canal
+:statut: ✅ LIVRÉ — `ci-image` `43685734673`, `43689467097` ; `Test` `43685734737`, `43689467176`, `43690078183` VERTES
+
+== Contexte
+
+Session globale 229 (travaux du 2026-11-15). `conventions-gradle` est
+**propriétaire de l'image de runtime** `cccp-ci-base` (GBL-013-2) et
+**propriétaire du canal de publication** (GBL-014). Cette entrée consigne la
+journée Node 26 LTS / actions `node24` ; les releases de canal `0.0.19`
+(S-051) et `0.0.20` (S-052) sont déjà closes et ne sont pas réécrites ici,
+seulement rappelées comme prérequis du repin consommateur.
+
+== 1. Actions `node24`-natives (GBL-013-10)
+
+Commit `e5d06ab` — `.github/workflows/ci-image.yml` et `test.yml` :
+`actions/checkout@v5 → v7`. Le dépôt n'utilise que `checkout` (build/push
+Docker via `docker/build-push-action@v6`, inchangé), d'où un delta réduit.
+
+== 2. Image `cccp-ci-base` : Node 22 → Node 26 LTS (GBL-013-10)
+
+Commit `1ca29a3` — `ci-image/Dockerfile` :
+
+[source,dockerfile]
+----
+-    curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource.sh; \
++    curl -fsSL https://deb.nodesource.com/setup_26.x -o /tmp/nodesource.sh; \
+----
+
+Le téléchargement du script NodeSource reste séparé de son exécution
+(`curl -o` puis `bash`) : un échec réseau ne peut pas être avalé par un
+pipeline `curl | bash` (garde héritée de S-226). L'image est reconstruite par
+le workflow `ci-image` (build chargé localement → **smoke-test** → push
+public/privé) qui vérifie `java`, **`node --version` = `v26.13.1`**, `ffmpeg`,
+`espeak-ng` et `shellcheck` avant publication.
+
+* `ci-image` run **`43689467097`** ✅ (build + smoke + push).
+* Digest publié : `cccpeducation/cccp-ci-base@sha256:03ead3787ed8f09068cc582191e4cd8f5e48e3ce696fe53836ecd826de57ea1f`.
+* `Test` run **`43689467176`** ✅ sur ce même commit.
+
+== 3. Repin du digest chez les consommateurs (GBL-013-10)
+
+Commit `719d34c` — `.github/workflows/test.yml` :
+`sha256:4722c1bc… → sha256:03ead378…`. Le digest est désormais identique dans
+les quatre dépôts de la vague (`slider`, `capsule`, `bakery`, `conventions`).
+
+== 4. Rappel propriétaire du canal (GBL-014)
+
+* `conventions-plugin 0.0.19` — tag `v0.0.19` (`b136b892`, commit `2acd6ae`) :
+  `verifyChannel` dans `.lint`, `ChannelConsistency` sémantique.
+* `conventions-plugin 0.0.20` — tag `v0.0.20` (`1cf4a7d`, commit `95a8387`) :
+  `verifyChannel` enregistré par **toutes** les conventions (idempotent),
+  fermant le trou `.cucumber`/`.library`.
+* Shim interne `0.0.18 → 0.0.19` (commit `b249e23`, `Test` `43672592161`) —
+  GBL-014-4 appliqué au dépôt propriétaire.
+* Les consommateurs de la vague ont repinné `0.0.19`
+  (`slider`/`capsule`/`bakery`) ; le rollout `0.0.20` reste US-5.
+
+== Preuves CI
+
+[cols="1,2,1", options="header"]
+|===
+| Commit | Run | Résultat
+
+| `b249e23` | `43672592161` (`Test`) | ✅
+| `e5d06ab` | `43685734673` (`ci-image`) | ✅
+| `e5d06ab` | `43685734737` (`Test`) | ✅
+| `1ca29a3` | `43689467097` (`ci-image`, smoke `v26.13.1`) | ✅
+| `1ca29a3` | `43689467176` (`Test`) | ✅
+| `719d34c` | `43690078183` (`Test`) | ✅
+|===
+
+== Fichiers
+
+`.agents` uniquement en clôture (ce rapport, `PROMPT_REPRISE`,
+`.agents/INDEX.adoc`, `.agents/SESSIONS_HISTORY.adoc`, archive 2026-11).
+Aucun fichier `src/`, aucun test, aucun secret.
+
+== Reste
+
+. **GBL-014-5** — rollout `0.0.20` : shim et pins `education.cccp.build.*`
+  encore à `0.0.18`/`0.0.14` chez plusieurs consommateurs ; `bureau` /
+  `container-provision` sans convention ; `codebase` garde un
+  `maven("https://jitpack.io")` inconditionnel.
+. **GBL-014-3** — deux catalogues/BOM projetés (`workspace-bom`) +
+  `CatalogueNoMix`.
+. `CHANNEL=central` inopérant avant US-7 (markers Central/Portal après
+  le 2026-12-01).
