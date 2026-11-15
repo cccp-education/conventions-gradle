@@ -15,6 +15,15 @@ class LintConventionsPlugin : Plugin<Project> {
         GradleWrapperVerification.register(project)
         AdoptionAuditTask.register(project)
 
+        // GBL-014-4 — `verifyChannel` used to exist only in builds applying
+        // `.publishing`, so `academy`, `dashboard` and `jhipster` (plugin-publish
+        // + lint, no `.publishing`) had no channel gate while their settings were
+        // already projected. Lint is the widest convention: registering here
+        // gives them the gate. `register` is idempotent, so a build applying
+        // both `.publishing` and `.lint` still gets exactly one task, and the
+        // `check` wiring keeps its transition rule (explicit `-Pchannel` only).
+        ChannelVerificationTask.register(project)
+
         val ktlint = project.extensions.getByType(KtlintExtension::class.java)
         ktlint.version.set("1.5.0")
 

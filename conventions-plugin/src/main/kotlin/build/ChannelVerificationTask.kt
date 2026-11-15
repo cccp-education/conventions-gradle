@@ -12,6 +12,12 @@ import org.gradle.api.Project
  * transition rule: the ~20 public consumers that have not migrated yet keep
  * their current CI unchanged; the rollout (GBL-014-5) makes `-Pchannel`
  * explicit in `ci/run.sh`, which activates the gate.
+ *
+ * GBL-014-4 — registration is shared by every convention that reaches the
+ * plugin repositories, not just `.publishing`: [PublishingConventionsPlugin]
+ * (which publishes) and [LintConventionsPlugin] (the widest applied
+ * convention) both call [register]. Registration is idempotent, so a build
+ * applying both still gets exactly one `verifyChannel` task.
  */
 internal object ChannelVerificationTask {
 
