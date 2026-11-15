@@ -1137,3 +1137,25 @@ garde central), corrigée (`5a1ae46`) ; CI vertes `43664464982` /
 `ChannelConsistency$Guard`). Reste : rollout `0.0.19`, GBL-014-3 (catalogues
 `workspace-bom`), dette `codebase`, bump catalogue (hors périmètre). Rapport
 `.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.
+
+== Session 052 — GBL-014-5 : `verifyChannel` dans toutes les conventions — 2026-11-15
+
+Trou de gate fermé : `verifyChannel` n'était enregistré que par `.lint` et
+`.publishing`, donc un build `.cucumber` seul (container-provision) ou
+`.library` seul n'avait aucun contrôle de canal. `ChannelVerificationTask.register`
+est désormais appelé par les 8 conventions (`.gradle-plugin`, `.library`,
+`.cucumber`, `.functional-test`, `.kover`, `.lint`, `.logback-exclusion`,
+`.publishing`) ; `register` reste idempotent, et la transition est conservée
+(`check` → gate seulement si `-Pchannel` explicite). 7 TestKit nouveaux
+(`ChannelVerificationConventionsFunctionalTest` : cucumber enregistre/jitpack/
+central/refus JitPack hors garde/`check` sans et avec `-Pchannel`, library) ;
+zéro test existant modifié. Gates locales : compiles ×3, `validatePlugins`,
+`assemble`, `publishToMavenLocal` VERTS. CI vertes `43678844589` (`654a55d`)
+et `43679188725` (`95a8387`). Release JitPack **`conventions-plugin 0.0.20`**
+(tag `v0.0.20`, `1cf4a7d` ; POM/JAR/`.module` + marker cucumber HTTP 200).
+Preuve container-provision : shim `0.0.20` dans les deux settings
+(`b06b79a`), `verifyChannel -Pchannel=jitpack` à la **racine** (le build
+`.cucumber`) → `CHANNEL OK` ; écart documenté : le sous-build
+`container-provision-plugin/` est autonome et n'applique aucune convention
+(pas de gate sans adoption, rollout US-5). Rapport
+`.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc`.

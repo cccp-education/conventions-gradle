@@ -1,56 +1,44 @@
 = PROMPT_REPRISE — Conventions (ABIDJAN 🟤)
-:session: 052
+:session: 053
 :date: 2026-11-15
 :epic: GBL-014 — canal de publication dual (Central/Portal + JitPack)
 :max-lines: 70
 
-== Session 051 terminée — GBL-014-4 livrée
+== Session 052 terminée — GBL-014-5 (trou de gate fermé)
 
-* **`verifyChannel` enregistré aussi par `.lint`** — `academy`, `dashboard`,
-  `jhipster` (plugin-publish + lint, sans `.publishing`) avaient des settings
-  projetés **sans** gate. `ChannelVerificationTask.register` est appelé par
-  `PublishingConventionsPlugin` **et** `LintConventionsPlugin` (idempotent).
-  Transition conservée : `check` → `verifyChannel` **seulement** si `-Pchannel`
-  est explicite.
-* **Audit `settings` sémantique** — l'audit textuel flaguait un `settings`
-  migré en `central`. Désormais : 2 passes lexicales index-alignées
-  (commentaires masqués ; contenu des littéraux masqué pour la structure),
-  gardes `if (… "jitpack")` / `if (… "central")` localisées à
-  parenthèses/accolades équilibrées. En `central` : *then* d'une garde jitpack
-  et *else* d'une garde central ignorés ; toute référence JitPack **hors**
-  projection reste un finding. En `jitpack` : dépôt + shim exigés (garde ou
-  inconditionnel).
+* **`verifyChannel` enregistré par TOUTES les conventions** —
+  `ChannelVerificationTask.register(project)` est appelé depuis
+  `.gradle-plugin`, `.library`, `.cucumber`, `.functional-test`, `.kover`,
+  `.lint`, `.logback-exclusion`, `.publishing` (idempotent : un build
+  multi-conventions n'a qu'une tâche). Un build `.cucumber` seul (ex.
+  container-provision) ou `.library` seul n'est plus un trou de gate.
+* **Transition conservée** : `check` → `verifyChannel` **seulement** si
+  `-Pchannel` est explicite (aucune CI existante activée par surprise).
+* **Tests** : `ChannelVerificationConventionsFunctionalTest` (7 TestKit,
+  nouveau) — cucumber (enregistre / jitpack / central / refus JitPack hors
+  garde en central / `check` sans et avec `-Pchannel`) et library
+  (enregistre + central). Zéro test existant modifié.
+* **Release JitPack `conventions-plugin 0.0.20`** (tag `v0.0.20`, `1cf4a7d` ;
+  POM/JAR/`.module` + marker cucumber HTTP 200).
+* **Preuve container-provision** : shim `0.0.20` dans les deux settings ;
+  `verifyChannel -Pchannel=jitpack` à la **racine** (le build `.cucumber`) →
+  `CHANNEL OK` ; `container-provision-plugin/` compile (build autonome sans
+  convention, donc pas de gate — écart documenté, rollout US-5).
 
-Fichiers : `ChannelConsistency.kt` (réécrit), `LintConventionsPlugin.kt`
-(+register), `ChannelVerificationTask.kt` (KDoc), **nouveaux**
-`ChannelConsistencySemanticTest` (13 unit) et
-`ChannelVerificationLintFunctionalTest` (5 TestKit). Zéro test existant
-modifié ni affaibli.
+CI vertes : `43678844589` (`654a55d`), `43679188725` (`95a8387`).
+Rapport `.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc`.
 
-Preuve sur settings réels (lecture seule, `jshell`) : `capsule`,
-`workspace-bom`, `runner`, `dashboard` → **0 finding** en `central` ;
-`codebase-gradle/codebase-plugin` → **1** `FORBIDDEN_JITPACK_REPOSITORY`
-(`maven("https://jitpack.io")` **inconditionnel** — dette réelle) ;
-`conventions-gradle` (non migré) → 2.
+== Mission session 053
 
-Gates : compiles ×3, `validatePlugins`, `assemble`, `publishToMavenLocal`
-**VERTS** (local = build). CI `Test` verte `43664464982` (`5a1ae46`) et
-`43664765633` (`2acd6ae`). Release JitPack **`conventions-plugin 0.0.19`**
-(tag `v0.0.19`, `b136b892` ; POM/JAR/`.module`/marker HTTP 200).
-
-== Mission session 052
-
-1. **GBL-014-5 rollout `0.0.19`** — shim `useModule` `0.0.18 → 0.0.19` et pins
+1. **GBL-014-5 rollout `0.0.20`** — shim `useModule` `0.0.19 → 0.0.20` et pins
    `education.cccp.build.*` (encore `0.0.18`/`0.0.14`) chez les consommateurs
-   publics ; `bureau`/`container-provision` doivent **adopter** `.lint` (ou
-   `.publishing`) pour recevoir la gate.
+   publics. Depuis S-052, `.cucumber`/`.library`/`.gradle-plugin`/`.kover`
+   suffisent à porter la gate.
 2. **Dette `codebase-gradle`** — retirer le `maven("https://jitpack.io")`
-   inconditionnel (le finding `central` doit disparaître).
-3. **GBL-014-3** (`workspace-bom`) — deux catalogues/BOM projetés d'une
-   source unique + `CatalogueNoMix` ; le BOM JitPack n'est **pas** un
-   `platform`.
-4. **Bump catalogue** vers `0.0.19` : hors périmètre sans permission explicite
-   (`PlatformCatalogAlignmentTest`).
+   inconditionnel de `dependencyResolutionManagement.repositories` (le finding
+   `FORBIDDEN_JITPACK_REPOSITORY` doit disparaître en `central`).
+3. **GBL-014-3** (`workspace-bom`) — deux catalogues/BOM projetés d'une source
+   unique + `CatalogueNoMix` ; le BOM JitPack n'est **pas** un `platform`.
 
 == Règles dures
 
@@ -60,11 +48,12 @@ Gates : compiles ×3, `validatePlugins`, `assemble`, `publishToMavenLocal`
 * Ordre DAG N0 → N1 → N2 → N3 sur le canal choisi ; pas de version non taggée.
 * Local = Build, Tests = CI : compiler, pousser, preuve = run CI.
 * **Ne pas toucher** `foundry/private/**`, `office/**`, `configuration/` ;
-  ne pas modifier les `settings.gradle.kts` des voisins (S-051 = lecture seule).
+  ne pas modifier les `settings.gradle.kts` des voisins (S-051/S-052 = bumps
+  de shim autorisés uniquement).
 * Aucune branche permanente `jitpack`/`central` ; tag unique `vX.Y.Z`, jamais
   republier une version.
 
 == Références
 
 * Cadrage : `.agents/CADRAGE_EPIC_GBL_014_DUAL_CHANNEL.adoc` ; politique : `AGENTS.adoc` racine § Publication.
-* Rapport : `.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.
+* Rapports : `.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc` (courant), `051-gbl-014-4-consolidated-channel-guards.adoc`.

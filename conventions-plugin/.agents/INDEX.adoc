@@ -6,12 +6,13 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-11-15
+_session terminee_ : 052 — **GBL-014-5** : `verifyChannel` est enregistré par **toutes** les conventions (`.gradle-plugin`, `.library`, `.cucumber`, `.functional-test`, `.kover`, `.lint`, `.logback-exclusion`, `.publishing` ; `register` idempotent), fermant le trou des builds `.cucumber`/`.library` (container-provision). Transition conservée : `check` → gate **seulement** si `-Pchannel` explicite. 7 TestKit **nouveaux** (`ChannelVerificationConventionsFunctionalTest`), zéro test existant modifié. CI vertes `43678844589` (`654a55d`) et `43679188725` (`95a8387`) ; **release JitPack `conventions-plugin 0.0.20`** (tag `v0.0.20`, POM/JAR/module/marker HTTP 200). Preuve container-provision : shim `0.0.20` (racine + sous-build), `verifyChannel -Pchannel=jitpack` à la racine → `CHANNEL OK` (écart : le build `.cucumber` est la racine, le sous-build plugin est autonome sans convention). Rapport `.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc`.
 _session terminee_ : 051 — **GBL-014-4** : (1) `verifyChannel` enregistré aussi par `education.cccp.build.lint` (academy/dashboard/jhipster n'avaient aucune gate de canal ; `bureau`/`container-provision` restent hors périmètre) ; (2) `ChannelConsistency` **sémantique** — masquage commentaires/littéraux, gardes `if (… "jitpack")`/`if (… "central")` localisées à accolades équilibrées, projection `central` = then d'une garde jitpack + else d'une garde central ignorés, toute référence JitPack hors projection reste un finding. 13 unit + 5 TestKit **nouveaux**, zéro test existant modifié. CI verte `43664464982` (`5a1ae46`) et `43664765633` (`2acd6ae`) ; **release JitPack `conventions-plugin 0.0.19`** (tag `v0.0.19`, POM/JAR/module/marker HTTP 200). Rapport `.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.
 _session terminee_ : 050 — **GBL-014-1 + GBL-014-2** : propriété de canal (`-Pchannel=central|jitpack`, défaut `jitpack`), audit pur `ChannelConsistency`, garde Central-only `PublishChannelGuard`, tâche `verifyChannel` (câblée à `check` seulement si `-Pchannel` explicite), tests unitaires + TestKit. **CI verte `43646315278`** (commit `1482fbd`) ; **release JitPack `conventions-plugin 0.0.18`** (tag `v0.0.18`, POM/JAR/module/markers HTTP 200). Rapport `.agents/sessions/050-gbl-014-1-publication-channel.adoc`.
 _session terminee_ : 045 — **EPIC `CNV-17 JITPACK-PRIMARY` ouvert** (décision pilote : canal unique JitPack pour tout `foundry/public/`). Cadrage + preuves HTTP : le BOM JitPack est un `platform` valide (84 contraintes + `.module`), JitPack relabelle tous les modules à la version du tag (versions par contrat abolies), 20/22 coordonnées 200. `foundry/private/**` et `office/**` hors périmètre. Rapport `.agents/sessions/045-cnv-17-jitpack-primary.adoc`.
 _session terminee_ : 044 — **`MEM-WARN-ZERO` US-3** : 3 délégués `registering` → `register` (9 warnings Gradle 9.6 → 0), iso-comportement. Rapport `.agents/sessions/044-mem-warn-zero-us3-conventions.adoc`.
 _session terminee_ : 043 — **Workspace Gradle 9.9.1** ✅ (101 wrappers sur 35 dépôts, action `verify-gradle-wrapper` 9.9.1, source unique du catalogue 9.9.1, garde/fixtures alignés, tag JitPack `v0.0.16` + shim 55 settings ; CI verte sur tous les dépôts publics, hors `magic-stick` infra Docker). Rapport `.agents/sessions/043-workspace-gradle-9-9-1.adoc`.
-_Prochaine session_ : 052 — **rollout `0.0.19`** (shim `settings.gradle.kts` + pins `education.cccp.build.*` encore à `0.0.18`/`0.0.14`), puis GBL-014-3 (`workspace-bom`, deux catalogues/BOM + `CatalogueNoMix`) et la dette `codebase` (JitPack inconditionnel).
+_Prochaine session_ : 053 — **rollout `0.0.20`** (shim `settings.gradle.kts` + pins `education.cccp.build.*` encore à `0.0.18`/`0.0.14`), puis GBL-014-3 (`workspace-bom`, deux catalogues/BOM + `CatalogueNoMix`) et la dette `codebase` (JitPack inconditionnel).
 _Note 2026-11-14 (S-045 suite)_ : N0 `workspace-bom 0.0.136` publié (11 modules 200) ; blocage racine corrigé (`JvmProjectConventions` écrasait `dependencyResolutionManagement` → JitPack ajouté aux dépôts projet), `conventions-plugin v0.0.17` + shim 56 settings ; 18 dépôts consommateurs réécrits et poussés, compiles VERTES.
 
 _Note 2026-11-09 (S-041)_ : **publication JitPack de tous les artefacts
@@ -521,3 +522,15 @@ conditionnelles) et `verifyChannel` enregistré par `.lint` (idempotent).
 13 unit + 5 TestKit nouveaux. CI verte `43664464982` / `43664765633` ;
 release JitPack `conventions-plugin 0.0.19` (tag `v0.0.19`). Rapport
 `.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.
+
+== Session 052 — GBL-014-5 : `verifyChannel` dans toutes les conventions (2026-11-15)
+
+`ChannelVerificationTask.register` appelé depuis les 8 conventions
+(`.gradle-plugin`, `.library`, `.cucumber`, `.functional-test`, `.kover`,
+`.lint`, `.logback-exclusion`, `.publishing`), idempotent ; `check` → gate
+seulement si `-Pchannel` explicite. 7 TestKit nouveaux
+(`ChannelVerificationConventionsFunctionalTest`), zéro test existant modifié.
+CI vertes `43678844589` / `43679188725` ; release JitPack
+`conventions-plugin 0.0.20` (tag `v0.0.20`). Preuve container-provision :
+`verifyChannel -Pchannel=jitpack` à la racine → `CHANNEL OK`. Rapport
+`.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc`.

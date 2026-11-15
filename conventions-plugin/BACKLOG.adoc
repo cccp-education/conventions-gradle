@@ -1005,7 +1005,21 @@ smoke, pin par digest. **Deux canaux** — `cccpeducation` (boroughs publics) /
   * CI vertes `43664464982` (`5a1ae46`) + `43664765633` (`2acd6ae`) ; release
     JitPack **`v0.0.19`** (tag `b136b892`, POM/JAR/`.module`/marker HTTP 200).
   * Rapport `.agents/sessions/051-gbl-014-4-consolidated-channel-guards.adoc`.
-* **US-5 🟡 À FAIRE** — rollout `0.0.19` : shim `settings.gradle.kts` + pins
+* **US-4b ✅ S-052** — trou de gate fermé : `verifyChannel` est enregistré par
+  **toutes** les conventions (`.gradle-plugin`, `.library`, `.cucumber`,
+  `.functional-test`, `.kover`, `.lint`, `.logback-exclusion`, `.publishing` ;
+  `ChannelVerificationTask.register` idempotent). Un build `.cucumber` seul
+  (container-provision) ou `.library` seul n'est plus sans contrôle de canal ;
+  transition conservée (`check` → gate seulement si `-Pchannel` explicite).
+  7 TestKit nouveaux (`ChannelVerificationConventionsFunctionalTest`), zéro
+  test existant modifié. CI vertes `43678844589` (`654a55d`) et
+  `43679188725` (`95a8387`) ; release JitPack **`conventions-plugin 0.0.20`**
+  (tag `v0.0.20`, POM/JAR/`.module`/marker HTTP 200). Preuve container-provision :
+  shim `0.0.20` (racine + sous-build), `verifyChannel -Pchannel=jitpack` à la
+  racine → `CHANNEL OK` ; le sous-build `container-provision-plugin/` reste
+  autonome et sans convention (rollout US-5).
+  Rapport `.agents/sessions/052-gbl-014-5-verify-channel-all-conventions.adoc`.
+* **US-5 🟡 À FAIRE** — rollout `0.0.20` : shim `settings.gradle.kts` + pins
   `education.cccp.build.*` (encore `0.0.18`/`0.0.14`) ; `bureau` et
   `container-provision` à faire adopter `.lint`/`.publishing` ; retirer le
   `maven("https://jitpack.io")` inconditionnel de `codebase-gradle`.

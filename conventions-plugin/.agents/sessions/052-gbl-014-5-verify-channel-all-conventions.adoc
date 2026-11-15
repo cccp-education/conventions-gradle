@@ -1,0 +1,111 @@
+= Session 052 — GBL-014-5 : `verifyChannel` dans toutes les conventions
+:date: 2026-11-15
+:scope: conventions-plugin — fermeture du trou de gate `.cucumber`/`.library`, preuve container-provision
+:statut: ✅ CI VERTE (`654a55d` run `43678844589`, `95a8387` run `43679188725`) + RELEASE JITPACK `v0.0.20`
+
+== Contexte
+
+Le rollout S-229/051 laissait un trou de gate : `verifyChannel` n'était
+enregistré que par `.lint` et `.publishing`. Un build n'appliquant que
+`.cucumber` (le consommateur container-provision) ou `.library` n'avait **aucun**
+contrôle de cohérence de canal. Décision : l'enregistrer depuis **toutes** les
+conventions.
+
+== Design
+
+`ChannelVerificationTask.register(project)` est appelé depuis chaque
+`*ConventionsPlugin` du module :
+
+[cols="2,3", options="header"]
+|===
+| Convention | Appel
+
+| `.gradle-plugin` | `GradlePluginConventionsPlugin.apply`
+| `.library` | `LibraryConventionsPlugin.apply`
+| `.cucumber` | `CucumberConventionsPlugin.apply`
+| `.functional-test` | `FunctionalTestConventionsPlugin.apply`
+| `.kover` | `KoverConventionsPlugin.apply`
+| `.lint` | `LintConventionsPlugin.apply` (déjà, S-051)
+| `.logback-exclusion` | `LogbackExclusionConventionsPlugin.apply`
+| `.publishing` | `PublishingConventionsPlugin.apply` (déjà, S-050)
+|===
+
+`register` reste **idempotent** (`tasks.names.contains`) : un build appliquant
+plusieurs conventions n'a qu'une tâche. La sémantique de transition est
+**conservée** : `check` dépend de `verifyChannel` **seulement** si `-Pchannel`
+est explicite (aucun test/CI existant n'est activé par surprise).
+
+== Tests ajoutés
+
+`ChannelVerificationConventionsFunctionalTest` (TestKit, **nouveau**) — 7 tests,
+zéro test existant modifié :
+
+* `.cucumber` seul : enregistre `verifyChannel` ; passe en `jitpack` et en
+  `central` sur un settings projeté ; **échoue** `FORBIDDEN_JITPACK_REPOSITORY`
+  avec un dépôt JitPack hors garde en `central` ; `check` **sans** `-Pchannel`
+  ne dépend pas de la gate ; `check` **avec** `-Pchannel` en dépend.
+* `.library` seul : enregistre `verifyChannel` et passe en `central`.
+
+== Gates locales (Local = Build)
+
+`compileKotlin compileTestKotlin compileFunctionalTestKotlin` **VERTS**,
+`validatePlugins` **VERT**, `assemble` **VERT**, `publishToMavenLocal` **VERT**
+(`education.cccp.build:conventions-plugin:0.0.19` puis `0.0.20`, jar/module/pom
++ 8 markers). Aucun test local (règle EAGER).
+
+== CI
+
+* `654a55d` — run **`43678844589`** ✅ (3m18s).
+* `95a8387` — bump `0.0.20`, run **`43679188725`** ✅ (2m57s).
+
+== Release JitPack `conventions-plugin 0.0.20`
+
+* Version `0.0.19 → 0.0.20` (`conventions-plugin/build.gradle.kts:25`).
+* Tag annoté **`v0.0.20`** (`1cf4a7d`), poussé ; `git ls-remote` confirme.
+* HTTP 200 : `conventions-plugin-0.0.20.pom` (2 514 o), `.jar` (155 949 o),
+  `.module` (4 597 o) ;
+  `https://jitpack.io/com/github/cccp-education/conventions-gradle/...` ;
+  marker `education.cccp.build.cucumber.gradle.plugin-0.0.20.pom` **200**.
+
+== Preuve container-provision
+
+* Shim `conventions-plugin:0.0.19 → 0.0.20` dans
+  `container-provision-gradle/settings.gradle.kts` **et**
+  `container-provision-plugin/settings.gradle.kts` (commit `b06b79a`).
+* `./gradlew verifyChannel -Pchannel=jitpack` à la **racine** du dépôt
+  (le build qui applique `education.cccp.build.cucumber`) →
+  `CHANNEL OK: settings.gradle.kts is consistent with channel=jitpack`.
+* `container-provision-plugin/` : `compileKotlin compileTestKotlin` **VERTS**.
+
+=== Écart mesuré — répertoire de la preuve
+
+Le trou était décrit comme « `container-provision-plugin` applique uniquement
+`.cucumber` ». En réalité, le `.cucumber` est appliqué par le **build racine**
+(`container-provision-gradle/build.gradle.kts`) ; `container-provision-plugin/`
+est un **build autonome** (article 0124) qui n'applique **aucune** convention.
+La preuve est donc faite à la racine (le seul build `.cucumber` du dépôt) ;
+`verifyChannel` reste volontairement absent du sous-build plugin tant qu'il
+n'adopte pas une convention (décision de rollout US-5, pas ajoutée ici pour ne
+pas modifier son build).
+
+== Fichiers
+
+[cols="2,3", options="header"]
+|===
+| Fichier | Nature
+
+| `ChannelVerificationTask.kt` | KDoc (enregistrement universel)
+| 7 `*ConventionsPlugin.kt` | `+ ChannelVerificationTask.register(project)`
+| `LintConventionsPlugin.kt` | KDoc réaligné (appel conservé)
+| `ChannelVerificationConventionsFunctionalTest.kt` | **nouveau** — 7 tests TestKit
+| `build.gradle.kts` | version `0.0.20`
+|===
+
+== Reste
+
+. **US-5 rollout** : bump des pins `education.cccp.build.*` et des shims
+  consommateurs (encore `0.0.18`/`0.0.14`).
+. `bureau` / `container-provision-plugin` : adopter une convention s'ils
+  doivent porter la gate.
+. GBL-014-3 (catalogues/BOM `workspace-bom`) et dette `codebase`
+  (JitPack inconditionnel).
