@@ -21,6 +21,11 @@ import org.gradle.api.Project
 class LibraryConventionsPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        // GBL-014 / S-052 — an N0 contract library may publish (via
+        // `.publishing`) but is often built with `.library` alone; the channel
+        // gate must not depend on the publication convention being applied.
+        ChannelVerificationTask.register(project)
+
         project.pluginManager.apply("java-library")
         project.pluginManager.apply("maven-publish")
         project.pluginManager.apply("org.jetbrains.kotlin.jvm")

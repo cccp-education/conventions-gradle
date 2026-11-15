@@ -17,6 +17,10 @@ open class LogbackExclusionConventionsPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
+        // GBL-014 / S-052 — every convention exposes the channel gate
+        // (idempotent, so pairing it with another convention is harmless).
+        ChannelVerificationTask.register(project)
+
         project.configurations.configureEach { config ->
             if (config.name in EXCLUDED_CONFIGURATIONS) {
                 config.exclude(mapOf("group" to LOGBACK_GROUP, "module" to LOGBACK_MODULE))

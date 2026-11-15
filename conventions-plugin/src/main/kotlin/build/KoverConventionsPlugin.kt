@@ -9,6 +9,10 @@ import java.io.File
 open class KoverConventionsPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        // GBL-014 / S-052 — `.kover` alone (on a coverage job) must still expose
+        // the channel gate.
+        ChannelVerificationTask.register(project)
+
         val extension = project.extensions.create(
             "koverConventions",
             KoverConventionsExtension::class.java

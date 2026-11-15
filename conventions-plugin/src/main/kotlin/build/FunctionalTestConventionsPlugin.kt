@@ -14,6 +14,10 @@ open class FunctionalTestConventionsPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
+        // GBL-014 / S-052 — every convention exposes the channel gate
+        // (idempotent, so pairing it with another convention is harmless).
+        ChannelVerificationTask.register(project)
+
         val extension = project.extensions.create(
             "functionalTestConventions",
             FunctionalTestConventionsExtension::class.java

@@ -11,6 +11,10 @@ import java.time.Duration
 open class CucumberConventionsPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        // GBL-014 / S-052 — a build that only applies `.cucumber` (e.g. the
+        // container-provision consumer) must still get the channel gate.
+        ChannelVerificationTask.register(project)
+
         val extension = project.extensions.create(
             "cucumberConventions",
             CucumberConventionsExtension::class.java

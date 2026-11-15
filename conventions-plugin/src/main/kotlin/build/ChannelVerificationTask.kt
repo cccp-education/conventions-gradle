@@ -13,11 +13,15 @@ import org.gradle.api.Project
  * their current CI unchanged; the rollout (GBL-014-5) makes `-Pchannel`
  * explicit in `ci/run.sh`, which activates the gate.
  *
- * GBL-014-4 — registration is shared by every convention that reaches the
- * plugin repositories, not just `.publishing`: [PublishingConventionsPlugin]
- * (which publishes) and [LintConventionsPlugin] (the widest applied
- * convention) both call [register]. Registration is idempotent, so a build
- * applying both still gets exactly one `verifyChannel` task.
+ * GBL-014-4 / S-052 — registration is shared by **every** convention plugin in
+ * this module ([GradlePluginConventionsPlugin], [LibraryConventionsPlugin],
+ * [CucumberConventionsPlugin], [FunctionalTestConventionsPlugin],
+ * [KoverConventionsPlugin], [LintConventionsPlugin],
+ * [LogbackExclusionConventionsPlugin], [PublishingConventionsPlugin]): a build
+ * that only adopts `.cucumber` or `.library` used to have no gate at all. The
+ * task is registered unconditionally (it is useful on demand) and wired to
+ * `check` only when `-Pchannel` is explicit. Registration is idempotent, so a
+ * build applying several conventions still gets exactly one `verifyChannel`.
  */
 internal object ChannelVerificationTask {
 

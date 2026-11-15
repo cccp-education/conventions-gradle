@@ -8,6 +8,10 @@ import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 class GradlePluginConventionsPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        // GBL-014 / S-052 — a plugin build keeps its channel gate even when it
+        // does not apply `.lint`/`.publishing`.
+        ChannelVerificationTask.register(project)
+
         project.pluginManager.apply("java-gradle-plugin")
         project.pluginManager.apply("maven-publish")
         project.pluginManager.apply("org.jetbrains.kotlin.jvm")
