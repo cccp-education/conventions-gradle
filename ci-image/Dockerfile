@@ -41,10 +41,10 @@ RUN set -eux; \
         fonts-dejavu-core fonts-liberation; \
     rm -rf /var/lib/apt/lists/*
 
-# Node 22 (the NodeSource script is downloaded first so a network failure cannot
+# Node 26 LTS (the NodeSource script is downloaded first so a network failure cannot
 # be swallowed by a `curl | bash` pipeline).
 RUN set -eux; \
-    curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource.sh; \
+    curl -fsSL https://deb.nodesource.com/setup_26.x -o /tmp/nodesource.sh; \
     bash /tmp/nodesource.sh; \
     apt-get install -y --no-install-recommends nodejs; \
     rm -f /tmp/nodesource.sh; \
