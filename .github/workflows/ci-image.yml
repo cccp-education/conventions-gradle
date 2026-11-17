@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
       - name: Compute immutable tags
         id: tags
@@ -56,7 +56,7 @@ jobs:
 
       - name: Build (loaded for smoke-test, cache writer)
         id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ci-image
           file: ci-image/Dockerfile
@@ -88,7 +88,7 @@ jobs:
       # account (S-226: the private login used to clobber the public one).
       - name: Log in to Docker Hub (public channel)
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -96,7 +96,7 @@ jobs:
       - name: Publish public channel (cache read, no rebuild)
         if: github.event_name != 'pull_request'
         id: publish_public
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ci-image
           file: ci-image/Dockerfile
@@ -109,7 +109,7 @@ jobs:
 
       - name: Log in to Docker Hub (private channel)
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_PRIVATE_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PRIVATE_TOKEN }}
@@ -117,7 +117,7 @@ jobs:
       - name: Publish private channel (cache read, no rebuild)
         if: github.event_name != 'pull_request'
         id: publish_private
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ci-image
           file: ci-image/Dockerfile
