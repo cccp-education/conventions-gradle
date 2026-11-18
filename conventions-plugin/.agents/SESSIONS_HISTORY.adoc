@@ -1173,3 +1173,12 @@ vérifiées ; shim interne `0.0.19` (`b249e23`). `Test` `43685734737`,
 `43689467176`, `43690078183` vertes. Aucun code, aucun test, aucune nouvelle
 publication. Rapport
 `.agents/sessions/053-node-lts-image-and-channel-owner.adoc`.
+
+== Session 053 (suite) — audit des journaux CI et actions Docker — 2026-11-15
+
+Audit du run `ci-image` : il restait une alerte « Node.js 20 is deprecated »
+(actions `docker/build-push-action@v6`, `login-action@v3`,
+`setup-buildx-action@v3`). Bump vers `@v7`/`@v4`/`@v4`, commit `5705b89` ;
+`ci-image` `44197536562` ✅ avec **0 alerte Node 20**. L'image `latest` est
+repassée à `sha256:db41c938…` (contenu identique) ; les consommateurs restent
+pinnés sur `sha256:03ead378…` (build validé sur 20 dépôts).

@@ -211,3 +211,10 @@ pour les contrats N0.
   (`b249e23`, `Test` `43672592161`).
 * `Test` `43685734737`, `43689467176`, `43690078183` vertes.
 * Rapport `.agents/sessions/053-node-lts-image-and-channel-owner.adoc`.
+
+== S-053 (suite) — actions Docker sur majeures node24 ✅
+
+* `docker/build-push-action@v7`, `docker/login-action@v4`,
+  `docker/setup-buildx-action@v4` (commit `5705b89`).
+* `ci-image` `44197536562` ✅ — **0 alerte « Node.js 20 »**.
+* Pins consommateurs inchangés (`sha256:03ead378…`) ; `latest` = `db41c938…`.
